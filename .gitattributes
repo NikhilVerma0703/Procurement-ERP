@@ -1,0 +1,4 @@
+# Shell scripts run inside Linux (WSL): they must keep LF line endings even
+# when Git on Windows converts text files to CRLF.
+*.sh text eol=lf
+*.sql text eol=lf

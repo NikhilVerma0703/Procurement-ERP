@@ -8,7 +8,7 @@ import "./globals.css";
 // place, and the Purchase module mounts under it at /purchase unchanged.
 
 export const metadata: Metadata = {
-  title: { default: "PO Management ERP", template: "%s · PO Management ERP" },
+  title: { default: "Procurement ERP", template: "%s · Procurement ERP" },
   description: "Purchase Orders — Pacific Engineered Surfaces",
 };
 

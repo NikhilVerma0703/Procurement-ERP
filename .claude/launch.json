@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "po-management-erp",
+      "name": "procurement-erp",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3300

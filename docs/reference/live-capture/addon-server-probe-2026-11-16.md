@@ -91,6 +91,21 @@ On PUR-ORD/25-26/02486 the saved PO shows two things:
 
 This is the add-on's save-time (server) logic, which no captured file contains. Details are in `ui-notes.md`.
 
+## 5. Checked against the backup (all 3,199 POs, 16-11-2026)
+
+Computed from the database dump (`scratchpad addon_rules.py`; to be turned into golden tests in Step 4).
+
+| Rule | Evidence |
+|---|---|
+| Per-item `igst` = highest rate of the Item Tax Template and `igst_amt` = amount × rate; `cgst` = `sgst` = lowest rate, amounts likewise | 2,713 of 3,835 filled rows match exactly. 285 have the right % but an amount from before a later qty/rate edit (the 2-second delayed update). 11 differ. |
+| Template source | 826 filled rows have **no** `item_tax_template` on the row. The add-on probably reads the template from the **Item master's** taxes table. Confirm in Step 4. |
+| Templates with a single rate | Some templates have only one rate (e.g. "GST 18% - PESPL - PESPL": [18]). Under the max/min rule an In-State PO would then show CGST = SGST = 18. Check what was stored. |
+| `total_taxes_and_charges` = taxes added − deducted + **Σ Cost Overhead service charges** | 272 of 300 POs with Cost Overheads. 25 equal the tax rows only (probably before the rule existed, or charges entered later). POs without overheads: 2,894 of 2,899 equal the tax rows. |
+| `grand_total` = `net_total` + `total_taxes_and_charges`; `rounded_total` = round(grand_total) | Examples: 24-25/00007, 00008 (rounding −0.36), 00010, 00016 (+0.18). 738 POs without overheads do not satisfy `gt == net + ttc`; additional discount on grand total is likely. **Must be explained in Step 4.** |
+| Overhead tax row: Actual, `tax_amount` = charges × **the service item's GST rate** | 18% on 252 rows (including 73 where the PO's items had no template, and POs whose items were at 12% or 28%). 5% on 3 (freight). 2 outliers (30.24%, 77.19%) were edited by hand. |
+| Overhead account = the service item's **Item Default expense account** for the company | 369 of 373 rows. 4 differ (account blank on one side). |
+| Service items (Item flag `service_item`) | Duty Charges (3.19%), Fabrication Charge, FCA Custom Formalities, Hardware Charge, Installation Charges, Insurance Amount, ISF and Clearance Chrages, Ocean Freight Charges, Packing & Forwarding Charges, Service Charge, Service Charges(Nails Gun), Shipping Charges, TCS, TYRE PRESSING CHARGE |
+
 ## Open points to settle with the golden tests
 
 - Rate source for overheads when items carry different GST rates.

@@ -1,4 +1,4 @@
-# PO Management ERP
+# Procurement ERP
 
 A complete, independent replica of **Buying → Purchase Order** from the company's old ERPNext site
 (pacificengineeredsurfaces.nestorhawk.com, ERPNext 14.92 + India Compliance 14.34 + the custom `pacific_group`
@@ -33,7 +33,7 @@ npm run db:studio    # browse the database
 create the database once:
 
 ```bash
-psql -U postgres -c "CREATE DATABASE po_management_erp"
+psql -U postgres -c "CREATE DATABASE procurement_erp"
 ```
 
 ## Layout
@@ -50,6 +50,7 @@ prisma/schema.prisma       Purchase* models → purchase_* tables (Step 2 onward
 scripts/analysis/          Python helpers used for the first export and setup extraction
 docs/                      plan, reference material (below)
 data/                      company data — NOT in git (below)
+stopgap/                   TEMPORARY: the old ERPNext running on this PC until this ERP is live (stopgap/README.md)
 ```
 
 ## Data (not in git)

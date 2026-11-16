@@ -1,5 +1,5 @@
 // ============================================================================
-// PO Management ERP — Prisma schema.
+// Procurement ERP — Prisma schema.
 //
 // Local development runs against a PostgreSQL database on this machine;
 // production will be the Main ERP's Neon database once the module is merged.

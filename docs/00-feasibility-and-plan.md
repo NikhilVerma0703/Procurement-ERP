@@ -1,4 +1,4 @@
-# PO Management ERP — feasibility, architecture and build plan
+# Procurement ERP — feasibility, architecture and build plan
 
 **Status:** proposal for approval. Nothing is built yet.
 **Date:** 16-11-2026
@@ -78,7 +78,7 @@ touching any working copy.
 
 ---
 
-## 3. Architecture of the PO Management ERP
+## 3. Architecture of the Procurement ERP
 
 Built in the same stack and versions as the Main ERP, **namespaced from day one**, so the later merge is a move of
 folders and not a rewrite.

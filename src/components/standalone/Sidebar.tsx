@@ -46,7 +46,7 @@ function Brand() {
         <ShoppingCart className="h-5 w-5 text-white" aria-hidden />
       </div>
       <div className="leading-tight">
-        <div className="text-sm font-bold text-pacific-dark">PO Management ERP</div>
+        <div className="text-sm font-bold text-pacific-dark">Procurement ERP</div>
         <div className="text-xs text-gray-500">Pacific Engineered Surfaces</div>
       </div>
     </div>

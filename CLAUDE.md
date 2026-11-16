@@ -1,4 +1,4 @@
-# PO Management ERP
+# Procurement ERP
 
 Replica of ERPNext **Buying → Purchase Order** (old site: ERPNext 14.92.14 / Frappe 14.101.1 / India Compliance
 14.34.6 / custom add-on `pacific_group` 0.0.1), in the Main ERP's stack:
