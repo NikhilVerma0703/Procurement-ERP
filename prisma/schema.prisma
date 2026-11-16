@@ -1,0 +1,25 @@
+// ============================================================================
+// PO Management ERP — Prisma schema.
+//
+// Local development runs against a PostgreSQL database on this machine;
+// production will be the Main ERP's Neon database once the module is merged.
+// DATABASE_URL is the connection the app uses, DIRECT_URL the unpooled one
+// Prisma Migrate needs. Schema changes go through `prisma migrate dev` locally
+// (as in the standalone Pigment ERP); at the merge they become one numbered
+// SQL script for Neon (as Pigment's scripts/0146).
+//
+// NAMING, so the merge is a move and not a rename: every model of the module
+// is `Purchase*` and every table `purchase_*` (the Main ERP's Pigment*/
+// pigment_*, Chromia*/chromia_* rule). Models arrive with Step 2 (the data
+// model of the whole PO ecosystem — docs/00-feasibility-and-plan.md §4).
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}

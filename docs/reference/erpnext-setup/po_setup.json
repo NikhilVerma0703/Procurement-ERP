@@ -1,0 +1,3958 @@
+{
+  "default_print_format": "PDF PO",
+  "print_formats": [
+    {
+      "name": "Drop Shipping Format",
+      "file": "print_formats/Drop Shipping Format.html",
+      "default": false,
+      "disabled": "0",
+      "modified": "2016-03-07 20:49:39.443328",
+      "margins_mm": {
+        "margin_top": "0.000000000",
+        "margin_bottom": "0.000000000",
+        "margin_left": "0.000000000",
+        "margin_right": "0.000000000"
+      },
+      "font_size": "0",
+      "page_number": null
+    },
+    {
+      "name": "Future Lab PO",
+      "file": "print_formats/Future Lab PO.html",
+      "default": false,
+      "disabled": "0",
+      "modified": "2024-05-30 18:47:33.162969",
+      "margins_mm": {
+        "margin_top": "15.000000000",
+        "margin_bottom": "15.000000000",
+        "margin_left": "15.000000000",
+        "margin_right": "15.000000000"
+      },
+      "font_size": "14",
+      "page_number": "Hide"
+    },
+    {
+      "name": "Import PO",
+      "file": "print_formats/Import PO.html",
+      "default": false,
+      "disabled": "0",
+      "modified": "2024-05-29 06:57:57.718877",
+      "margins_mm": {
+        "margin_top": "15.000000000",
+        "margin_bottom": "15.000000000",
+        "margin_left": "15.000000000",
+        "margin_right": "15.000000000"
+      },
+      "font_size": "14",
+      "page_number": "Hide"
+    },
+    {
+      "name": "PDF PO",
+      "file": "print_formats/PDF PO.html",
+      "default": true,
+      "disabled": "0",
+      "modified": "2024-04-04 17:33:40.321356",
+      "margins_mm": {
+        "margin_top": "15.000000000",
+        "margin_bottom": "15.000000000",
+        "margin_left": "15.000000000",
+        "margin_right": "15.000000000"
+      },
+      "font_size": "14",
+      "page_number": "Hide"
+    },
+    {
+      "name": "PO print format",
+      "file": "print_formats/PO print format.html",
+      "default": false,
+      "disabled": "0",
+      "modified": "2025-09-04 13:06:23.398936",
+      "margins_mm": {
+        "margin_top": "15.000000000",
+        "margin_bottom": "15.000000000",
+        "margin_left": "15.000000000",
+        "margin_right": "15.000000000"
+      },
+      "font_size": "14",
+      "page_number": "Hide"
+    },
+    {
+      "name": "Purchase Order",
+      "file": "print_formats/Purchase Order.html",
+      "default": false,
+      "disabled": "0",
+      "modified": "2024-02-01 12:05:34.657377",
+      "margins_mm": {
+        "margin_top": "15.000000000",
+        "margin_bottom": "15.000000000",
+        "margin_left": "15.000000000",
+        "margin_right": "15.000000000"
+      },
+      "font_size": "14",
+      "page_number": "Hide"
+    },
+    {
+      "name": "Purchase Order 2025",
+      "file": "print_formats/Purchase Order 2025.html",
+      "default": false,
+      "disabled": "0",
+      "modified": "2025-09-04 16:54:01.345896",
+      "margins_mm": {
+        "margin_top": "15.000000000",
+        "margin_bottom": "15.000000000",
+        "margin_left": "15.000000000",
+        "margin_right": "15.000000000"
+      },
+      "font_size": "14",
+      "page_number": "Hide"
+    },
+    {
+      "name": "Purchase Order Print",
+      "file": "print_formats/Purchase Order Print.html",
+      "default": false,
+      "disabled": "0",
+      "modified": "2024-05-29 07:02:22.497091",
+      "margins_mm": {
+        "margin_top": "15.000000000",
+        "margin_bottom": "15.000000000",
+        "margin_left": "15.000000000",
+        "margin_right": "15.000000000"
+      },
+      "font_size": "14",
+      "page_number": "Hide"
+    },
+    {
+      "name": "PURCHASE ORDER TEMPLATE",
+      "file": "print_formats/PURCHASE ORDER TEMPLATE.html",
+      "default": false,
+      "disabled": "0",
+      "modified": "2025-09-05 10:00:13.524801",
+      "margins_mm": {
+        "margin_top": "15.000000000",
+        "margin_bottom": "15.000000000",
+        "margin_left": "15.000000000",
+        "margin_right": "15.000000000"
+      },
+      "font_size": "14",
+      "page_number": "Hide"
+    },
+    {
+      "name": "tecnosint",
+      "file": "print_formats/tecnosint.html",
+      "default": false,
+      "disabled": "0",
+      "modified": "2024-05-29 11:35:40.981566",
+      "margins_mm": {
+        "margin_top": "15.000000000",
+        "margin_bottom": "15.000000000",
+        "margin_left": "15.000000000",
+        "margin_right": "15.000000000"
+      },
+      "font_size": "14",
+      "page_number": "Hide"
+    },
+    {
+      "name": "Test Future Lab PO",
+      "file": "print_formats/Test Future Lab PO.html",
+      "default": false,
+      "disabled": "0",
+      "modified": "2024-09-27 11:12:59.332044",
+      "margins_mm": {
+        "margin_top": "15.000000000",
+        "margin_bottom": "15.000000000",
+        "margin_left": "15.000000000",
+        "margin_right": "15.000000000"
+      },
+      "font_size": "14",
+      "page_number": "Hide"
+    }
+  ],
+  "custom_fields": [
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "cb_gst_details",
+      "fieldtype": "Column Break",
+      "insert_after": "cess_non_advol_rate"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "cess_amount",
+      "label": "CESS Amount",
+      "fieldtype": "Currency",
+      "options": "Company:company:default_currency",
+      "insert_after": "sgst_amount",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "cess_non_advol_amount",
+      "label": "CESS Non Advol Amount",
+      "fieldtype": "Currency",
+      "options": "Company:company:default_currency",
+      "insert_after": "cess_amount",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "cess_non_advol_rate",
+      "label": "CESS Non Advol Rate",
+      "fieldtype": "Float",
+      "insert_after": "cess_rate",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "cess_rate",
+      "label": "CESS Rate",
+      "fieldtype": "Float",
+      "insert_after": "sgst_rate",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "cgst",
+      "label": "CGST %",
+      "fieldtype": "Float",
+      "insert_after": "column_break_hej44",
+      "in_list_view": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "cgst_amount",
+      "label": "CGST Amount",
+      "fieldtype": "Currency",
+      "options": "Company:company:default_currency",
+      "insert_after": "igst_amount",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "cgst_amt",
+      "label": "CGST Amt",
+      "fieldtype": "Float",
+      "insert_after": "cgst",
+      "in_list_view": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "cgst_rate",
+      "label": "CGST Rate",
+      "fieldtype": "Float",
+      "insert_after": "igst_rate",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "column_break_ai3sg",
+      "fieldtype": "Column Break",
+      "insert_after": "cgst_amt"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "column_break_hej44",
+      "fieldtype": "Column Break",
+      "insert_after": "sgst_amt"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "gst_details_section",
+      "label": "GST Details",
+      "fieldtype": "Section Break",
+      "insert_after": "taxable_value"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "gst_hsn_code",
+      "label": "HSN/SAC",
+      "fieldtype": "Data",
+      "insert_after": "description",
+      "fetch_from": "item_code.gst_hsn_code",
+      "allow_on_submit": "1",
+      "print_hide": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "gst_treatment",
+      "label": "GST Treatment",
+      "fieldtype": "Autocomplete",
+      "options": "Taxable\nZero-Rated\nNil-Rated\nExempted\nNon-GST",
+      "insert_after": "item_tax_template",
+      "read_only": "1",
+      "fetch_from": "item_tax_template.gst_treatment",
+      "print_hide": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "igst",
+      "label": "IGST %",
+      "fieldtype": "Float",
+      "insert_after": "column_break_ai3sg",
+      "in_list_view": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "igst_amount",
+      "label": "IGST Amount",
+      "fieldtype": "Currency",
+      "options": "Company:company:default_currency",
+      "insert_after": "cb_gst_details",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "igst_amt",
+      "label": "IGST Amt",
+      "fieldtype": "Float",
+      "insert_after": "igst",
+      "in_list_view": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "igst_rate",
+      "label": "IGST Rate",
+      "fieldtype": "Float",
+      "insert_after": "gst_details_section",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "is_ineligible_for_itc",
+      "label": "Is Ineligible for Input Tax Credit",
+      "fieldtype": "Check",
+      "insert_after": "gst_hsn_code",
+      "fetch_from": "item_code.is_ineligible_for_itc",
+      "print_hide": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "sgst",
+      "label": "SGST %",
+      "fieldtype": "Float",
+      "insert_after": "tax_and_charges",
+      "in_list_view": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "sgst_amount",
+      "label": "SGST Amount",
+      "fieldtype": "Currency",
+      "options": "Company:company:default_currency",
+      "insert_after": "cgst_amount",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "sgst_amt",
+      "label": "SGST Amt",
+      "fieldtype": "Float",
+      "insert_after": "sgst",
+      "in_list_view": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "sgst_rate",
+      "label": "SGST Rate",
+      "fieldtype": "Float",
+      "insert_after": "cgst_rate",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "tax_and_charges",
+      "label": "Tax And Charges",
+      "fieldtype": "Section Break",
+      "insert_after": "base_net_amount"
+    },
+    {
+      "dt": "Purchase Order Item",
+      "fieldname": "taxable_value",
+      "label": "Taxable Value",
+      "fieldtype": "Currency",
+      "options": "Company:company:default_currency",
+      "insert_after": "base_net_amount",
+      "read_only": "1",
+      "print_hide": "1"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "company_gstin",
+      "label": "Company GSTIN",
+      "fieldtype": "Data",
+      "insert_after": "billing_address_display",
+      "read_only": "1",
+      "fetch_from": "billing_address.gstin",
+      "print_hide": "1"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "custom_mode_of_transport",
+      "label": "Mode Of Transport",
+      "fieldtype": "Select",
+      "options": "\nRoad\nAir\nRail\nShip",
+      "insert_after": "get_items_from_open_material_requests",
+      "default": "Road"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "custom_purpose_of_purchase",
+      "label": "Purpose",
+      "fieldtype": "Select",
+      "options": "General\nDomestic\nExports",
+      "insert_after": "schedule_date"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "custom_shipment_type",
+      "label": "Shipment Type",
+      "fieldtype": "Select",
+      "options": "Domestic\nImport",
+      "insert_after": "order_confirmation_date"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "gst_breakup_table",
+      "label": "GST Breakup Table",
+      "fieldtype": "Text Editor",
+      "insert_after": "section_gst_breakup",
+      "read_only": "1",
+      "allow_on_submit": "1"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "gst_category",
+      "label": "GST Category",
+      "fieldtype": "Data",
+      "insert_after": "supplier_gstin",
+      "read_only": "1",
+      "fetch_from": "supplier_address.gst_category",
+      "print_hide": "1"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "is_reverse_charge",
+      "label": "Is Reverse Charge",
+      "fieldtype": "Check",
+      "insert_after": "apply_tds",
+      "print_hide": "1"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "place_of_supply",
+      "label": "Place of Supply",
+      "fieldtype": "Autocomplete",
+      "options": "01-Jammu and Kashmir\n02-Himachal Pradesh\n03-Punjab\n04-Chandigarh\n05-Uttarakhand\n06-Haryana\n07-Delhi\n08-Rajasthan\n09-Uttar Pradesh\n10-Bihar\n11-Sikkim\n12-Arunachal Pradesh\n13-Nagaland\n14-Manipur\n15-Mizoram\n16-Tripura\n17-Meghalaya\n18-Assam\n19-West Bengal\n20-Jharkhand\n21-Odisha\n22-Chhattisgarh\n23-Madhya Pradesh\n24-Gujarat\n26-Dadra and Nagar Haveli and Daman and Diu\n27-Maharashtra\n29-Karnataka\n30-Goa\n31-Lakshadweep Islands\n32-Kerala\n33-Tamil Nadu\n34-Puducherry\n35-Andaman and Nicobar Islands\n36-Telangana\n37-Andhra Pradesh\n38-Ladakh\n96-Other Countries\n97-Other Territory",
+      "insert_after": "company_gstin",
+      "print_hide": "1"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "section_gst_breakup",
+      "label": "GST Breakup",
+      "fieldtype": "Section Break",
+      "insert_after": "other_charges_calculation"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "services_item",
+      "label": "Cost Overhead",
+      "fieldtype": "Section Break",
+      "insert_after": "supplied_items"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "services_items",
+      "label": "Cost Overheads",
+      "fieldtype": "Table",
+      "options": "Services Items",
+      "insert_after": "services_item"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "supplier_gstin",
+      "label": "Supplier GSTIN",
+      "fieldtype": "Data",
+      "insert_after": "address_display",
+      "read_only": "1",
+      "fetch_from": "supplier_address.gstin",
+      "print_hide": "1"
+    },
+    {
+      "dt": "Purchase Order",
+      "fieldname": "workflow_state",
+      "label": "Workflow State",
+      "fieldtype": "Link",
+      "options": "Workflow State",
+      "insert_after": "custom_mode_of_shipping",
+      "hidden": "1",
+      "allow_on_submit": "1"
+    },
+    {
+      "dt": "Purchase Taxes and Charges",
+      "fieldname": "gst_tax_type",
+      "label": "GST Tax Type",
+      "fieldtype": "Data",
+      "insert_after": "rate",
+      "read_only": "1"
+    },
+    {
+      "dt": "Purchase Taxes and Charges",
+      "fieldname": "service_price",
+      "label": "Service Price",
+      "fieldtype": "Float",
+      "insert_after": "column_break_opehw"
+    }
+  ],
+  "property_setters": [
+    {
+      "doc_type": "Purchase Order Item",
+      "field_name": "amount",
+      "property": "label",
+      "value": "Final Amount"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "base_rounded_total",
+      "property": "hidden"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "base_rounded_total",
+      "property": "print_hide",
+      "value": "1"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "disable_rounded_total",
+      "property": "default"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "due_date",
+      "property": "print_hide"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "in_words",
+      "property": "hidden"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "in_words",
+      "property": "print_hide"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "property": "default_print_format",
+      "value": "PDF PO"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "property": "field_order",
+      "value": "[\"workflow_state\", \"supplier_section\", \"title\", \"naming_series\", \"supplier\", \"supplier_name\", \"order_confirmation_no\", \"order_confirmation_date\", \"custom_shipment_type\", \"custom_mode_of_transport\", \"get_items_from_open_material_requests\", \"column_break_7\", \"transaction_date\", \"schedule_date\", \"custom_purpose_of_purchase\", \"column_break1\", \"company\", \"apply_tds\", \"is_reverse_charge\", \"tax_withholding_category\", \"is_subcontracted\", \"supplier_warehouse\", \"amended_from\", \"accounting_dimensions_section\", \"cost_center\", \"dimension_col_break\", \"project\", \"currency_and_price_list\", \"currency\", \"conversion_rate\", \"cb_price_list\", \"buying_price_list\", \"price_list_currency\", \"plc_conversion_rate\", \"ignore_pricing_rule\", \"before_items_section\", \"scan_barcode\", \"set_from_warehouse\", \"items_col_break\", \"set_warehouse\", \"items_section\", \"items\", \"sb_last_purchase\", \"total_qty\", \"total_net_weight\", \"column_break_40\", \"base_total\", \"base_net_total\", \"column_break_26\", \"total\", \"net_total\", \"tax_withholding_net_total\", \"base_tax_withholding_net_total\", \"section_break_48\", \"pricing_rules\", \"raw_material_details\", \"set_reserve_warehouse\", \"supplied_items\", \"services_item\", \"services_items\", \"taxes_section\", \"tax_category\", \"taxes_and_charges\", \"column_break_53\", \"shipping_rule\", \"column_break_50\", \"incoterm\", \"named_place\", \"section_break_52\", \"taxes\", \"totals\", \"base_taxes_and_charges_added\", \"base_taxes_and_charges_deducted\", \"base_total_taxes_and_charges\", \"column_break_39\", \"taxes_and_charges_added\", \"taxes_and_charges_deducted\", \"total_taxes_and_charges\", \"totals_section\", \"base_grand_total\", \"base_rounding_adjustment\", \"base_in_words\", \"base_rounded_total\", \"column_break4\", \"grand_total\", \"rounding_adjustment\", \"rounded_total\", \"disable_rounded_total\", \"in_words\", \"advance_paid\", \"discount_section\", \"apply_discount_on\", \"base_discount_amount\", \"column_break_45\", \"additional_discount_percentage\", \"discount_amount\", \"sec_tax_breakup\", \"other_charges_calculation\", \"section_gst_breakup\", \"gst_breakup_table\", \"address_and_contact_tab\", \"section_addresses\", \"supplier_address\", \"address_display\", \"supplier_gstin\", \"gst_category\", \"col_break_address\", \"contact_person\", \"contact_display\", \"contact_mobile\", \"contact_email\", \"shipping_address_section\", \"shipping_address\", \"column_break_99\", \"shipping_address_display\", \"company_billing_address_section\", \"billing_address\", \"column_break_103\", \"billing_address_display\", \"company_gstin\", \"place_of_supply\", \"drop_ship\", \"customer\", \"customer_name\", \"column_break_19\", \"customer_contact_person\", \"customer_contact_display\", \"customer_contact_mobile\", \"customer_contact_email\", \"terms_tab\", \"payment_schedule_section\", \"payment_terms_template\", \"payment_schedule\", \"terms_section_break\", \"tc_name\", \"terms\", \"more_info_tab\", \"tracking_section\", \"status\", \"column_break_75\", \"per_billed\", \"per_received\", \"column_break5\", \"letter_head\", \"group_same_items\", \"column_break_86\", \"select_print_heading\", \"language\", \"subscription_section\", \"from_date\", \"to_date\", \"column_break_97\", \"auto_repeat\", \"update_auto_repeat_reference\", \"additional_info_section\", \"is_internal_supplier\", \"represents_company\", \"ref_sq\", \"column_break_74\", \"party_account_currency\", \"inter_company_order_reference\", \"is_old_subcontracting_flow\", \"connections_tab\"]"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "naming_series",
+      "property": "default",
+      "value": "PUR-ORD/25-26/"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "naming_series",
+      "property": "options",
+      "value": "PUR-ORD/25-26/"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "payment_schedule",
+      "property": "print_hide",
+      "value": "1"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "rounded_total",
+      "property": "hidden"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "rounded_total",
+      "property": "print_hide"
+    },
+    {
+      "doc_type": "Purchase Order",
+      "field_name": "scan_barcode",
+      "property": "hidden"
+    },
+    {
+      "doc_type": "Purchase Taxes and Charges",
+      "field_name": "rate",
+      "property": "in_list_view"
+    }
+  ],
+  "workflow": [
+    {
+      "name": "Purchase Order",
+      "document_type": "Purchase Order",
+      "is_active": "1",
+      "workflow_state_field": "workflow_state",
+      "send_email_alert": "1",
+      "states": [
+        {
+          "idx": "1",
+          "state": "Created",
+          "allow_edit": "Purchase Head"
+        },
+        {
+          "idx": "3",
+          "state": "Rejected",
+          "doc_status": "1",
+          "allow_edit": "Admin"
+        },
+        {
+          "idx": "2",
+          "state": "Approved",
+          "doc_status": "1",
+          "allow_edit": "Admin"
+        }
+      ],
+      "transitions": [
+        {
+          "idx": "1",
+          "state": "Created",
+          "action": "Approve",
+          "next_state": "Approved",
+          "allowed": "Admin",
+          "allow_self_approval": "1"
+        },
+        {
+          "idx": "2",
+          "state": "Created",
+          "action": "Reject",
+          "next_state": "Rejected",
+          "allowed": "Admin",
+          "allow_self_approval": "1"
+        }
+      ]
+    }
+  ],
+  "notifications": [
+    {
+      "name": "Purchase Order {{doc.name}} Is Save",
+      "enabled": "1",
+      "event": "New",
+      "channel": "Email",
+      "subject": "Purchase Order {{doc.name}} Is Created",
+      "condition": "doc.workflow_state == \"Created\"",
+      "message": "New Purchase Order {{doc.name}} Is Created",
+      "recipients": [
+        {
+          "receiver_by_role": "Request Dept Head"
+        },
+        {
+          "receiver_by_role": "Store Head"
+        },
+        {
+          "receiver_by_role": "Purchase Head"
+        },
+        {
+          "receiver_by_role": "Admin"
+        }
+      ]
+    },
+    {
+      "name": "Purchase Order {{doc.name}} Is Submit",
+      "enabled": "1",
+      "event": "Submit",
+      "channel": "Email",
+      "subject": "Purchase Order {{doc.name}} Is Submit",
+      "condition": "doc.workflow_state == \"Approved\"",
+      "message": "New Purchase Order {{doc.name}} Is Submit",
+      "recipients": [
+        {
+          "receiver_by_role": "Store Head"
+        },
+        {
+          "receiver_by_role": "Request Dept Head"
+        },
+        {
+          "receiver_by_role": "Purchase Head"
+        },
+        {
+          "receiver_by_role": "Admin"
+        },
+        {
+          "receiver_by_role": "Supplier"
+        }
+      ]
+    },
+    {
+      "name": "Purchase order approved",
+      "enabled": "1",
+      "event": "Submit",
+      "channel": "Email",
+      "subject": "Purchase Order {{ doc.name }} has been approved",
+      "condition": "doc.workflow_state==\"Approved\"",
+      "message": "Purchase order is approved",
+      "recipients": [
+        {
+          "receiver_by_document_field": "owner"
+        },
+        {
+          "receiver_by_document_field": "contact_email"
+        }
+      ]
+    }
+  ],
+  "letter_heads": [
+    {
+      "name": "Logo",
+      "is_default": "1",
+      "source": "Image",
+      "image": "/files/pacific_logo.png",
+      "content": "<div style=\"text-align: left;\">\n<img alt=\"Logo\" src=\"/files/pacific_logo.png\" style=\"width: 32.0px;\" width=\"32.0\">\n</div>"
+    }
+  ],
+  "terms_and_conditions": [
+    {
+      "name": "(Subject to stock availability).ex-our works from the date of receipt technical & commercial clear order with advance payment",
+      "title": "(Subject to stock availability).ex-our works from the date of receipt technical & commercial clear order with advance payment",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "02 weeks from Advanced payment date",
+      "title": "02 weeks from Advanced payment date",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "1 - 2 Days",
+      "title": "1 - 2 Days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "1 WEEK",
+      "title": "1 WEEK",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "1-2 weeks from the date of P.O with advance",
+      "title": "1-2 weeks from the date of P.O with advance",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "10 DAYS",
+      "title": "10 DAYS",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "10 WORKING DAYS AFTER ORDER",
+      "title": "10 WORKING DAYS AFTER ORDER",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "10-12 Weeks from the date of receipt of technically & commercially clear & firm order.",
+      "title": "10-12 Weeks from the date of receipt of technically & commercially clear & firm order.",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "10-15 Days",
+      "title": "10-15 Days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "120 DAYS FROM BL DATE",
+      "title": "120 DAYS FROM BL DATE",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "2 - 10 Working Days after Receipt of Confirmed Purchase Order with advance.",
+      "title": "2 - 10 Working Days after Receipt of Confirmed Purchase Order with advance.",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "2 – 3 days from the date of PO & Advance",
+      "title": "2 – 3 days from the date of PO & Advance",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "2 Month",
+      "title": "2 Month",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "2 WEEKS",
+      "title": "2 WEEKS",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "2-3 Days",
+      "title": "2-3 Days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "2-3 WEEKS",
+      "title": "2-3 WEEKS",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "2&3 weeks door to door delivery",
+      "title": "2&3 weeks door to door delivery",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "20 days",
+      "title": "20 days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "20 Working Days from receipt of your advance payment",
+      "title": "20 Working Days from receipt of your advance payment",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p>20 Working Days from receipt of your advance payment</p></div>"
+    },
+    {
+      "name": "21 Working Days",
+      "title": "21 Working Days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "25 Days",
+      "title": "25 Days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "3 - 4 WEEKS",
+      "title": "3 - 4 WEEKS",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "3 Weeks",
+      "title": "3 Weeks",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "30 Days",
+      "title": "30 Days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "30% advance & 70% CAD before releasing BL",
+      "title": "30% advance & 70% CAD before releasing BL",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "4 DAYS FOR PRODUCTION EXECUTION, DELIVERY TIMING BASED ON LOCATION",
+      "title": "4 DAYS FOR PRODUCTION EXECUTION, DELIVERY TIMING BASED ON LOCATION",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "4 Weeks",
+      "title": "4 Weeks",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "4 Working Weeks for LC Opening",
+      "title": "4 Working Weeks for LC Opening",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "4-5 Days",
+      "title": "4-5 Days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "5 Days",
+      "title": "5 Days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "5-6 Weeks",
+      "title": "5-6 Weeks",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "6 WEEKS ON RECEIPT OF PAYMENT",
+      "title": "6 WEEKS ON RECEIPT OF PAYMENT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "6-8 WEEKS",
+      "title": "6-8 WEEKS",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "60 days on receipt of your PO",
+      "title": "60 days on receipt of your PO",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "7 - 10 WORKING DAYS",
+      "title": "7 - 10 WORKING DAYS",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "7 - 8 weeks",
+      "title": "7 - 8 weeks",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "7 to 10 working days from PO received date",
+      "title": "7 to 10 working days from PO received date",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "7-10 DAYS AS SOON AS WE RECEIVED YOUR PAYMENT",
+      "title": "7-10 DAYS AS SOON AS WE RECEIVED YOUR PAYMENT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "7-10 DAYS FOR PRODUCTION EXECUTION, DELIVERY TIMING BASED ON LOCATION",
+      "title": "7-10 DAYS FOR PRODUCTION EXECUTION, DELIVERY TIMING BASED ON LOCATION",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Advance authorisation License No: 0711012736  ARO invalidation: 1",
+      "title": "Advance authorisation License No: 0711012736  ARO invalidation: 1",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Against Advance Authorisation",
+      "title": "Against Advance Authorisation",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "approx 45 days on receipt of irrevocable LC ,",
+      "title": "approx 45 days on receipt of irrevocable LC ,",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "AROUND 2 WEEKS AFTER RECEIVING REMITTANCE",
+      "title": "AROUND 2 WEEKS AFTER RECEIVING REMITTANCE",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "By Supplier , To Pay Basis.",
+      "title": "By Supplier , To Pay Basis.",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "C & F CHENNAI PORT",
+      "title": "C & F CHENNAI PORT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "C & F Destination Port",
+      "title": "C & F Destination Port",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p>C &amp; F Destination Port</p></div>"
+    },
+    {
+      "name": "C & F Norfolk Port Inclusive of freight + ISF + DUTY & Clearance",
+      "title": "C & F Norfolk Port Inclusive of freight + ISF + DUTY & Clearance",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "C & I",
+      "title": "C & I",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "can be discussed at the time of ordering",
+      "title": "can be discussed at the time of ordering",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "CIF",
+      "title": "CIF",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p>Chennai</p></div>"
+    },
+    {
+      "name": "CIF BANGALORE AIRPORT",
+      "title": "CIF BANGALORE AIRPORT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "CIF Chennai",
+      "title": "CIF Chennai",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "CIF Chennai Port of India, Incoterms 2020",
+      "title": "CIF Chennai Port of India, Incoterms 2020",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "CIF ENNORE",
+      "title": "CIF ENNORE",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "CIF KATTUPALLI",
+      "title": "CIF KATTUPALLI",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "CIP BANGALORE AIRPORT",
+      "title": "CIP BANGALORE AIRPORT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "CIP INCOTERMS 2020",
+      "title": "CIP INCOTERMS 2020",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "CNF - Jebel Ali Port, UAE",
+      "title": "CNF - Jebel Ali Port, UAE",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p>CNF - Jebel Ali Port, UAE</p></div>"
+    },
+    {
+      "name": "CPT Bangalore",
+      "title": "CPT Bangalore",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "DAP HOSUR",
+      "title": "DAP HOSUR",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "DDP",
+      "title": "DDP",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "DDP, Miami",
+      "title": "DDP, Miami",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Delivered Duty Paid (DDP)",
+      "title": "Delivered Duty Paid (DDP)",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><h3><strong style=\"background-color: rgb(249, 250, 250); color: rgb(31, 39, 46);\">Delivered Duty Paid (DDP)</strong></h3><p><br></p></div>"
+    },
+    {
+      "name": "DELIVERY AT HOSUR PLANT",
+      "title": "DELIVERY AT HOSUR PLANT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "DELIVERY AT OUR WORKS",
+      "title": "DELIVERY AT OUR WORKS",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Delivery Time 8 to 10 Working Days",
+      "title": "Delivery Time 8 to 10 Working Days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Delivery within 10 Days",
+      "title": "Delivery within 10 Days",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Direct",
+      "title": "Direct",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "DOOR DELIVERY",
+      "title": "DOOR DELIVERY",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Door delivery by supplier",
+      "title": "Door delivery by supplier",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Ex - Factory",
+      "title": "Ex - Factory",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Ex - Hanoi",
+      "title": "Ex - Hanoi",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "EX - Hyderabad",
+      "title": "EX - Hyderabad",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Ex - Stocks",
+      "title": "Ex - Stocks",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "EX - WORKS",
+      "title": "EX - WORKS",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Ex Factory - Chennai, Thiruvottiyur",
+      "title": "Ex Factory - Chennai, Thiruvottiyur",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Ex- Bhiwandi",
+      "title": "Ex- Bhiwandi",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Ex-Factory with Packing Against LUT",
+      "title": "Ex-Factory with Packing Against LUT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "EX-ICD CONCOR WAREHOUSE",
+      "title": "EX-ICD CONCOR WAREHOUSE",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "EXW (Ex Works), Hanoi, Vietnam",
+      "title": "EXW (Ex Works), Hanoi, Vietnam",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "F O R YOUR STORES DELIVERY TIME 2 WEEKS",
+      "title": "F O R YOUR STORES DELIVERY TIME 2 WEEKS",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "F.O.R. Hosur",
+      "title": "F.O.R. Hosur",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FCA",
+      "title": "FCA",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FCA - 10090 ROSTA (TO) Corso Moncenisio 18 - Incoterms 2020",
+      "title": "FCA - 10090 ROSTA (TO) Corso Moncenisio 18 - Incoterms 2020",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FCA 10090 ROSTA - INCOTERMS 2020",
+      "title": "FCA 10090 ROSTA - INCOTERMS 2020",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FCA BRETON SPA",
+      "title": "FCA BRETON SPA",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FCA BRETON SPA , INCOTERMS 2020",
+      "title": "FCA BRETON SPA , INCOTERMS 2020",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FCA CASTELLO DI GODEGO - ITALY",
+      "title": "FCA CASTELLO DI GODEGO - ITALY",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FCA CASTELLO DI GODEGO (ITALY)",
+      "title": "FCA CASTELLO DI GODEGO (ITALY)",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FCA Incheon International Airport",
+      "title": "FCA Incheon International Airport",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FOB",
+      "title": "FOB",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FOB - Chennai Port",
+      "title": "FOB - Chennai Port",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FOB - Italian Port",
+      "title": "FOB - Italian Port",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FOB - SHANGHAI",
+      "title": "FOB - SHANGHAI",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FOB - TUTICORIN PORT",
+      "title": "FOB - TUTICORIN PORT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p>Free on Board, TUTICORIN PORT</p></div>"
+    },
+    {
+      "name": "FOB BUSAN PORT",
+      "title": "FOB BUSAN PORT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FOB Chennai",
+      "title": "FOB Chennai",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FOB Ennore Port",
+      "title": "FOB Ennore Port",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p>FOB Ennore Port</p></div>"
+    },
+    {
+      "name": "FOB Mundra",
+      "title": "FOB Mundra",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FOB SHANGHAI PORT",
+      "title": "FOB SHANGHAI PORT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "FREE DOOR DELIVERY",
+      "title": "FREE DOOR DELIVERY",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Free On Board,ENNORE PORT",
+      "title": "Free On Board,ENNORE PORT",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "From Date of PO confirmation 10 Working Day's",
+      "title": "From Date of PO confirmation 10 Working Day's",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Godown delivery",
+      "title": "Godown delivery",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Godown Delivery - Topay basis.",
+      "title": "Godown Delivery - Topay basis.",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "GOODS EX WORKS LOADED - NERVIANO - ICC",
+      "title": "GOODS EX WORKS LOADED - NERVIANO - ICC",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "GOODS EX WORKS LOADED - NERVIANO - ICC 2020",
+      "title": "GOODS EX WORKS LOADED - NERVIANO - ICC 2020",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "ICD Bangalore",
+      "title": "ICD Bangalore",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p>ICD Bangalore</p></div>"
+    },
+    {
+      "name": "Immediate",
+      "title": "Immediate",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "INCOTERMS EXW",
+      "title": "INCOTERMS EXW",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "KATTUPALLI PORT,INDIA",
+      "title": "KATTUPALLI PORT,INDIA",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "November 15th",
+      "title": "November 15th",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "PLEASE SHIP THIS PI AS DDP, ADDING OCEAN FREIGHT TO DETROIT RAIL, CUSTOM CLEARANCE AND DUTY",
+      "title": "PLEASE SHIP THIS PI AS DDP, ADDING OCEAN FREIGHT TO DETROIT RAIL, CUSTOM CLEARANCE AND DUTY",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "TO PAY",
+      "title": "TO PAY",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Vehicle will be delivered at SALEM after completing all the payment & registration formalities",
+      "title": "Vehicle will be delivered at SALEM after completing all the payment & registration formalities",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "within 30 Days from the date of your conformation",
+      "title": "within 30 Days from the date of your conformation",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "Within one week  from the date of receipt of PO",
+      "title": "Within one week  from the date of receipt of PO",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p><br></p></div>"
+    },
+    {
+      "name": "without packing",
+      "title": "without packing",
+      "buying": "1",
+      "terms": "<div class=\"ql-editor read-mode\"><p>without packing</p></div>"
+    }
+  ],
+  "purchase_tax_templates": [
+    {
+      "name": "Input GST In-state - PESPL",
+      "title": "Input GST In-state",
+      "company": "Pacific Engineered Surfaces Private Limited",
+      "tax_category": "In-State",
+      "rows": [
+        {
+          "idx": "1",
+          "category": "Total",
+          "add_deduct_tax": "Add",
+          "charge_type": "On Net Total",
+          "account_head": "Input Tax CGST - PESPL",
+          "description": "CGST",
+          "rate": "9.000000000"
+        },
+        {
+          "idx": "2",
+          "category": "Total",
+          "add_deduct_tax": "Add",
+          "charge_type": "On Net Total",
+          "account_head": "Input Tax SGST - PESPL",
+          "description": "SGST",
+          "rate": "9.000000000"
+        }
+      ]
+    },
+    {
+      "name": "Input GST Out-state - PESPL",
+      "title": "Input GST Out-state",
+      "company": "Pacific Engineered Surfaces Private Limited",
+      "tax_category": "Out-State",
+      "rows": [
+        {
+          "idx": "1",
+          "category": "Total",
+          "add_deduct_tax": "Add",
+          "charge_type": "On Net Total",
+          "account_head": "Input Tax IGST - PESPL",
+          "description": "IGST",
+          "rate": "18.000000000"
+        }
+      ]
+    },
+    {
+      "name": "Input GST RCM In-state - PESPL",
+      "title": "Input GST RCM In-state",
+      "company": "Pacific Engineered Surfaces Private Limited",
+      "tax_category": "Reverse Charge In-State",
+      "rows": [
+        {
+          "idx": "1",
+          "category": "Total",
+          "add_deduct_tax": "Add",
+          "charge_type": "On Net Total",
+          "account_head": "Input Tax CGST - PESPL",
+          "description": "CGST",
+          "rate": "9.000000000"
+        },
+        {
+          "idx": "2",
+          "category": "Total",
+          "add_deduct_tax": "Add",
+          "charge_type": "On Net Total",
+          "account_head": "Input Tax SGST - PESPL",
+          "description": "SGST",
+          "rate": "9.000000000"
+        },
+        {
+          "idx": "3",
+          "category": "Total",
+          "add_deduct_tax": "Deduct",
+          "charge_type": "On Net Total",
+          "account_head": "Input Tax CGST RCM - PESPL",
+          "description": "CGST RCM",
+          "rate": "9.000000000"
+        },
+        {
+          "idx": "4",
+          "category": "Total",
+          "add_deduct_tax": "Deduct",
+          "charge_type": "On Net Total",
+          "account_head": "Input Tax SGST RCM - PESPL",
+          "description": "SGST RCM",
+          "rate": "9.000000000"
+        }
+      ]
+    },
+    {
+      "name": "Input GST RCM Out-state - PESPL",
+      "title": "Input GST RCM Out-state",
+      "company": "Pacific Engineered Surfaces Private Limited",
+      "tax_category": "Reverse Charge Out-State",
+      "rows": [
+        {
+          "idx": "1",
+          "category": "Total",
+          "add_deduct_tax": "Add",
+          "charge_type": "On Net Total",
+          "account_head": "Input Tax IGST - PESPL",
+          "description": "IGST",
+          "rate": "18.000000000"
+        },
+        {
+          "idx": "2",
+          "category": "Total",
+          "add_deduct_tax": "Deduct",
+          "charge_type": "On Net Total",
+          "account_head": "Input Tax IGST RCM - PESPL",
+          "description": "IGST RCM",
+          "rate": "18.000000000"
+        }
+      ]
+    },
+    {
+      "name": "Poland VAT 23% - PP",
+      "title": "Poland VAT 23%",
+      "company": "Pacific Polska",
+      "is_default": "1",
+      "rows": [
+        {
+          "idx": "1",
+          "category": "Total",
+          "add_deduct_tax": "Add",
+          "charge_type": "On Net Total",
+          "account_head": "VAT 23% - PP",
+          "description": "VAT 23% @ 23.0",
+          "rate": "23.000000000"
+        }
+      ]
+    },
+    {
+      "name": "Poland VAT 7% - PP",
+      "title": "Poland VAT 7%",
+      "company": "Pacific Polska",
+      "rows": [
+        {
+          "idx": "1",
+          "category": "Total",
+          "add_deduct_tax": "Add",
+          "charge_type": "On Net Total",
+          "account_head": "VAT 7% - PP",
+          "description": "VAT 7% @ 7",
+          "rate": "7.000000000"
+        }
+      ]
+    }
+  ],
+  "payment_terms_templates": [
+    {
+      "name": "1 Week",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "1 Week",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "10 Days Credit",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "10 Days Credit",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "10% Advance , Balance CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "10% advance + Balance 90 days from bill date.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "10% advance + Balance 90 days from bill date.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "10% ADVANCE AND 90% CAD (CASH AGAINST DOCUMENTS)",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "10% ADVANCE AND 90% CAD (CASH AGAINST DOCUMENTS)",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "10% Advance at order confirmation, 50% when Products arrive at US & 40% within 30 days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "10% Advance at order confirmation, 50% when Products arrive at US & 40% within 30 days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "10% Advance at order confirmation, 90% against B/L",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "10% Advance at order confirmation, 90% against B/L",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "10% Material cost+100% Freight,Advance 20% after arrival at destination port to facilitate release 30% after 30 days from DO,40% after 60 da",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "10% Material cost+100% Freight,Advance 20% after arrival at destination port to facilitate release 30% after 30 days from DO,40% after 60 da",
+          "description": "10% Material cost+100% Freight,Advance 20% after arrival at destination port to facilitate release 30% after 30 days from DO,40% after 60 da",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100%  150 Days From BL Date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% 120 Days From BL date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% Advance",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Advance",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% advance after the completion of the work",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% advance after the completion of the work",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% ADVANCE AGAINST PI",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% ADVANCE AGAINST PI",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% advance against PO",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% advance against PO",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% advance along with PO",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% advance along with PO.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% Advance before the Date of Service",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Advance before the Date of Service",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% Advance Payment",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Advance Payment",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% Advance with PO.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Advance with PO.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% after delivery at the factory and confirming the quality",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% after delivery at the factory and confirming the quality",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% against advance",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% against advance",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% Against Pi",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Against Pi",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% Against Proforma Invoice",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Against Proforma Invoice",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% AGAINST PROFORMA INVOICE WITHIN 10DAYS DELIVERY",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% AGAINST PROFORMA INVOICE WITHIN 10DAYS DELIVERY",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% at 30 Days from BL Date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% at 45 Days From BL Date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% at 90 Days From BL Date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% at Cash Against Documents{CAD}",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% Bank Transfer at 120 Days From AWB date",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Bank Transfer at 120 Days From AWB date",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date",
+          "credit_days": "120"
+        }
+      ]
+    },
+    {
+      "name": "100% Before Despatch",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Before Despatch",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% by irrevocable LC 90 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% by irrevocable LC 90 Days from B/L date",
+          "description": "100% by irrevocable LC and confirmed by an Italian Bank payable at 180 days from the date of the B/L, against the production of the shipping documents. The above payment is valid for the first two orders. The first order (592779) has been processed, and the second order (592890) is currently being fulfilled. Therefore, starting from future orders, the payment terms will be by LC at 90-days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% by irrevocable LC at 90 Days from the date of BL",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% by irrevocable LC at 90 Days from the date of BL",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% Cash Against Documents (CAD)",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Cash Against Documents (CAD)",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% credit - PDC 60 days from dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% in Advance upon order confirmation by bank transfer",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% in Advance upon order confirmation by bank transfer",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% LC at 180 Days from Date of BL",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% of Payment is Acceptable in the form of RTGS or Demand",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Draft or any form of online transfer in favor of Jailaxmi Auto Works & Agenices (P) Ltd., Payable at Salem Before Delivery",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% paid by Irrevocable Letter of Credit at 45 days after BL date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% payment against PO",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% payment against PO",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% Payment along with PO",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Payment along with PO",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% Payment Before Dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Payment on the date of delivery",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% payment on delivery",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% payment on delivery order.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% payment on delivery order.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "100% with GST against pro-forma invoice prior to dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% with GST against pro-forma invoice prior to dispatch",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "120 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "120 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "120 days from BL Date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "130 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "130 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "15 DAYS",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "15 DAYS FROM THE INVOICE",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "15 DAYS FROM THE INVOICE",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "15 DAYS FROM THE INVOICE",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "15 lakhs of Advance and PDC of 7 days for the remaining amount",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "15% advance and 85% against 85 days LC from BL date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "180 Days from BL Date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20 DAYS CREDIT",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Advance",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "20% Advance",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% advance  80% PDC of 10 days from the date of dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Advance & 80% against delivery",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "20% Advance & 80% against delivery",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Advance & 80% CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "20% Advance & 80% CAD",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Advance & 80% on Arrival at Port.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "20% Advance & 80% on Arrival at Port.",
+          "description": "20% Advance & 80% on Arrival at Port.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Advance & 80% Post Dated Cheque",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date",
+          "credit_days": "10"
+        }
+      ]
+    },
+    {
+      "name": "20% advance and rest 30 days from billing date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% advance and rest is pdc - 45 days",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% advance and rest pdc 45 days",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Advance Rest CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Advance, 60% Against BL, 20% after Inspection",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Advance, balance 6 equal Monthly installment from Invoice date",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "20% Advance, balance 6 equal Monthly installment from Invoice date",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Advance, balance 8 equal Monthly installment (PDC)",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "20% Advance, balance 8 equal Monthly installment (PDC)",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Advance, balance 8 equal Monthly installment from Invoice date",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "20% Advance, balance 8 equal Monthly installment from Invoice date",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "20% Upon Arrival / 40% @ 30days /40% @ 60days",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "25%  Advance Balance CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "25% advance - 25% 30 days from BL - 25% 60 days from BL - 25% 90 days from BL.",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "25% Advance & 75% CAD before Releasing BL",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "25% Advance & 75% CAD before Releasing BL",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "25% advance, Balance as per below terms",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "25% advance",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "25% Advance, balance as per terms below",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "EPD",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30 Days after Delivery",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30 Days after Delivery",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30 DAYS CREDIT",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30 DAYS CREDIT",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30 days for balance",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% Advance balance 30 days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date",
+          "credit_days": "30"
+        }
+      ]
+    },
+    {
+      "name": "30 days from date of Receiving the shipment.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30 DAYS FROM THE DATE OF RECEIPT OF MATERIAL",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30 days from date of Receiving the shipment. / Delivery Order",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30 days from date of Receiving the shipment. / Delivery Order",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30 Days from the date of Invoice",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30 Days from the date of Invoice",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30 DAYS FROM THE DATE OF RECEIPT OF MATERIAL",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30 DAYS FROM THE DATE OF RECEIPT OF MATERIAL",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date",
+          "credit_days": "30"
+        }
+      ]
+    },
+    {
+      "name": "30 Days PDC",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30 Days PDC",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30 Days PDC against PI",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30 Days PDC against PI",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% ADVANCE & 70% BEFORE DISPATCH FROM FACTORY",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% Advance & 70% on Dispatch",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% advance & 70% Cad",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% advance & 70% Cad",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance & 70% CAD (Before Releasing BL)",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% Advance & 70% CAD (Before Releasing BL)",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance & 70% CAD Before Releasing BL.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% ADVANCE AGAINST PI",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance & 70% CAD before releasing the BL",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Advance",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance & 70% upon Inspection of the Material",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% Advance & 70% upon Inspection of the Material",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance & Balance CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% advance 65% CAD 5% after inspection",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% advance 65% CAD 5% after inspection",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% advance along with PO & 70% advance against proforma invoice prior to dispatch.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% advance along with PO & 70% advance against proforma invoice prior to dispatch.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% ADVANCE AND 70% BALANCE AGAINST COPY OF DOCUMENTS",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% ADVANCE AND 70% BALANCE AGAINST COPY OF DOCUMENTS.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance and balance 70% as CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% Advance and balance 70% as CAD",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% advance Balance Against Dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% advance Balance Against Dispatch",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% ADVANCE BALANCE AGAINST PROFORMA INVOICE",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% ADVANCE BALANCE AGAINST PROFORMA INVOICE",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance Balance CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance Balance Cash Against Document (CAD)",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% advance to be paid along with the balance payment of the 1st container, and the remaining 70% against CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% advance to be paid along with the balance payment of the 1st container, and the remaining 70% against CAD",
+          "description": "30% advance to be paid along with the balance payment of the 1st container, and the remaining 70% against CAD",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance, 50% CAD, Balance After Inspection",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance, 70% CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% advance, Balance 70% before releasing the BL",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% advance, Balance 70% before releasing the BL",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Advance, remaining 20 days PDC",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Cash Against Documents (CAD) AND 70% 90 DAYS",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Deposit and 70% Before Loading",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% Deposit and 70% Before Loading",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Material Value + Packaging $2000 + ISF $2000 and Rest against documents",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% Material Value + Packaging $2000 + ISF $2000 and Rest against documents",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% now and 70 when ready to shipping",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% now and 70 when ready to shipping",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "30% Payment after approval of the Sample. Remaining payment will be released only after one week from the date of delivery",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "30% Payment after approval of the Sample. Remaining payment will be released only after one week from the date of delivery",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "35% ADVANACE & 65% AGAINST BL Copy",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "40% advance along with the purchase order, 50% against material readiness prior to dispatch & 10% after installation",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "40% advance along with the purchase order, 50% against material readiness prior to dispatch & 10% after installation",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "40% Advance Balance after dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "40% Advance Balance after dispatch",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "40% Advance Balance Before Dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "40% Advance Balance Before Loading",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "40% Advance Balance post event",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "40% Advance Balance post event",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "40% Advance balance upon final handover",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "40% Advance balance upon final handover",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "40% ADVANCE PAYMENT",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "40% ADVANCE PAYMENT",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "45 Days from the Date of Invoice",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "45 Days from the Date of Invoice",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "45 Days From The Date Of Receipt Of Material",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "45 Days From The Date Of Receipt Of Material",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "45 Days PDC",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "45 Days PDC against Invoice",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "45 Days PDC against Invoice",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "45 Days PDC against Invoice",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50 % Advance against PI, 50 % against after Installation",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50 % Advance against PI, 50 % against after Installation",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50 % Advance against PO, 50 % after Installation",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50 % Advance against PO, 50 % against after Installation",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50 % Advance against PO, 50 % against Performa invoice.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50 % Advance against PO, 50 % against Performa invoice.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50 % in advance & balance against PI before dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50 % in advance & balance before dispatch",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% Advance - 50% within 7 days of Invoice Date",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% Advance - 50% within 7 days of Invoice Date",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% Advance & 50% after 30 days from Invoice",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% Advance & 50% after 30 days from Invoice",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% Advance & 50% before arrival at destination port",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% Advance & 50% before arrival at destination port",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% advance along with PO balance against Proforma.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% advance along with PO balance against Proforma.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% Advance And 50% after 3 Months",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% Advance And 50% after 3 Months",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% Advance And 50% After Installation",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% Advance And 50% After Installation",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% Advance and 50% after reaching Warehouse",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% ADVANCE AND BALANCE BEFORE DISPATCH",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% ADVANCE AND BALANCE BEFORE DISPATCH",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% ADVANCE AND BALANCE BEFORE LOADING",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% advance and rest post event",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% advance and rest post event",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% ADVANCE BALANCE AGAINST DELIVERY",
+      "rows": [
+        {
+          "idx": "2",
+          "payment_term": "50% ADVANCE BALANCE AGAINST DELIVERY",
+          "invoice_portion": "50.000000000",
+          "due_date_based_on": "Day(s) after invoice date",
+          "credit_days": "7"
+        },
+        {
+          "idx": "1",
+          "payment_term": "50% ADVANCE BALANCE AGAINST DELIVERY",
+          "invoice_portion": "50.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% ADVANCE DURING ORDER",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% ADVANCE DURING ORDER",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% ADVANCE DURING ORDER , 50% ON SHIPPING",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% ADVANCE DURING ORDER , 50% ON SHIPPING",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% advance payable at the time of booking. Balance 50% payable on or before 15th September 2026.",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% advance, Balance after service",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% advance, Balance after service",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% advance,25% on commencement of work & 25% against a post dated cheque of 30 days",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% Advance,30% CAD, 20% After Inspection.",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% ARRIVAL AT PORT + 50% 90 days from arrival to port",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% ARRIVAL AT PORT + 50% 90 days from arrival to port",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% Bank Transfer at 90 Days from Invoice Date & 50% Bank Transfer at 120 Days from Invoice Date",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% Bank Transfer at 90 Days from Invoice Date & 50% Bank Transfer at 120 Days from Invoice Date",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% CAD & Balance 50% after 90 days from Date of Invoice",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% CAD & Balance 50% after 90 days from Date of Invoice",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% IN ADVANCE & 50% ON DELIVERY/INSTALLATION",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% IN ADVANCE & 50% ON DELIVERY/INSTALLATION",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% in advance and 50% before shipment",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% in advance and 50% before shipment.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% IN ADVANCE, REST 30 DAYS FROM BL DATE",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% IN ADVANCE, REST 30 DAYS FROM BL DATE",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "50% T/T in advance as deposit, 50% T/T at seeing B/L copy before arrival",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% T/T in advance as deposit, 50% T/T at seeing B/L copy before arrival",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "60 DAYS",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "60 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "60 DAYS BL DATE",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "60 DAYS BL DATE",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "60 DAYS From The Date Of Invoice",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "60 DAYS From The Date Of Invoice",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "60 DAYS From The Date Of Purchase Order",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "60 DAYS From The Date Of Purchase Order",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "60 Days from the date of receipt of Materials",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "60 Days from the date of receipt of Materials",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "60% Advance",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "60% Advance",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "7 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "7 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "7 to 10 working days from PO received date",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "7 to 10 working days from PO received date",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "70 % CAD & 30% - 60 Days net",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "70 % CAD & 30% - 60 Days net",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "70% Advance & 30% Against Delivery",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "70% Advance & 30% Against Delivery,",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "70% Advance & Balance within a week after completion of work",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "70% Advance & Balance within a week after completion of worlk",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "70% advance, 30 % before dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "70% advance, 30 % before dispatch",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "70%CAD and 30% 90days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "70%CAD and 30% 90days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "75% Advance, 25% After Delivery",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "75% Advance, 25% After Delivery",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "75% Advance, 25% After Inspection.",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "75% Advance, 25% before dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "75% Advance, 25% before dispatch",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "80 % before document  20 % after received material",
+      "rows": [
+        {
+          "idx": "2",
+          "payment_term": "25 % after received material",
+          "invoice_portion": "50.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        },
+        {
+          "idx": "1",
+          "payment_term": "75 % before document ",
+          "invoice_portion": "50.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "80% ADVANCE AND 20% AFTER INSPECTION",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "80% ADVANCE AND 20% AFTER INSPECTION",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "80% Advance and Balance 20% prior to Exhibition",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "80% Advance and Balance 20% prior to Exhibition",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "80% advance balance against Delivery",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "80% CAD & 20% 15 DAYS AFTER DELIVERY",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "80% CAD & 20% 15 DAYS AFTER DELIVERY",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "80% in advance & 20% on delivery/Installation",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "80% in advance & 20% on delivery/Installation",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "90 DAYS",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "90 DAYS",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "90 Days from BL Date",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "90 Days from BL Date",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "90 Days from the date of receipt of Materials",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "90 Days from the date of receipt of Materials",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "90 Days from the Invoice Date",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "90 Days PDC",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "90 Days PDC",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "ADVANCE",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "ADVANCE",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "ADVANCE PAYMENT",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "ADVANCE PAYMENT",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Advance Payment of 80% including tax along with PO.  Balance Payment of 20% including tax   during  the date of handover",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Advance Payment of 80% including tax along with PO.  Balance Payment of 20% including tax   during  the date of handover",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Advance Payment of 90% including tax along with PO. Balance Payment of 10% including tax during the date of handover",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Advance Payment of 90% including tax along with PO. Balance Payment of 10% including tax during the date of handover",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "After Delivering the material",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "After Delivering the material",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "After service",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Against Delivery",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Against Delivery",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Against Pro.Invoice",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Against Pro.Invoice",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "BANK TRANSFER AFTER 30-60-90-120-150 DAYS FROM THE DATE OF AWB",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Bank Transfer Before Shipment",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Bank Transfer Before Shipment",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "CAD -Cash Against Documents",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "CAD",
+          "description": "Cash Against Documents",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "CAD AT SIGHT",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "CAD AT SIGHT",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Cash on Delivery (COD)",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Consignment at 30 %",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date",
+          "credit_days": "30"
+        }
+      ]
+    },
+    {
+      "name": "Customs & Duties in Advance & Balance CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "D/A 90DAYS FROM B/L DATE",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "D/A 90DAYS FROM B/L DATE",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "DA 120 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "DA 120 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "DA 90 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "DA 90 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "DA at 120 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "DA at 120 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Estimated Freight, Customs & Duties in Advance &",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "F O R YOUR STORES DELIVERY TIME 2 WEEKS",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "F O R YOUR STORES DELIVERY TIME 2 WEEKS",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Freight / Customs / Duties prepaid, Balance CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "CAD",
+          "description": "Cash Against Documents",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Immediate",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Immediate",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Immediate after Completion of Work",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Immediate after Completion of Work",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "IN ADVANCE BY T/T",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "IN ADVANCE BY T/T",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "L/C 90 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "LC 60 DAYS FROM BL DATE",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "LC 60 DAYS FROM BL DATE",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "LC at 120 Days from Date of BL",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "LC at 120 Days from Date of BL",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "LC at 30 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "LC at 30 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "LC in 90 Days from B/L",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "LC in 90 Days from B/L",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Monthly Payment",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Monthly Payment",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Net 30 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Net 30 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "ON RECEIPT OF MATERIALS",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "ON RECEIPT OF MATERIALS",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Payment each machine: Deposit Euro 50,000 + 6 monthly installments",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Payment each machine: Deposit Euro 50,000 + 6 monthly installments",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Payment is due within 30 days from the date of receipt of the shipment by the Buyer.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Payment is due within 30 days from the date of receipt of the shipment by the Buyer.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Payment of 25% in 90 Days, 25% in 120 Days, 25% in 150 Days & balance in 180 Days",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Payment of 25% in 90 Days, 25% in 120 Days, 25% in 150 Days & balance in 180 Days",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Payment on the date of delivery",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "100% Payment on the date of delivery",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Payment Terms 50% Advance & Balance 50% CAD",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "Payment within 30 days from the date of dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "TT in Advance 20%, 80% against B/L Copy",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "TT in Advance 20%, 80% against B/L Copy",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "USD 5,000 deposit/container & balance due 1 week before destination arrival.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "USD 5,000 deposit/container; balance due 1 week before destination arrival.\"",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "With in 01 or 02 Days, After receiving Material.",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "With in 01 or 02 Days, After receiving Material.",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "with in one week after receiving the payment",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "with in one week after receiving the payment",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date",
+          "credit_days": "7"
+        }
+      ]
+    },
+    {
+      "name": "Within 1 day after delivery",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "Within the day following delivery",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "X one",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "50% deposit upon contract signing; 50% prior to shipment",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    },
+    {
+      "name": "₹25,000 Advance & Balance before Dispatch",
+      "rows": [
+        {
+          "idx": "1",
+          "payment_term": "₹25,000 Advance & Balance before Dispatch",
+          "invoice_portion": "100.000000000",
+          "due_date_based_on": "Day(s) after invoice date"
+        }
+      ]
+    }
+  ]
+}
