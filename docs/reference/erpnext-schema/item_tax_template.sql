@@ -1,0 +1,20 @@
+CREATE TABLE `tabItem Tax Template` (
+  `name` varchar(140) NOT NULL,
+  `creation` datetime(6) DEFAULT NULL,
+  `modified` datetime(6) DEFAULT NULL,
+  `modified_by` varchar(140) DEFAULT NULL,
+  `owner` varchar(140) DEFAULT NULL,
+  `docstatus` int(1) NOT NULL DEFAULT 0,
+  `idx` int(8) NOT NULL DEFAULT 0,
+  `title` varchar(140) DEFAULT NULL,
+  `company` varchar(140) DEFAULT NULL,
+  `disabled` int(1) NOT NULL DEFAULT 0,
+  `_user_tags` text DEFAULT NULL,
+  `_comments` text DEFAULT NULL,
+  `_assign` text DEFAULT NULL,
+  `_liked_by` text DEFAULT NULL,
+  `gst_treatment` varchar(140) DEFAULT 'Taxable',
+  `gst_rate` decimal(21,9) NOT NULL DEFAULT 0.000000000,
+  PRIMARY KEY (`name`),
+  KEY `modified` (`modified`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;

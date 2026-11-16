@@ -1,0 +1,21 @@
+CREATE TABLE `tabCurrency Exchange` (
+  `name` varchar(140) NOT NULL,
+  `creation` datetime(6) DEFAULT NULL,
+  `modified` datetime(6) DEFAULT NULL,
+  `modified_by` varchar(140) DEFAULT NULL,
+  `owner` varchar(140) DEFAULT NULL,
+  `docstatus` int(1) NOT NULL DEFAULT 0,
+  `idx` int(8) NOT NULL DEFAULT 0,
+  `date` date DEFAULT NULL,
+  `from_currency` varchar(140) DEFAULT NULL,
+  `to_currency` varchar(140) DEFAULT NULL,
+  `exchange_rate` decimal(21,9) NOT NULL DEFAULT 0.000000000,
+  `for_buying` int(1) NOT NULL DEFAULT 1,
+  `for_selling` int(1) NOT NULL DEFAULT 1,
+  `_user_tags` text DEFAULT NULL,
+  `_comments` text DEFAULT NULL,
+  `_assign` text DEFAULT NULL,
+  `_liked_by` text DEFAULT NULL,
+  PRIMARY KEY (`name`),
+  KEY `modified` (`modified`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;

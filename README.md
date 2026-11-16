@@ -15,7 +15,9 @@ Forms use react-hook-form + zod, notices use sonner, and icons come from lucide-
 
 - **Step 0** (live-site captures) ✅
 - **Step 1** (project scaffold) ✅
-- **Step 2** (data model) is next
+- **Step 2** (data model) ✅ — [docs/02-data-model.md](docs/02-data-model.md)
+- **Step 3** (import of the historical data) ✅ — [docs/03-data-migration.md](docs/03-data-migration.md)
+- **Step 4** (calculation, GST and status engine) is next
 
 ## Commands
 
@@ -27,6 +29,8 @@ npm run typecheck    # tsc --noEmit
 npm test             # vitest — tests/purchase/**
 npm run db:migrate   # prisma migrate dev — local database (from Step 2)
 npm run db:studio    # browse the database
+npm run import:erpnext             # import the old site's data from data/erpnext-backup (newest backup)
+npm run import:erpnext -- --dry-run # read and map only; nothing written
 ```
 
 **Local database (from Step 2):** copy `.env.example` to `.env` and put your local PostgreSQL password in it. Then
