@@ -15,6 +15,7 @@ npm run dev        # port 3300
 npm run typecheck
 npm test           # vitest over tests/purchase/**
 npm run db:migrate # prisma migrate dev (local Postgres only)
+npm run golden     # engine vs all imported POs (local data)
 ```
 
 ## Rules of this codebase
@@ -57,4 +58,5 @@ npm run db:migrate # prisma migrate dev (local Postgres only)
 | PO sheet layouts | `docs/reference/erpnext-setup/print_formats/*.html` (default: `PDF PO.html`) |
 | Add-on behaviour | `docs/reference/live-capture/{pacific_group_purchase_order.js, addon-server-probe-2026-11-16.md}` |
 | Live UI details | `docs/reference/live-capture/ui-notes.md` (+ local `screens/`, `pdfs/`) |
+| Calculation rules, old-site defects, golden check | `docs/04-calculation-engine.md` (code: `src/lib/purchase/calc/`) |
 | Main ERP conventions | `C:\Users\User\Desktop\Pacific-ERP-payment-tracking` (read `origin/main` through git; don't modify that checkout) |

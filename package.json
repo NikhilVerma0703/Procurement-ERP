@@ -16,7 +16,8 @@
     "prisma:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "import:erpnext": "tsx scripts/import-erpnext.ts"
+    "import:erpnext": "tsx scripts/import-erpnext.ts",
+    "golden": "tsx scripts/golden-check.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "5.9.1",

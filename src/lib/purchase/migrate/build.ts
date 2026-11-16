@@ -11,6 +11,9 @@
 // IDs are importId(kind, ERPNext name): a later backup imports with the same
 // IDs. Every migrated record keeps its whole source row in `legacy`.
 import type { Prisma } from "@prisma/client";
+import {
+  ADD_DEDUCT_KEYS, CHARGE_TYPE_KEYS, DISCOUNT_ON_KEYS, MARGIN_TYPE_KEYS, PO_STATUS_KEYS, TAX_CATEGORY_KEYS,
+} from "../orders/labels";
 import { MODES_OF_TRANSPORT, PURPOSES, SHIPMENT_TYPES } from "../orders/options";
 import type { DumpTable, Row, TableSpec } from "./dump";
 import {
@@ -92,18 +95,12 @@ export const SOURCE_TABLES: readonly TableSpec[] = [
 // ERPNext labels → enum keys -------------------------------------------------
 const DOCSTATUS = { "0": "DRAFT", "1": "SUBMITTED", "2": "CANCELLED" } as const;
 const WORKFLOW = { Created: "CREATED", Approved: "APPROVED", Rejected: "REJECTED" } as const;
-const STATUS = {
-  Draft: "DRAFT", "On Hold": "ON_HOLD", "To Receive and Bill": "TO_RECEIVE_AND_BILL", "To Bill": "TO_BILL",
-  "To Receive": "TO_RECEIVE", Completed: "COMPLETED", Cancelled: "CANCELLED", Closed: "CLOSED", Delivered: "DELIVERED",
-} as const;
-const DISCOUNT_ON = { "Grand Total": "GRAND_TOTAL", "Net Total": "NET_TOTAL" } as const;
-const CHARGE = {
-  Actual: "ACTUAL", "On Net Total": "ON_NET_TOTAL", "On Previous Row Amount": "ON_PREVIOUS_ROW_AMOUNT",
-  "On Previous Row Total": "ON_PREVIOUS_ROW_TOTAL", "On Item Quantity": "ON_ITEM_QUANTITY",
-} as const;
-const CONSIDER = { Total: "TOTAL", Valuation: "VALUATION", "Valuation and Total": "VALUATION_AND_TOTAL" } as const;
-const ADD_DEDUCT = { Add: "ADD", Deduct: "DEDUCT" } as const;
-const MARGIN = { Percentage: "PERCENTAGE", Amount: "AMOUNT" } as const;
+const STATUS = PO_STATUS_KEYS;
+const DISCOUNT_ON = DISCOUNT_ON_KEYS;
+const CHARGE = CHARGE_TYPE_KEYS;
+const CONSIDER = TAX_CATEGORY_KEYS;
+const ADD_DEDUCT = ADD_DEDUCT_KEYS;
+const MARGIN = MARGIN_TYPE_KEYS;
 const COMMENT_KIND = {
   Label: "LABEL", Workflow: "WORKFLOW", Deleted: "DELETED", Attachment: "ATTACHMENT", Comment: "COMMENT", Info: "INFO",
   "Attachment Removed": "ATTACHMENT", Edit: "INFO", Like: "INFO", Shared: "INFO", Unshared: "INFO", Assigned: "INFO",

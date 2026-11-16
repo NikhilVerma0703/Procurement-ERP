@@ -17,7 +17,8 @@ Forms use react-hook-form + zod, notices use sonner, and icons come from lucide-
 - **Step 1** (project scaffold) ✅
 - **Step 2** (data model) ✅ — [docs/02-data-model.md](docs/02-data-model.md)
 - **Step 3** (import of the historical data) ✅ — [docs/03-data-migration.md](docs/03-data-migration.md)
-- **Step 4** (calculation, GST and status engine) is next
+- **Step 4** (calculation, GST and status engine) ✅ — [docs/04-calculation-engine.md](docs/04-calculation-engine.md)
+- **Step 5** (PO list screen) is next
 
 ## Commands
 
@@ -31,6 +32,7 @@ npm run db:migrate   # prisma migrate dev — local database (from Step 2)
 npm run db:studio    # browse the database
 npm run import:erpnext             # import the old site's data from data/erpnext-backup (newest backup)
 npm run import:erpnext -- --dry-run # read and map only; nothing written
+npm run golden                     # check the calculation engine against every imported PO
 ```
 
 **Local database (from Step 2):** copy `.env.example` to `.env` and put your local PostgreSQL password in it. Then
@@ -53,6 +55,7 @@ src/components/standalone/ STANDALONE ONLY: the app's sidebar
 prisma/schema.prisma       Purchase* models → purchase_* tables (Step 2 onward)
 scripts/analysis/          Python helpers used for the first export and setup extraction
 docs/                      plan, reference material (below)
+scripts/                   import-erpnext.ts, golden-check.ts (both read data/; reports go to data/reports/)
 data/                      company data — NOT in git (below)
 stopgap/                   TEMPORARY: the old ERPNext running on this PC until this ERP is live (stopgap/README.md)
 ```

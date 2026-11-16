@@ -111,3 +111,12 @@ Computed from the database dump (`scratchpad addon_rules.py`; to be turned into 
 - Rate source for overheads when items carry different GST rates.
 - How the *PDF PO* layout presents service charges against the grand total. It prints a separate "SERVICE ITEMS /
   SERVICE CHARGES" table; check against `pdfs/PDF PO/PUR-ORD_25-26_02486.pdf`.
+
+## 6. Settled by the golden check (Step 4)
+
+See `docs/04-calculation-engine.md` §3–§5:
+- **Cost Overheads** are added to the Grand Total inside ERPNext's totals step. This explains the 25 POs whose
+  Total Taxes and Charges lack them: those POs have no tax rows.
+- **The whole-rupee Grand Total of 02486** is the add-on's stale rounding adjustment (from 03-12-2025), not a rule.
+- **GST columns:** they come from the row's own template, as probed. The item-master fallback explains only 19 rows
+  and is not adopted.
