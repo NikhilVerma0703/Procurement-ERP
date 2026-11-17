@@ -2,8 +2,8 @@
 //
 // One transaction: empty the module's tables (TRUNCATE … CASCADE), then insert
 // every table in INSERT_ORDER in chunks. Any failure rolls the whole thing
-// back and the database is exactly as it was. purchase_import_runs is never
-// emptied: it is the history of the imports themselves.
+// back and the database is exactly as it was. KEEP_ON_RELOAD is never
+// emptied: the history of the imports themselves, and the sign-in accounts.
 //
 // A RELOAD, NOT A MERGE: this is for bringing the old site's data in before
 // go-live (again on the final backup). Once POs have been raised in this
@@ -32,10 +32,13 @@ const DELEGATE: Record<(typeof INSERT_ORDER)[number], string> = {
 };
 
 /** The module's tables, read from the schema itself (purchase_* except the run log). */
+/** Module tables a reload leaves alone: the import log, and the standalone app's sign-in accounts. */
+export const KEEP_ON_RELOAD: readonly string[] = ["purchase_import_runs", "purchase_logins"];
+
 export function moduleTables(): string[] {
   return Prisma.dmmf.datamodel.models
     .map((m) => m.dbName ?? m.name)
-    .filter((t) => t.startsWith("purchase_") && t !== "purchase_import_runs");
+    .filter((t) => t.startsWith("purchase_") && !KEEP_ON_RELOAD.includes(t));
 }
 
 /** Refuses a reload that would wipe POs raised in this system (they have no `legacy`). */

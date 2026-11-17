@@ -71,7 +71,9 @@ describe("purchase schema conventions", () => {
 
   it("keeps the ERPNext identity and the original row on the documents and masters", () => {
     const identity = /^(code|number)\s|^erpnextName\s|^name\s+String\s+@id|^code\s+String\s+@id|^prefix\s|^email\s+String\s+@id/m;
-    for (const m of models.filter((x) => x.name !== "PurchaseImportRun" && x.name !== "PurchaseOrderLink")) {
+    // Not ERPNext records: the import log, the PO's links, and the standalone app's sign-in accounts.
+    const own = new Set(["PurchaseImportRun", "PurchaseOrderLink", "PurchaseLogin"]);
+    for (const m of models.filter((x) => !own.has(x.name))) {
       expect(identity.test(fieldLines(m).join("\n")), `${m.name} has no ERPNext identity`).toBe(true);
     }
     for (const name of ["PurchaseOrder", "PurchaseOrderItem", "PurchaseOrderTax", "PurchaseOrderCostOverhead",

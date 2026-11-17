@@ -25,15 +25,18 @@ npm run golden     # engine vs all imported POs (local data)
   - code under `src/lib/purchase`, components under `src/components/purchase`
   - Prisma models `Purchase*` mapped to tables `purchase_*`
   - CSS classes `po-*`, base rules scoped to `.purchase-root`
-  - Only `src/app/layout.tsx`, `src/app/page.tsx` and `src/components/standalone/` are standalone-only.
+  - Standalone-only (left behind at the merge): `src/app/layout.tsx`, `src/app/page.tsx`, `src/components/standalone/`,
+    and the sign-in: `src/auth.ts`, `src/auth.config.ts`, `src/middleware.ts`, `src/types/next-auth.d.ts`,
+    `src/app/{login,no-access,api/auth}/`, `scripts/purchase-users.ts`, model `PurchaseLogin` (`purchase_logins`).
 - **Server authority** (the Main ERP and Pigment ERP rule):
   - The form computes live for the user.
   - The server action re-validates with the same zod schema and **recomputes every total, tax and status itself**.
     It never stores the browser's numbers.
   - It writes in one transaction and returns `{ ok, error, fieldErrors }`.
-- **Seams** (from Step 2): `src/lib/purchase/server/{db,current-user,gate,page,write,audit}.ts` and a pure
-  `src/lib/purchase/access.ts`. At the merge they are rewired to the Main ERP's `currentUser()`, View-as guard and
-  action_log. Nothing else in the module may reach past them.
+- **Seams:** `src/lib/purchase/server/{db,current-user,gate,page}.ts` (Step 5; `write`, `audit` come with the form)
+  and a pure `src/lib/purchase/access.ts`. At the merge they are rewired to the Main ERP's `currentUser()`, View-as
+  guard and action_log. Nothing else in the module may reach past them: every page starts with
+  `purchasePageGate()`, every API route and server action with `purchaseGate(action)`, all queries use `server/db`.
 - **Behave like the original.** Labels, field order, tabs, buttons, statuses and number formats follow the old
   ERPNext screens (`docs/reference/`). Do not add features the original lacked. Do not drop ones it had without
   the owner's say-so (scope table: plan §5).

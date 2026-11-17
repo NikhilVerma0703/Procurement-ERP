@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PURCHASE_API_ROOT, PURCHASE_NAV, PURCHASE_PATHS, PURCHASE_ROOT } from "@/lib/purchase/routes";
+import { PURCHASE_API_PATHS, PURCHASE_API_ROOT, PURCHASE_NAV, PURCHASE_PATHS, PURCHASE_ROOT, orderPath } from "@/lib/purchase/routes";
 
 // The module's paths are the merge boundary: everything the Main ERP takes
 // over must live under /purchase (pages) and /api/purchase (APIs).
@@ -9,6 +9,10 @@ describe("purchase routes", () => {
       expect(path.startsWith(`${PURCHASE_ROOT}/`)).toBe(true);
     }
     expect(PURCHASE_API_ROOT).toBe(`/api${PURCHASE_ROOT}`);
+    for (const path of Object.values(PURCHASE_API_PATHS)) {
+      expect(path.startsWith(`${PURCHASE_API_ROOT}/`)).toBe(true);
+    }
+    expect(orderPath("po_x/1")).toBe("/purchase/orders/po_x%2F1");
   });
 
   it("builds the sidebar only from known module paths, once each", () => {

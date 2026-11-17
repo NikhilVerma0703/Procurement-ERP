@@ -18,7 +18,8 @@ Forms use react-hook-form + zod, notices use sonner, and icons come from lucide-
 - **Step 2** (data model) ✅ — [docs/02-data-model.md](docs/02-data-model.md)
 - **Step 3** (import of the historical data) ✅ — [docs/03-data-migration.md](docs/03-data-migration.md)
 - **Step 4** (calculation, GST and status engine) ✅ — [docs/04-calculation-engine.md](docs/04-calculation-engine.md)
-- **Step 5** (PO list screen) is next
+- **Step 5** (PO list screen, standalone sign-in) ✅ — [docs/05-list-screen.md](docs/05-list-screen.md)
+- **Step 6** (PO form) is next
 
 ## Commands
 
@@ -33,6 +34,7 @@ npm run db:studio    # browse the database
 npm run import:erpnext             # import the old site's data from data/erpnext-backup (newest backup)
 npm run import:erpnext -- --dry-run # read and map only; nothing written
 npm run golden                     # check the calculation engine against every imported PO
+npm run users -- list              # standalone sign-in accounts (add / password / role / disable)
 ```
 
 **Local database (from Step 2):** copy `.env.example` to `.env` and put your local PostgreSQL password in it. Then
@@ -40,6 +42,13 @@ create the database once:
 
 ```bash
 psql -U postgres -c "CREATE DATABASE procurement_erp"
+```
+
+**Signing in (from Step 5):** put a long random `AUTH_SECRET` in `.env` (see `.env.example`), then create your own
+account; the password is asked for twice and never shown:
+
+```bash
+npm run users -- add <your email> --name "<Your Name>" --role ADMIN
 ```
 
 ## Layout
@@ -55,7 +64,7 @@ src/components/standalone/ STANDALONE ONLY: the app's sidebar
 prisma/schema.prisma       Purchase* models → purchase_* tables (Step 2 onward)
 scripts/analysis/          Python helpers used for the first export and setup extraction
 docs/                      plan, reference material (below)
-scripts/                   import-erpnext.ts, golden-check.ts (both read data/; reports go to data/reports/)
+scripts/                   import-erpnext.ts, golden-check.ts (read data/; reports to data/reports/), purchase-users.ts
 data/                      company data — NOT in git (below)
 stopgap/                   TEMPORARY: the old ERPNext running on this PC until this ERP is live (stopgap/README.md)
 ```

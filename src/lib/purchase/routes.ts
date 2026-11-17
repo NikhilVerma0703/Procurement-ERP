@@ -13,6 +13,15 @@ export const PURCHASE_API_ROOT = "/api/purchase";
 /** The module's paths. */
 export const PURCHASE_PATHS = {
   orders: "/purchase/orders",
+  orderNew: "/purchase/orders/new",
+} as const;
+
+/** One Purchase Order's page. */
+export const orderPath = (id: string) => `${PURCHASE_PATHS.orders}/${encodeURIComponent(id)}`;
+
+/** The module's APIs. */
+export const PURCHASE_API_PATHS = {
+  ordersExport: "/api/purchase/orders/export",
 } as const;
 
 /**

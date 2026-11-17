@@ -3,9 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FileText, Menu, ShoppingCart, X } from "lucide-react";
+import { FileText, LogOut, Menu, ShoppingCart, X } from "lucide-react";
+import { signOutAction } from "@/app/login/actions";
 import { PURCHASE_NAV } from "@/lib/purchase/routes";
 import { cn } from "@/lib/purchase/cn";
+
+export interface SidebarUser {
+  name: string;
+  email: string;
+  role: string;
+}
+
+const ROLE_LABEL: Record<string, string> = { PURCHASE: "Purchase", APPROVER: "Approver", ADMIN: "Admin" };
 
 // STANDALONE ONLY — the app's own sidebar while it runs on its own (the
 // standalone Pigment ERP's Sidebar, same look). At the merge the Main ERP's
@@ -39,6 +48,24 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
+/** Who is signed in, and the way out. */
+function UserCard({ user }: { user: SidebarUser }) {
+  return (
+    <div className="mt-auto border-t border-gray-200/70 pt-4">
+      <div className="px-2 text-sm font-medium text-gray-800">{user.name}</div>
+      <div className="truncate px-2 text-xs text-gray-500" title={user.email}>
+        {user.email} · {ROLE_LABEL[user.role] ?? user.role}
+      </div>
+      <form action={signOutAction} className="mt-2">
+        <button type="submit" className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          <LogOut className="h-4 w-4" aria-hidden />
+          Sign out
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function Brand() {
   return (
     <div className="flex items-center gap-2.5 px-2">
@@ -53,7 +80,7 @@ function Brand() {
   );
 }
 
-export function StandaloneSidebar() {
+export function StandaloneSidebar({ user }: { user: SidebarUser }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   useEffect(() => setOpen(false), [pathname]);
@@ -64,6 +91,7 @@ export function StandaloneSidebar() {
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-6 border-r border-gray-200/70 bg-white/70 px-4 py-5 backdrop-blur md:flex print:hidden">
         <Brand />
         <NavLinks />
+        <UserCard user={user} />
       </aside>
 
       {/* Mobile top bar + drawer */}
@@ -84,6 +112,7 @@ export function StandaloneSidebar() {
               </button>
             </div>
             <NavLinks onNavigate={() => setOpen(false)} />
+            <UserCard user={user} />
           </div>
         </div>
       )}

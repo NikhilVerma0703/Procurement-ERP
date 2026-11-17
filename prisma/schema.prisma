@@ -1350,3 +1350,37 @@ model PurchaseImportRun {
 
   @@map("purchase_import_runs")
 }
+
+// ---------------------------------------------------------------------------
+// STANDALONE ONLY: sign-in accounts of the standalone app (plan §3 "Logins in
+// standalone"). At the merge the Main ERP's users and roles take over and this
+// table is not carried across (docs/05-list-screen.md). The import never
+// touches it (migrate/load.ts KEEP_ON_RELOAD).
+// ---------------------------------------------------------------------------
+
+/// What a standalone login may do, mirroring the old site's workflow roles:
+/// PURCHASE creates and edits drafts (ERPNext "Purchase Head"), APPROVER
+/// approves and rejects (ERPNext "Admin"), ADMIN does everything.
+enum PurchaseLoginRole {
+  PURCHASE
+  APPROVER
+  ADMIN
+
+  @@map("purchase_login_role")
+}
+
+model PurchaseLogin {
+  id           String            @id @default(cuid())
+  /// Lower-case; the sign-in name.
+  email        String            @unique
+  name         String
+  role         PurchaseLoginRole
+  /// bcrypt hash. The password itself is never stored or logged.
+  passwordHash String            @map("password_hash")
+  active       Boolean           @default(true)
+  lastSignInAt DateTime?         @map("last_sign_in_at")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+
+  @@map("purchase_logins")
+}

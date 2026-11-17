@@ -113,8 +113,9 @@ The data stays in the backup and in each PO's `legacy` copy.
   kept in `legacy` only.
 - **Workflow and notification definitions:** these become module configuration in code, as the plan says. They are
   three states, two transitions and three emails, and editing them was never part of the PO screen.
-- **Sign-in accounts:** the standalone app's logins come with the screens. After the merge, the Main ERP's users
-  apply. `purchase_users` is the history's directory of people, not a login table.
+- **Sign-in accounts:** the standalone app's logins are `purchase_logins` (Step 5, `docs/05-list-screen.md`): email,
+  name, role, bcrypt hash. A re-import never touches them. After the merge, the Main ERP's users apply and this
+  table stays behind. `purchase_users` is the history's directory of people, not a login table.
 
 ## Open points (they affect later steps, not this schema)
 
