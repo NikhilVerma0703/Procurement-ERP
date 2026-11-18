@@ -22,7 +22,18 @@ export const orderPath = (id: string) => `${PURCHASE_PATHS.orders}/${encodeURICo
 /** The module's APIs. */
 export const PURCHASE_API_PATHS = {
   ordersExport: "/api/purchase/orders/export",
+  /** The PO form's link fields search here (Frappe's search_link). */
+  lookup: "/api/purchase/lookup",
 } as const;
+
+/** A new PO; `from` duplicates a PO, `amend` amends a cancelled one. */
+export const orderNewPath = (opts: { duplicate?: string; amend?: string } = {}) => {
+  const q = new URLSearchParams();
+  if (opts.duplicate) q.set("duplicate", opts.duplicate);
+  if (opts.amend) q.set("amend", opts.amend);
+  const s = q.toString();
+  return s ? `${PURCHASE_PATHS.orderNew}?${s}` : PURCHASE_PATHS.orderNew;
+};
 
 /**
  * The sidebar rows. The original site reached the screen as Buying →

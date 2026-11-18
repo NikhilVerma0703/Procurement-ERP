@@ -19,7 +19,8 @@ Forms use react-hook-form + zod, notices use sonner, and icons come from lucide-
 - **Step 3** (import of the historical data) ✅ — [docs/03-data-migration.md](docs/03-data-migration.md)
 - **Step 4** (calculation, GST and status engine) ✅ — [docs/04-calculation-engine.md](docs/04-calculation-engine.md)
 - **Step 5** (PO list screen, standalone sign-in) ✅ — [docs/05-list-screen.md](docs/05-list-screen.md)
-- **Step 6** (PO form) is next
+- **Step 6** (PO form: save, approve/reject, cancel, amend, duplicate, close/hold, Update Items) ✅ — [docs/06-po-form.md](docs/06-po-form.md)
+- **Step 7** (the PDF PO sheet) is next
 
 ## Commands
 

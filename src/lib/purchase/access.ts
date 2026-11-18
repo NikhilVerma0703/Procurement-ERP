@@ -6,10 +6,8 @@
 // "Purchase Head"), APPROVER approves and rejects (ERPNext "Admin"), ADMIN
 // does everything. AT THE MERGE this file is rewired to the Main ERP's roles
 // (a capped PURCHASE role, as PIGMENT is) without the screens changing: they
-// only ever ask purchaseCan(user, action).
-//
-// Actions are added as the screens that need them arrive: Step 5 (the list)
-// needs only "view"; the form (Step 6) adds saving, approving and the rest.
+// only ever ask purchaseCan(user, action). Which buttons a PO in a given state
+// shows is orders/workflow.ts.
 //
 // PURE AND EDGE-SAFE: no Prisma, no `next/headers`, no server-only imports.
 // The server gate over it is server/gate.ts.
@@ -29,13 +27,26 @@ export function purchaseTierOf(user: unknown): PurchaseTier | null {
 export const PURCHASE_ACTIONS = [
   /** Open any Purchase page or read any Purchase API: lists, a PO, every export. */
   "view",
+  /** Create a PO, edit a draft, duplicate, amend a cancelled PO, delete a draft. */
+  "save",
+  /** Approve or reject a draft (the workflow's transitions). */
+  "approve",
+  /** After approval: cancel, close, hold, resume, and update the fields that may change then. */
+  "manage",
 ] as const;
 
 export type PurchaseAction = (typeof PURCHASE_ACTIONS)[number];
 
-/** Who may do each action. ADMIN is on every line so the table can be read as it is. */
+/**
+ * Who may do each action. ADMIN is on every line so the table can be read as it is.
+ * The old site's workflow: drafts (state Created) were edited by "Purchase Head"; Approve
+ * and Reject, and editing an approved PO, by "Admin" (po_setup.json, workflow).
+ */
 export const PURCHASE_ACTORS: Record<PurchaseAction, readonly PurchaseTier[]> = {
   view: ["PURCHASE", "APPROVER", "ADMIN"],
+  save: ["PURCHASE", "ADMIN"],
+  approve: ["APPROVER", "ADMIN"],
+  manage: ["APPROVER", "ADMIN"],
 };
 
 /** May this user do this? An action nobody defined fails closed, a prototype key included. */

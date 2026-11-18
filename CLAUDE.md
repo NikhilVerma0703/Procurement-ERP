@@ -33,7 +33,7 @@ npm run golden     # engine vs all imported POs (local data)
   - The server action re-validates with the same zod schema and **recomputes every total, tax and status itself**.
     It never stores the browser's numbers.
   - It writes in one transaction and returns `{ ok, error, fieldErrors }`.
-- **Seams:** `src/lib/purchase/server/{db,current-user,gate,page}.ts` (Step 5; `write`, `audit` come with the form)
+- **Seams:** `src/lib/purchase/server/{db,current-user,gate,page,write,audit}.ts`
   and a pure `src/lib/purchase/access.ts`. At the merge they are rewired to the Main ERP's `currentUser()`, View-as
   guard and action_log. Nothing else in the module may reach past them: every page starts with
   `purchasePageGate()`, every API route and server action with `purchaseGate(action)`, all queries use `server/db`.
@@ -62,4 +62,5 @@ npm run golden     # engine vs all imported POs (local data)
 | Add-on behaviour | `docs/reference/live-capture/{pacific_group_purchase_order.js, addon-server-probe-2026-11-16.md}` |
 | Live UI details | `docs/reference/live-capture/ui-notes.md` (+ local `screens/`, `pdfs/`) |
 | Calculation rules, old-site defects, golden check | `docs/04-calculation-engine.md` (code: `src/lib/purchase/calc/`) |
+| PO form: save, workflow, GST checks, fetches, history | `docs/06-po-form.md` (code: `src/lib/purchase/orders/`, `src/components/purchase/form/`) |
 | Main ERP conventions | `C:\Users\User\Desktop\Pacific-ERP-payment-tracking` (read `origin/main` through git; don't modify that checkout) |
