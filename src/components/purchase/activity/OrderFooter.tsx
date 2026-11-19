@@ -8,7 +8,7 @@
 //   * at the end, who created the PO and who last edited it.
 // A comment's author may edit it (Edit, then Save or Dismiss) and delete it;
 // an Admin may delete any. "Copy Link" copies a link to the comment.
-import { Bell, GitBranch, Loader2, Mail, MessageSquare, MoreHorizontal, Plus, Reply, ReplyAll, Trash2, Upload } from "lucide-react";
+import { Bell, GitBranch, Heart, Loader2, Mail, MessageSquare, MoreHorizontal, Plus, Reply, ReplyAll, Trash2, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -168,8 +168,8 @@ function Dot() {
   return <span className="absolute -left-[27px] top-[11px] h-2 w-2 rounded-full border border-gray-300 bg-white" aria-hidden />;
 }
 
-const BADGES = { workflow: GitBranch, upload: Upload, remove: Trash2, comment: MessageSquare, mail: Mail, notification: Bell } as const;
-const BADGE_TITLES = { workflow: "Workflow", upload: "Upload", remove: "Delete", comment: "Comment", mail: "Email", notification: "Notification" } as const;
+const BADGES = { workflow: GitBranch, upload: Upload, remove: Trash2, comment: MessageSquare, mail: Mail, notification: Bell, like: Heart } as const;
+const BADGE_TITLES = { workflow: "Workflow", upload: "Upload", remove: "Delete", comment: "Comment", mail: "Email", notification: "Notification", like: "Like" } as const;
 
 function Badge({ icon, top = "top-1" }: { icon: keyof typeof BADGES; top?: string }) {
   const Icon = BADGES[icon];

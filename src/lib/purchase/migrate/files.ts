@@ -1,11 +1,11 @@
 // Takes the PO attachments (and the letter-head logo the PO sheets print)
-// out of the backup's file archives into this system's file store.
+// out of the backup's file archives into this system's file store, the
+// purchase_files table (server/files.ts), through the writer the run passes.
 //
 // ERPNext's "Download Files Backup" gives two plain tar archives, public and
 // private files, with paths like "<site>/public/files/<name>". A file record's
 // URL is "/files/<name>" or "/private/files/<name>"; that is how they meet.
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { readFile } from "node:fs/promises";
 
 export interface TarEntry {
   name: string;
@@ -59,13 +59,13 @@ export interface RestoredFile {
 }
 
 /**
- * Finds each wanted file in the archives and writes it under `storeRoot`.
- * Files not found are returned with storagePath null (the report lists them).
+ * Finds each wanted file in the archives and stores it with `store` at its place
+ * ("files/public/<name>"). Files not found are returned with storagePath null (the report lists them).
  */
 export async function restoreFiles(
   archives: { publicTar: string; privateTar: string },
   wanted: readonly FileToRestore[],
-  storeRoot: string,
+  store: (storagePath: string, data: Buffer) => Promise<void>,
 ): Promise<RestoredFile[]> {
   const [pub, priv] = await Promise.all([readFile(archives.publicTar), readFile(archives.privateTar)]);
   const index = new Map<string, Buffer>();
@@ -88,9 +88,7 @@ export async function restoreFiles(
     const isPrivate = url.startsWith("/private/");
     const name = url.replace(/^\/(private\/)?files\//, "");
     const storagePath = `files/${isPrivate ? "private" : "public"}/${name}`;
-    const target = join(storeRoot, storagePath);
-    await mkdir(dirname(target), { recursive: true });
-    await writeFile(target, data);
+    await store(storagePath, data);
     results.push({ fileUrl: w.fileUrl, storagePath, bytes: data.length });
   }
   return results;

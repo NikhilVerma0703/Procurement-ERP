@@ -155,6 +155,7 @@ export interface Built {
   itemVariantAttributes: Prisma.PurchaseItemVariantAttributeCreateManyInput[];
   hsnCodes: Prisma.PurchaseHsnCodeCreateManyInput[];
   orders: Prisma.PurchaseOrderCreateManyInput[];
+  likes: Prisma.PurchaseLikeCreateManyInput[];
   orderItems: Prisma.PurchaseOrderItemCreateManyInput[];
   orderTaxes: Prisma.PurchaseOrderTaxCreateManyInput[];
   orderCostOverheads: Prisma.PurchaseOrderCostOverheadCreateManyInput[];
@@ -177,7 +178,7 @@ export const INSERT_ORDER = [
   "addressLinks", "contactLinks", "itemGroups", "items", "itemUomConversions", "itemDefaults", "itemTaxes",
   "itemAttributes", "itemAttributeValues", "itemVariantAttributes", "hsnCodes",
   "orders", "orderItems", "orderTaxes", "orderCostOverheads", "orderPaymentSchedules", "orderLinks",
-  "orderEvents", "attachments", "users",
+  "orderEvents", "attachments", "users", "likes",
 ] as const satisfies readonly (keyof Built)[];
 
 const legacyOf = (r: Row, drop?: Set<string>): Prisma.InputJsonObject => {
@@ -754,5 +755,38 @@ export function build(tables: Map<string, DumpTable>): Built {
 
   out.sourceCounts = Object.fromEntries([...tables.entries()].map(([t, d]) => [t, d.rows.length]));
   out.issues = issues;
+  // Likes: Frappe kept who liked a record in its _liked_by (a JSON list of users), on the POs and
+  // on every master that has a screen here.
+  const likeSources: [string, string, Map<string, string>][] = [
+    ["tabPurchase Order", "Purchase Order", poIds],
+    ["tabSupplier", "Supplier", supplierIds],
+    ["tabItem", "Item", itemIds],
+    ["tabAddress", "Address", addressIds],
+    ["tabContact", "Contact", contactIds],
+    ["tabPurchase Taxes and Charges Template", "Purchase Taxes and Charges Template", taxTemplateIds],
+    ["tabPayment Terms Template", "Payment Terms Template", paymentTermsTemplateIds],
+    ["tabPayment Term", "Payment Term", paymentTermIds],
+    ["tabTerms and Conditions", "Terms and Conditions", termsIds],
+  ];
+  out.likes = [];
+  for (const [table, doctype, ids] of likeSources) {
+    for (const r of rows(table)) {
+      const raw = text(r._liked_by);
+      if (!raw) continue;
+      let users: unknown;
+      try {
+        users = JSON.parse(raw);
+      } catch {
+        issues.push(`${doctype} ${r.name}: its likes (_liked_by) are not a list — not imported`);
+        continue;
+      }
+      const recordId = ids.get(r.name!);
+      if (!Array.isArray(users) || !recordId) continue;
+      for (const email of new Set(users.filter((u): u is string => typeof u === "string" && u.trim() !== ""))) {
+        out.likes.push({ id: importId("like", `${doctype}|${r.name}|${email}`), doctype, recordId, email });
+      }
+    }
+  }
+
   return out;
 }

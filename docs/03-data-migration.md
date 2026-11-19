@@ -14,7 +14,7 @@
 | Read | `dump.ts` | Streams the backup's `…-database.sql.gz` directly; no ERPNext needed. Only the tables the PO needs are read, filtered while reading. |
 | Map | `build.ts`, `convert.ts` | ERPNext rows → the new tables (`docs/02-data-model.md`). ERPNext names become foreign keys. Times are converted from the old site's Asia/Kolkata to UTC. Money stays exact. |
 | Load | `load.ts` | **One transaction:** empties the module's tables, then inserts everything in dependency order. Any failure rolls back, and the database is left exactly as it was. |
-| Files | `files.ts` | Copies the PO attachments and the letter-head logo out of the backup's file archives into `data/storage/purchase/files/`. |
+| Files | `files.ts` | Copies the PO attachments and the letter-head logo out of the backup's file archives into the module's file store, the `purchase_files` table (a folder, `data/storage/purchase/files/`, until Step 9). |
 | Check | `reconcile.ts` | Compares the result with the backup and writes the report to `data/reports/`. |
 | Record | `run.ts` | Logs every run (backup file, SHA-256, counts, verdict) in `purchase_import_runs`. |
 

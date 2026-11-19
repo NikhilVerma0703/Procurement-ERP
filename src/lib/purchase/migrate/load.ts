@@ -30,7 +30,7 @@ const DELEGATE: Record<(typeof INSERT_ORDER)[number], string> = {
   orders: "purchaseOrder", orderItems: "purchaseOrderItem",
   orderTaxes: "purchaseOrderTax", orderCostOverheads: "purchaseOrderCostOverhead",
   orderPaymentSchedules: "purchaseOrderPaymentSchedule", orderLinks: "purchaseOrderLink", orderEvents: "purchaseOrderEvent",
-  attachments: "purchaseAttachment", users: "purchaseUser",
+  attachments: "purchaseAttachment", users: "purchaseUser", likes: "purchaseLike",
 };
 
 /** The module's tables, read from the schema itself (purchase_* except the run log). */

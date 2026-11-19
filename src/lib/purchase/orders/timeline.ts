@@ -49,7 +49,7 @@ export interface TimelineLine {
   id: string;
   at: string;
   /** The badge: a workflow step, a file added or removed; none for the rest. */
-  icon: "workflow" | "upload" | "remove" | null;
+  icon: "workflow" | "upload" | "remove" | "like" | null;
   runs: Run[];
 }
 
@@ -257,7 +257,9 @@ export function buildTimeline(events: TimelineEvent[], o: TimelineOptions): Time
     items.push({ type: "line", id: e.id, at: at(e), icon: removed ? "remove" : "upload", runs: [{ text: name(e), bold: true }, { text: " " }, ...attachmentRuns(e.content ?? "", o)] });
   }
   for (const e of newestFirst.filter((x) => x.kind === "LABEL" || x.kind === "INFO")) {
-    items.push({ type: "line", id: e.id, at: at(e), icon: null, runs: [{ text: name(e), bold: true }, { text: ` ${textContent(e.content ?? "")}` }] });
+    // A Like comment: "{name} Liked", with Frappe's heart (get_like_timeline_contents).
+    const icon = e.kind === "INFO" && e.subject === "Like" ? "like" : null;
+    items.push({ type: "line", id: e.id, at: at(e), icon, runs: [{ text: name(e), bold: true }, { text: ` ${textContent(e.content ?? "")}` }] });
   }
   // A stable sort keeps the order above among lines at the same moment.
   return items.sort((a, b) => Date.parse(b.at) - Date.parse(a.at));

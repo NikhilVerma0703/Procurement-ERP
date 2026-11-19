@@ -1396,6 +1396,33 @@ model PurchaseAttachment {
   @@map("purchase_attachments")
 }
 
+/// The module's file store (server/files.ts): the bytes of PO attachments and of the letter-head
+/// logo the sheets print, by their place ("files/private/x.pdf", an attachment's storage_path).
+/// In the database, as the Main ERP keeps uploaded files: it runs on Vercel, with no lasting disk.
+model PurchaseFile {
+  path      String   @id
+  bytes     Bytes
+  sizeBytes Int      @map("size_bytes")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("purchase_files")
+}
+
+/// Likes: the ♥ on a list row and in a form's sidebar (Frappe's _liked_by, which ERPNext kept on
+/// each record): who liked which PO or master, by doctype ("Purchase Order", "Supplier", …) and
+/// the record's id. Brought back by the owner's decision of 19-11-2026.
+model PurchaseLike {
+  id       String   @id @default(cuid())
+  doctype  String
+  recordId String   @map("record_id")
+  email    String
+  likedAt  DateTime @default(now()) @map("liked_at")
+
+  @@unique([doctype, recordId, email])
+  @@index([email])
+  @@map("purchase_likes")
+}
+
 // ---------------------------------------------------------------------------
 // People and migration runs
 // ---------------------------------------------------------------------------

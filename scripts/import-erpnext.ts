@@ -6,8 +6,8 @@
 //   npm run import:erpnext -- --force          # reload even if POs were raised here (wipes them)
 //
 // A reload, all-or-nothing (src/lib/purchase/migrate/load.ts). The
-// reconciliation report goes to data/reports/; attachments to the module's
-// file store (data/storage/purchase, or PURCHASE_FILE_STORE).
+// reconciliation report goes to data/reports/; attachments and the logo to the
+// module's file store, the purchase_files table.
 // Exit code: 0 everything matches, 2 imported with differences, 1 failed.
 import { resolve } from "node:path";
 import { PrismaClient } from "@prisma/client";
@@ -26,7 +26,6 @@ const started = Date.now();
 runImport(db, {
   backupDir: resolve(root, valueOf("--backup-dir") ?? "data/erpnext-backup"),
   prefix: valueOf("--prefix"),
-  storeRoot: resolve(root, process.env.PURCHASE_FILE_STORE ?? "data/storage/purchase"),
   reportDir: resolve(root, "data/reports"),
   force: args.includes("--force"),
   dryRun: args.includes("--dry-run"),

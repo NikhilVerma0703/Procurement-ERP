@@ -23,8 +23,6 @@ export interface ImportOptions {
   backupDir: string;
   /** Which backup, e.g. "20261116_110221-pacificengineeredsurfaces_m_frappe_cloud"; default: the newest. */
   prefix?: string;
-  /** Where restored files go (the module's file store). */
-  storeRoot: string;
   /** Where the reconciliation report is written. */
   reportDir: string;
   force?: boolean;
@@ -98,7 +96,11 @@ export async function runImport(db: PrismaClient, opts: ImportOptions): Promise<
       ...built.attachments.map((a) => ({ fileUrl: a.fileUrl })),
       ...built.letterHeads.filter((l) => l.image).map((l) => ({ fileUrl: l.image! })),
     ];
-    const files = await restoreFiles(backup, wanted, opts.storeRoot);
+    // Into the module's file store, the purchase_files table (emptied with the rest by the load).
+    const files = await restoreFiles(backup, wanted, async (path, data) => {
+      const bytes = new Uint8Array(data);
+      await db.purchaseFile.upsert({ where: { path }, create: { path, bytes, sizeBytes: bytes.length }, update: { bytes, sizeBytes: bytes.length } });
+    });
     for (const f of files.filter((x) => x.storagePath)) {
       await db.purchaseAttachment.updateMany({ where: { fileUrl: f.fileUrl }, data: { storagePath: f.storagePath } });
     }

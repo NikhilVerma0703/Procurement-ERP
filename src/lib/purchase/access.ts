@@ -41,6 +41,8 @@ export const PURCHASE_ACTIONS = [
   "email",
   /** Create and edit the masters a PO links to: suppliers, items, addresses, contacts, templates. */
   "masters",
+  /** Like a PO or a master (the ♥ on a list row and in a form), as anyone who could open it could. */
+  "like",
 ] as const;
 
 export type PurchaseAction = (typeof PURCHASE_ACTIONS)[number];
@@ -61,6 +63,7 @@ export const PURCHASE_ACTORS: Record<PurchaseAction, readonly PurchaseTier[]> = 
   // The people who raise POs keep the records they need (ERPNext: Purchase Master Manager, Item
   // Manager); approvers see them.
   masters: ["PURCHASE", "ADMIN"],
+  like: ["PURCHASE", "APPROVER", "ADMIN"],
 };
 
 /** May this user do this? An action nobody defined fails closed, a prototype key included. */
