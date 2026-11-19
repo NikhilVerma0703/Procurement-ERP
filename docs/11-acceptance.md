@@ -18,10 +18,15 @@
 
 | # | Do | Expect | ✓ / ✗ |
 |---|---|---|---|
-| B1 | Open Buying › Purchase Order. | 3,199 POs (plus any raised since the backup). The columns and status colours are as on the old list. | |
+| B1 | Open Buying › Purchase Order. | 3,217 POs, as of the 19-11-2026 backup (plus any raised since). The columns and status colours are as on the old list. | |
 | B2 | Use each quick filter in turn: ID, Supplier, Supplier Name, Company, Status. | Each one narrows the list; clearing it brings the rows back. | |
 | B3 | Add a filter with the filter builder. Search, sort, then switch between 20 / 100 / 500 and press Load More. | Rows and the "N of M" count follow. The address bar keeps the view, so a bookmark reopens it. | |
 | B4 | Export. | An Excel file of the filtered list downloads. | |
+| B5 | Tick two rows, then shift-tick a third further down. | The heading reads "N items selected"; the rows in between are ticked too. "+ Add Purchase Order" becomes **Actions**. | |
+| B6 | Tick two draft POs (Created). Actions › Approve. | "Workflow Status" lists both under Successful Transactions; the list shows them Approved. With an approved PO ticked too, Approve and Reject are not offered. | |
+| B7 | Tick a few POs. Actions › Print, keep PDF PO, Print. Then tick a cancelled PO and Print again. | One PDF, `Purchase-Order.pdf`, with each sheet in the list's order. With the cancelled PO: "You selected Draft or Cancelled documents". | |
+| B8 | Tick a draft and an approved PO. Actions › Delete › Yes. | The draft is deleted. The approved PO stays: "Purchase Order … Submitted Record cannot be deleted. You must Cancel it first." | |
+| B9 | Click a row's ♡, then the ♡ in the heading. Open that PO. | The heart turns red with 1; the heading's heart lists only the POs you liked ("1 filter"). The PO's sidebar shows ♥ 1 and its timeline "{you} Liked". Unlike: both go. | |
 
 ## C. Historical POs
 
@@ -81,11 +86,13 @@ Pick POs you know from the old site.
 | H6 | Change a template's Lead Time and save. | "Item Variants updated"; its variants take the new value. | |
 | H7 | Payment Terms Template with rows that do not total 100%. | Refused ("Combined invoice portion must equal 100%"). | |
 | H8 | ⋯ › Rename a test supplier, then try to Delete a supplier with POs. | The new name is everywhere it was used. The delete is refused ("Cannot delete or cancel because …"). | |
+| H9 | On any master list: tick rows, Actions › Export; then tick a record in use and Actions › Delete. Like a row and use the heading's ♡. | A `.csv` of the ticked rows downloads. The delete is refused with the record's link. The heading's heart shows only what you liked. | |
 
 ## I. On production, after the merge
 
 | # | Do | Expect | ✓ / ✗ |
 |---|---|---|---|
+| I0 | After the cut-over load ([10](10-merge-guide.md) §4.2): `npm run verify:erpnext` with `DATABASE_URL` on production, then open `/purchase/orders` on the live site. | "✓ The database holds exactly what the backup has." The list reads "20 of" the final backup's PO count; old POs open, print and export as here. | |
 | I1 | Sign in with a `PURCHASE` role. | Only the module, under its "Buying" rows. An admin sees a Buying section too. | |
 | I2 | The first real PO, from new to approved to PDF to email. | As above, with the real mail settings. | |
 
@@ -104,7 +111,7 @@ Defaults apply where a recommendation is given and you say nothing.
 |---|---|---|---|
 | 1 | **Who approves after the merge.** Over the last 12 months the two buyers held both "Purchase Head" and "Admin", and approved their own POs (1,441 approvals). | Ask the Procurement Manager. Either `PURCHASE` may approve (as practised) or approval stays with the ERP's `ADMIN`. | [10](10-merge-guide.md) §5 |
 | 2 | **Goods receipts.** How a new receipt is recorded: the Main ERP's Store module, or a small "receive" action in this module. It drives "% Received" and the PO status. | The Store module, if it is to handle purchase receipts. Until then, statuses stay as received history left them. | plan §5 |
-| 3 | **Attachment size after the merge.** Vercel allows about 4 MB per upload; the old site allowed 10 MB. | 4 MB, as the Lab module. The 5 old attachments are 344 KB at most. | [10](10-merge-guide.md) §5 |
+| 3 | **Attachment size after the merge.** Vercel allows about 4 MB per upload; the old site allowed 10 MB. | Applied 19-11-2026 with this default: 4,000,000 bytes, as the Lab module. The 5 old attachments are 344 KB at most. | [10](10-merge-guide.md) §5 |
 | 4 | **The three email notifications** (PO created / approved). The old site stopped sending them on 21-09-2024. | Keep off. | [08](08-activity-and-email.md) §4 |
 | 5 | **Email to supplier.** No one ever sent one from a PO on the old site, but the plan includes it. | Keep, for all three roles. | [08](08-activity-and-email.md) §4 |
 | 6 | **Which mailbox sends PO emails.** | The writer's own mail settings, else the ERP's (the Main ERP's rule). | [10](10-merge-guide.md) §5 |
@@ -114,11 +121,14 @@ Defaults apply where a recommendation is given and you say nothing.
 | 10 | **Item prices and pricing rules** (price-list rates on 43 lines). | Leave out; rates are typed. | plan §5, [06](06-po-form.md) |
 | 11 | **Purchase invoices / "% Billed"** (1 invoice ever). | Keep the status logic and data; no invoice screen. | plan §5 |
 | 12 | **Other print layouts** (6 layouts without reference PDFs, e.g. "Drop Shipping Format"). | Only if the team still prints them; each needs a captured PDF to match. | [07](07-po-sheet.md) |
-| 13 | **Unused sidebar items** (Assigned To, Tags, likes, Shared With, Follow). | Leave out. | [08](08-activity-and-email.md) §4 |
+| 13 | **Unused sidebar items** (Assigned To, Tags, Shared With, Follow). Likes: added by the owner, 19-11-2026. | Leave out. | [08](08-activity-and-email.md) §4 |
 | 14 | **The masters' own history** (844 supplier and 4,438 item versions, 36 item files and emails). | Import, if the team looked at it; otherwise leave in the backup. | [09](09-masters.md) |
 | 15 | **Merge on Rename** (used once). | Leave out. | [09](09-masters.md) |
 | 16 | **Item Group defaults and taxes** for new items (4 group tax rows). | Leave out unless the team relied on them. | [09](09-masters.md) |
 | 17 | **Your separate supplier and item list files.** The plan was to match them against the imported masters (by code, GSTIN and name). It needs those files. | Send them, or confirm they are no longer needed. | plan §4, §8.5 |
-| 18 | **The final backup** from the old site, if POs were raised after 16-11-2026. | Take it on the last day, and import it at cut-over. | plan Step 0 |
+| 18 | **The final backup** from the old site, if POs were raised after 19-11-2026 15:21 (the last backup imported: 3,217 POs). | Take it on the last day, and import it at cut-over. | plan Step 0 |
+| 19 | **Assign To, Apply Assignment Rule and Add Tags** in the lists' Actions menu. They need assignments and tags (0 POs used them). | Leave out. | [05](05-list-screen.md) §2 |
+| 20 | **Bulk Edit and Print on the master lists** (Frappe's Actions menu had both). | Leave out unless the team used them. | [09](09-masters.md) |
+| 21 | **Letter Head and Page Size** in the bulk Print dialog. The PO layouts draw their own logo on A4, as the print view does. | Leave out. | [05](05-list-screen.md) §2 |
 
-Already decided: no Report view and no bulk row actions on the list (17-11-2026); the old site's calculation defects are not carried over (16-11-2026, [04](04-calculation-engine.md) §6).
+Already decided: no Report view on the list (17-11-2026); the old lists' checkboxes, Actions menu and likes are in (19-11-2026, replacing "no bulk row actions" of 17-11-2026); the old site's calculation defects are not carried over (16-11-2026, [04](04-calculation-engine.md) §6).

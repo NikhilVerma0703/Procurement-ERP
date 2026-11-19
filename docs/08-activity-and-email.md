@@ -89,11 +89,16 @@ Ported from Frappe 14.101.1 (`form_timeline.js`, `version_timeline_content_build
     sure you want to delete the attachment?". The newest 10 show, then "Show All".
   - A private file needs the module's view access; every file opens through the gated route.
   - PDFs and pictures open in the browser; other files download, sandboxed.
-- **The comment count:** takes you to the comment box.
+- **Likes and the comment count,** "♥ 0 · 💬 2" as the old sidebar showed them (added by owner decision 19-11-2026):
+  - The heart likes or unlikes the PO for you (red when you have) and names who liked it on hover.
+  - Liking writes "{name} Liked" on the timeline, with a heart; unliking takes it away again (Frappe's like log).
+  - Neither changes the PO's Last Updated (Frappe's `update_modified=False`).
+  - The comment count takes you to the comment box.
 - **"{X} edited this · {time}" and "{Y} created this · {time}".**
 - **Attach File** (FileUploader, "My Device"):
   - Drop or pick files; each is private unless unticked. Then Upload.
-  - The size limit is 10 MB, Frappe's default.
+  - The size limit is 4 MB (4,000,000 bytes, as the Main ERP's Lab module). The old site's 10 MB cannot pass
+    Vercel, which refuses a request near 4.5 MB (decision 3, applied 19-11-2026). The 5 old files are 344 KB at most.
   - The same bytes again reuse the stored file. Another file of the same name gets its hash's end before the
     extension.
   - The timeline records "Added …" and "Removed …". A removed file's bytes go when nothing else uses them.
@@ -104,11 +109,13 @@ Ported from Frappe 14.101.1 (`form_timeline.js`, `version_timeline_content_build
 |---|---|
 | Assigned To | 0 POs |
 | Tags | 0 |
-| Likes | 0 |
 | Shared With | none found |
 | Follow | none found |
 | Comment @mentions | 1 comment ever |
 | The uploader's Library, Link and Camera | never used |
+
+Likes were unused too (0), but are back by owner decision 19-11-2026 (above, and the list's hearts:
+[05](05-list-screen.md) §2).
 
 ## 3. Email
 
@@ -160,7 +167,7 @@ Switching them on would start emailing staff and suppliers again after two years
    - On the old site no one ever sent an email from a PO: all 95 emails were automatic.
    - The captured form showed no Email item for the capturing user.
    - Keep it for all three roles?
-3. **The unused sidebar items** (Assigned To, Tags, likes, Shared With, Follow): leave them out?
+3. **The unused sidebar items** (Assigned To, Tags, Shared With, Follow): leave them out? (Likes: added, 19-11-2026.)
 
 ## 5. Not in this part
 

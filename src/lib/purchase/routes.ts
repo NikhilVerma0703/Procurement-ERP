@@ -38,6 +38,8 @@ export const masterNewPath = (m: MasterKey, prefill: Record<string, string> = {}
 /** The module's APIs. */
 export const PURCHASE_API_PATHS = {
   ordersExport: "/api/purchase/orders/export",
+  /** The list's selected rows, printed as one PDF (a form post: ids, format). */
+  ordersPrint: "/api/purchase/orders/print",
   /** The PO form's link fields search here (Frappe's search_link). */
   lookup: "/api/purchase/lookup",
 } as const;

@@ -62,10 +62,11 @@ const row = (master: MasterKey, r: { id: string; code: string; title?: string; u
 export const TAX_TEMPLATE_LIST: ListShape = { filters: ["company"], sorts: [...ORDER_KEYS], defaultSort: "modified", defaultOrder: "desc" };
 
 export async function listTaxTemplates(q: MasterListQuery): Promise<ListPage> {
-  const where: Prisma.PurchaseTaxTemplateWhereInput = {
+  const base: Prisma.PurchaseTaxTemplateWhereInput = {
     ...(q.q ? { OR: [{ code: has(q.q) }, { title: has(q.q) }] } : {}),
     ...(q.filters.company ? { company: { code: q.filters.company } } : {}),
   };
+  const where: Prisma.PurchaseTaxTemplateWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
   const [rows, total] = await Promise.all([
     db.purchaseTaxTemplate.findMany({ where, orderBy: [orderOf(q.sort, q.order), { code: "asc" }], take: q.limit, include: { company: { select: { code: true } } } }),
     db.purchaseTaxTemplate.count({ where }),
@@ -227,7 +228,8 @@ export function deleteTaxTemplate(_user: PurchaseUser, id: string): Promise<Acti
 export const PAYMENT_TERMS_TEMPLATE_LIST: ListShape = { filters: [], sorts: [...ORDER_KEYS], defaultSort: "modified", defaultOrder: "desc" };
 
 export async function listPaymentTermsTemplates(q: MasterListQuery): Promise<ListPage> {
-  const where: Prisma.PurchasePaymentTermsTemplateWhereInput = q.q ? { code: has(q.q) } : {};
+  const base: Prisma.PurchasePaymentTermsTemplateWhereInput = q.q ? { code: has(q.q) } : {};
+  const where: Prisma.PurchasePaymentTermsTemplateWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
   const [rows, total] = await Promise.all([
     db.purchasePaymentTermsTemplate.findMany({ where, orderBy: [orderOf(q.sort, q.order), { code: "asc" }], take: q.limit }),
     db.purchasePaymentTermsTemplate.count({ where }),
@@ -354,7 +356,8 @@ export function deletePaymentTermsTemplate(_user: PurchaseUser, id: string): Pro
 export const PAYMENT_TERM_LIST: ListShape = { filters: [], sorts: [...ORDER_KEYS], defaultSort: "modified", defaultOrder: "desc" };
 
 export async function listPaymentTerms(q: MasterListQuery): Promise<ListPage> {
-  const where: Prisma.PurchasePaymentTermWhereInput = q.q ? { OR: [{ code: has(q.q) }, { description: has(q.q) }] } : {};
+  const base: Prisma.PurchasePaymentTermWhereInput = q.q ? { OR: [{ code: has(q.q) }, { description: has(q.q) }] } : {};
+  const where: Prisma.PurchasePaymentTermWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
   const [rows, total] = await Promise.all([
     db.purchasePaymentTerm.findMany({ where, orderBy: [orderOf(q.sort, q.order), { code: "asc" }], take: q.limit }),
     db.purchasePaymentTerm.count({ where }),
@@ -434,7 +437,8 @@ export function deletePaymentTerm(_user: PurchaseUser, id: string): Promise<Acti
 export const TERMS_LIST: ListShape = { filters: [], sorts: [...ORDER_KEYS], defaultSort: "modified", defaultOrder: "asc" };
 
 export async function listTerms(q: MasterListQuery): Promise<ListPage> {
-  const where: Prisma.PurchaseTermsTemplateWhereInput = q.q ? { OR: [{ code: has(q.q) }, { title: has(q.q) }] } : {};
+  const base: Prisma.PurchaseTermsTemplateWhereInput = q.q ? { OR: [{ code: has(q.q) }, { title: has(q.q) }] } : {};
+  const where: Prisma.PurchaseTermsTemplateWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
   const [rows, total] = await Promise.all([
     db.purchaseTermsTemplate.findMany({ where, orderBy: [orderOf(q.sort, q.order), { code: "asc" }], take: q.limit }),
     db.purchaseTermsTemplate.count({ where }),

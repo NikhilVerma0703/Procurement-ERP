@@ -93,6 +93,17 @@ All test records were made with made-up data. They were removed afterwards, and 
 
 ## How they behave (the old site's rules)
 
+- **Every list** (added by owner decision 19-11-2026, as on the PO list, [05](05-list-screen.md) §2):
+  - a checkbox and a ♥ before each title; the heading's checkbox ticks every row shown, and its ♥ shows only what you
+    liked (`?_liked_by=<you>`, Frappe's "Liked By like %you%");
+  - while rows are ticked, "Add …" gives way to **Actions**:
+    - **Export:** the ticked rows as `<Master>.csv`, with the list's columns (ID, title and the list's own columns).
+      Frappe's Data Export let you pick the fields, in Excel or CSV.
+    - **Delete:** each record through its own Delete, with its link checks ("Cannot delete or cancel because …"), in
+      rounds as Frappe's `delete_bulk` ran them. What was refused is listed afterwards.
+  - not offered: Frappe's **Edit** (one field set on every ticked record), **Print** (no master layouts here), Assign
+    To, Apply Assignment Rule and Add Tags. See "For the owner to decide".
+
 - **Supplier:**
   - Named by Supplier Name (Buying Settings). A name already in use is refused.
   - "Add Supplier" opens India Compliance's quick entry: GSTIN, the mandatory fields, Primary Contact Details and Primary Address Details. 545 of the 561 suppliers with a primary address got it in the same second as the supplier, so this is how suppliers were made. Edit Full Form carries the values over.
@@ -161,4 +172,6 @@ All test records were made with made-up data. They were removed afterwards, and 
 
 1. **Masters' history.** The old site kept 844 supplier and 4,438 item versions, 36 item files and 36 item emails. The renames are recorded only as comments. None of these were imported. The screens show who created and last edited each record. Should the history come across and show as a timeline, as it does on a PO?
 2. **Merge on Rename.** It was used once, on an address. It is left out unless needed.
-3. **Item Group defaults and taxes.** 4 Item Tax rows on item groups were not imported. A new item does not take its group's defaults (ERPNext's `update_defaults_from_item_group`). Is this needed?
+3. **Bulk Edit and Print on the master lists.** Frappe's list Actions also had Edit (set one field on every ticked
+   record) and Print (its standard layout). They are left out unless the team used them.
+4. **Item Group defaults and taxes.** 4 Item Tax rows on item groups were not imported. A new item does not take its group's defaults (ERPNext's `update_defaults_from_item_group`). Is this needed?

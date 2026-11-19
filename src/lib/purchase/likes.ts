@@ -3,38 +3,17 @@
 // list can show only what the viewer liked. On a PO, liking writes "{name} Liked" on its timeline (a
 // Like comment) and unliking takes that line away again, as _toggle_like did. Neither changes when
 // the record was last modified (update_modified=False). Not used on the old site (no record was
-// liked); brought back by the owner's decision of 19-11-2026.
+// liked); brought back by the owner's decision of 19-11-2026. The pure rules are like-rules.ts.
 import "server-only";
 import type { ActionResult } from "./orders/form-schema";
 import { namesOf } from "./orders/activity";
+import type { ListFilter } from "./orders/list";
 import type { PurchaseUser } from "./server/current-user";
 import { db } from "./server/db";
 import { recordOrderEvent } from "./server/audit";
+import { LIKE_DOCTYPE, likedByCondition, NO_LIKES, type LikeInfo, type LikeKind } from "./like-rules";
 
-/** The doctype each screen's records are liked as (ERPNext's doctype names). */
-export const LIKE_DOCTYPE = {
-  orders: "Purchase Order",
-  suppliers: "Supplier",
-  items: "Item",
-  addresses: "Address",
-  contacts: "Contact",
-  taxTemplates: "Purchase Taxes and Charges Template",
-  paymentTermsTemplates: "Payment Terms Template",
-  paymentTerms: "Payment Term",
-  terms: "Terms and Conditions",
-} as const;
-export type LikeKind = keyof typeof LIKE_DOCTYPE;
-export const isLikeKind = (k: string): k is LikeKind => Object.prototype.hasOwnProperty.call(LIKE_DOCTYPE, k);
-
-export interface LikeInfo {
-  count: number;
-  /** Did the viewer like it? */
-  mine: boolean;
-  /** Who liked it, by name, first liker first (the heart's tooltip). */
-  names: string[];
-}
-
-export const NO_LIKES: LikeInfo = { count: 0, mine: false, names: [] };
+export { LIKE_DOCTYPE, NO_LIKES, isLikeKind, type LikeInfo, type LikeKind } from "./like-rules";
 
 /** The likes of these records, by record id (records nobody liked are absent). */
 export async function likesOf(kind: LikeKind, ids: readonly string[], viewer: string): Promise<Record<string, LikeInfo>> {
@@ -42,7 +21,7 @@ export async function likesOf(kind: LikeKind, ids: readonly string[], viewer: st
   const rows = await db.purchaseLike.findMany({
     where: { doctype: LIKE_DOCTYPE[kind], recordId: { in: [...ids] } },
     select: { recordId: true, email: true },
-    orderBy: { likedAt: "asc" },
+    orderBy: [{ likedAt: "asc" }, { id: "asc" }],
   });
   const nameOf = await namesOf(rows.map((r) => r.email));
   const out: Record<string, LikeInfo> = {};
@@ -55,10 +34,20 @@ export async function likesOf(kind: LikeKind, ids: readonly string[], viewer: st
   return out;
 }
 
-/** The ids of the records of a kind the viewer liked (the list's "liked by me"). */
-export async function likedIds(kind: LikeKind, viewer: string): Promise<string[]> {
-  const rows = await db.purchaseLike.findMany({ where: { doctype: LIKE_DOCTYPE[kind], email: { equals: viewer, mode: "insensitive" } }, select: { recordId: true } });
-  return rows.map((r) => r.recordId);
+/** A "Liked By" condition (the ♥ heading, or the filter builder) as a condition on record ids. */
+export async function likedByWhere(kind: LikeKind, f: Pick<ListFilter, "op" | "value">): Promise<{ id: { in: string[] } | { notIn: string[] } }> {
+  const rows = await db.purchaseLike.findMany({
+    where: { doctype: LIKE_DOCTYPE[kind] },
+    select: { recordId: true, email: true },
+    orderBy: [{ likedAt: "asc" }, { id: "asc" }],
+  });
+  const likers = new Map<string, string[]>();
+  for (const r of rows) {
+    const list = likers.get(r.recordId);
+    if (list) list.push(r.email);
+    else likers.set(r.recordId, [r.email]);
+  }
+  return { id: likedByCondition(f, likers) };
 }
 
 /** Does the record exist? (A like is kept only for a record that is there.) */

@@ -14,8 +14,10 @@ pattern). The plan, scope and step list are in `docs/00-feasibility-and-plan.md`
 npm run dev        # port 3300
 npm run typecheck
 npm test           # vitest over tests/purchase/**
-npm run db:migrate # prisma migrate dev (local Postgres only)
+npm run db:migrate # prisma migrate dev (refuses any database not on this machine)
 npm run golden     # engine vs all imported POs (local data)
+npm run import:erpnext  # load the newest backup in data/erpnext-backup (another machine's DB: --target <host>)
+npm run verify:erpnext  # read-only: does the database still equal the backup?
 npm run merge:sql  # rebuild merge/ for the Main ERP after any schema change
 ```
 
@@ -42,7 +44,7 @@ npm run merge:sql  # rebuild merge/ for the Main ERP after any schema change
   ERPNext screens (`docs/reference/`). Do not add features the original lacked. Do not drop ones it had without
   the owner's say-so (scope table: plan §5).
 - **Golden tests** are the definition of correct. The calculation engine must reproduce the totals, taxes and
-  statuses ERPNext stored on the 3,199 historical POs (Step 4). A mismatch is a bug or a documented exception.
+  statuses ERPNext stored on the historical POs (3,199 at Step 4; 3,217 in the 19-11-2026 backup). A mismatch is a bug or a documented exception.
 - Comment the *why*, in the style of the Main ERP (business rule, owner decision, date).
 
 ## Data and secrets

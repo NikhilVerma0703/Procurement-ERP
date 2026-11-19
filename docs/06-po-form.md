@@ -54,6 +54,8 @@ schema messages, numbering.
 - **Totals.** Where a re-saved draft's totals differ, they are the old-site defects you approved correcting (D1–D3). The
   old-precision era shows the same way. The golden check reproduces the stored figures with the old rules.
 
+On the 19-11-2026 backup: 548 drafts, **538 pass**, and the same 10 are refused.
+
 ## 2. Rules kept from the old site
 
 **On save (ERPNext 14 `PurchaseOrder.validate` and controllers):**
@@ -69,7 +71,9 @@ schema messages, numbering.
   - The taxes template must be enabled.
   - With no stock or fixed-asset row, "Valuation" taxes become "Total".
 - **Payment schedule.**
-  - An empty schedule is filled from the Payment Terms Template, or with one 100% row due on the PO date.
+  - An empty schedule is filled from the Payment Terms Template, or with one 100% row due on the PO date. The
+    template's Payment Terms are looked up then, so the rows link to them (fixed 19-11-2026: a duplicated PO, whose
+    schedule Frappe's no-copy leaves empty, failed to save when its template named its terms).
   - Duplicate due dates are refused.
   - The amounts must add up to the Grand / Rounded Total.
 - **Grand Total.** The company-currency Grand Total must not be negative.

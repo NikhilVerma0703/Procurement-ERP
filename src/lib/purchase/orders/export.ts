@@ -17,8 +17,8 @@ const num = (v: { toString(): string } | null | undefined) => (v == null ? null 
 /** Excel has no time zones: a moment is written as the old site's (IST) wall-clock time. */
 const wallClock = (d: Date) => new Date(d.getTime() + IST_MS);
 
-export async function buildOrdersWorkbook(q: ListQuery): Promise<{ buffer: ArrayBuffer; filename: string }> {
-  const orders = await ordersForExport(q);
+export async function buildOrdersWorkbook(q: ListQuery, ids?: readonly string[]): Promise<{ buffer: ArrayBuffer; filename: string }> {
+  const orders = await ordersForExport(q, ids);
   const wb = new ExcelJS.Workbook();
   wb.creator = "Procurement ERP";
   wb.created = new Date();

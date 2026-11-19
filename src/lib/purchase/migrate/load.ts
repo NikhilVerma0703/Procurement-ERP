@@ -44,9 +44,14 @@ export function moduleTables(): string[] {
 }
 
 /**
- * Refuses a reload that would wipe records made in this system: POs raised here, and suppliers,
- * items, addresses and contacts made on the masters screens (Step 8). Imported rows carry
- * `legacy`; these do not.
+ * Refuses a reload that would wipe or undo work done in this system:
+ *   * records made here: POs raised here, and suppliers, items, addresses and contacts made on the
+ *     masters screens (Step 8). Imported rows carry `legacy`; these do not;
+ *   * anything changed since the last import (19-11-2026, for production): a table holding more or
+ *     fewer rows than that import loaded (a comment, a like, an upload, a deleted draft), or a PO or
+ *     master saved after it (an imported PO edited or approved). Imported rows keep the old site's
+ *     timestamps, so anything later was written here.
+ * After go-live this is what stops the old site's data being loaded over the team's work.
  */
 export async function assertReloadAllowed(db: PrismaClient, force: boolean): Promise<void> {
   const none = { legacy: { equals: Prisma.DbNull } };
@@ -59,12 +64,52 @@ export async function assertReloadAllowed(db: PrismaClient, force: boolean): Pro
   ]);
   const made = [[orders, "purchase order"], [suppliers, "supplier"], [items, "item"], [addresses, "address"], [contacts, "contact"]] as const;
   const found = made.filter(([n]) => n > 0).map(([n, what]) => `${n} ${what}${n === 1 ? "" : what.endsWith("s") ? "es" : "s"}`);
-  if (found.length && !force) {
+  const changed = await changesSinceLastImport(db);
+  if ((found.length || changed.length) && !force) {
+    const lines = [
+      ...(found.length ? [`${found.join(", ")} were made in this system after the import.`] : []),
+      ...(changed.length ? [`This database changed after the last import:\n  - ${changed.join("\n  - ")}`] : []),
+    ];
     throw new Error(
-      `${found.join(", ")} were made in this system after the import. Reloading the old site's data ` +
-        `would delete them. Nothing was changed. (Run with --force only if that is really intended.)`,
+      `${lines.join("\n")}\nReloading the old site's data would delete or undo that work. Nothing was changed. ` +
+        `(Run with --force only if that is really intended.)`,
     );
   }
+}
+
+/** What changed in the module's tables after the last finished import; [] when nothing did (or no import ran). */
+export async function changesSinceLastImport(db: PrismaClient): Promise<string[]> {
+  const last = await db.purchaseImportRun.findFirst({
+    where: { status: { in: ["ok", "differences"] }, finishedAt: { not: null } },
+    orderBy: { startedAt: "desc" },
+  });
+  if (!last?.finishedAt) return [];
+  const out: string[] = [];
+  const recorded = (last.counts ?? {}) as Record<string, number>;
+  const delegates = db as unknown as Record<string, { count(args?: unknown): Promise<number> }>;
+  for (const [key, was] of Object.entries(recorded)) {
+    const delegate = DELEGATE[key as keyof typeof DELEGATE];
+    if (!delegate) continue;
+    const now = await delegates[delegate].count();
+    if (now !== was) out.push(`${key}: ${was} loaded by the import, ${now} now`);
+  }
+  const after = { updatedAt: { gt: last.finishedAt } };
+  const saved: [string, Promise<number>][] = [
+    ["purchase orders", db.purchaseOrder.count({ where: after })],
+    ["suppliers", db.purchaseSupplier.count({ where: after })],
+    ["items", db.purchaseItem.count({ where: after })],
+    ["addresses", db.purchaseAddress.count({ where: after })],
+    ["contacts", db.purchaseContact.count({ where: after })],
+    ["tax templates", db.purchaseTaxTemplate.count({ where: after })],
+    ["payment terms templates", db.purchasePaymentTermsTemplate.count({ where: after })],
+    ["payment terms", db.purchasePaymentTerm.count({ where: after })],
+    ["terms and conditions", db.purchaseTermsTemplate.count({ where: after })],
+  ];
+  for (const [what, count] of saved) {
+    const n = await count;
+    if (n) out.push(`${n} ${what} saved after it`);
+  }
+  return out;
 }
 
 type CreateMany = { createMany(args: { data: unknown[] }): Promise<{ count: number }> };

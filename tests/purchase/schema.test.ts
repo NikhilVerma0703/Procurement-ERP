@@ -73,7 +73,8 @@ describe("purchase schema conventions", () => {
     const identity = /^(code|number)\s|^erpnextName\s|^name\s+String\s+@id|^code\s+String\s+@id|^prefix\s|^email\s+String\s+@id/m;
     // Not ERPNext records: the import log, the PO's links, the file store (keyed by each file's place,
     // which comes from the old site's file URL), and the standalone app's sign-in accounts.
-    const own = new Set(["PurchaseImportRun", "PurchaseOrderLink", "PurchaseFile", "PurchaseLogin"]);
+    // Likes were a column on the old site (_liked_by), not a doctype: no ERPNext name to keep.
+    const own = new Set(["PurchaseImportRun", "PurchaseOrderLink", "PurchaseFile", "PurchaseLogin", "PurchaseLike"]);
     for (const m of models.filter((x) => !own.has(x.name))) {
       expect(identity.test(fieldLines(m).join("\n")), `${m.name} has no ERPNext identity`).toBe(true);
     }

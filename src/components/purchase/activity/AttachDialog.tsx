@@ -3,15 +3,15 @@
 // "Attach File", as the old uploader worked for a PO (Frappe 14 FileUploader,
 // "My Device"): drop files or pick them, each private unless unticked, then
 // Upload. Files go one by one to api/purchase/orders/[id]/attachments; the
-// server checks the size (10 MB) and stores them. The uploader's Library,
+// server checks the size (4 MB, the Vercel-safe limit: orders/attachment-limit.ts)
+// and stores them. The uploader's Library,
 // Link and Camera sources were never used on POs and are left out.
 import { Loader2, Lock, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/purchase/cn";
+import { ATTACHMENT_TOO_BIG, MAX_ATTACHMENT_BYTES } from "@/lib/purchase/orders/attachment-limit";
 import { PURCHASE_API_ROOT } from "@/lib/purchase/routes";
-
-const MAX_BYTES = 10 * 1024 * 1024;
 
 const size = (n: number) => (n < 1024 ? `${n} B` : n < 1024 * 1024 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`);
 
@@ -31,8 +31,8 @@ export function AttachDialog({ orderId, onClose, onUploaded }: { orderId: string
     let done = 0;
     try {
       for (const { file, isPrivate } of files) {
-        if (file.size > MAX_BYTES) {
-          toast.error(`${file.name}: File size exceeded the maximum allowed size of 10.0 MB`);
+        if (file.size > MAX_ATTACHMENT_BYTES) {
+          toast.error(`${file.name}: ${ATTACHMENT_TOO_BIG}`);
           continue;
         }
         const body = new FormData();
@@ -95,7 +95,7 @@ export function AttachDialog({ orderId, onClose, onUploaded }: { orderId: string
                 <li key={`${f.file.name}-${i}`} className="flex items-center gap-3 px-3 py-2 text-[13px]">
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-gray-900">{f.file.name}</div>
-                    <div className={cn("text-xs", f.file.size > MAX_BYTES ? "text-red-600" : "text-gray-500")}>{size(f.file.size)}</div>
+                    <div className={cn("text-xs", f.file.size > MAX_ATTACHMENT_BYTES ? "text-red-600" : "text-gray-500")}>{size(f.file.size)}</div>
                   </div>
                   <label className="flex items-center gap-1.5 text-xs text-gray-600">
                     <input

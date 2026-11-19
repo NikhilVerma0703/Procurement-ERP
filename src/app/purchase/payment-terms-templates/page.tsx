@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MasterList } from "@/components/purchase/masters/MasterList";
+import { masterListPage } from "@/lib/purchase/masters/list-likes";
 import { purchaseCan } from "@/lib/purchase/access";
 import { parseMasterQuery } from "@/lib/purchase/masters/list-query";
 import { listPaymentTermsTemplates, PAYMENT_TERMS_TEMPLATE_LIST } from "@/lib/purchase/masters/templates/server";
@@ -12,9 +13,13 @@ export const dynamic = "force-dynamic";
 export default async function PaymentTermsTemplateListPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const gate = await purchasePageGate();
   const query = parseMasterQuery(await searchParams, PAYMENT_TERMS_TEMPLATE_LIST);
-  const page = await listPaymentTermsTemplates(query);
+  const page = await masterListPage("paymentTermsTemplates", query, gate.user!.email, listPaymentTermsTemplates);
   return (
     <MasterList
+      kind="paymentTermsTemplates"
+      viewer={gate.user!.email}
+      canLike={purchaseCan(gate.user, "like")}
+      canDelete={purchaseCan(gate.user, "masters")}
       title="Payment Terms Template"
       titleLabel="ID"
       rows={page.rows}

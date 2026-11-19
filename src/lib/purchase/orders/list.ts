@@ -52,6 +52,9 @@ export const LIST_FIELDS: readonly ListField[] = [
   { key: "modified_by", label: "Last Updated By", type: "link" },
   { key: "creation", label: "Created On", type: "datetime" },
   { key: "modified", label: "Last Updated On", type: "datetime" },
+  // Frappe's standard "Liked By" (_liked_by): the ♥ heading adds "Liked By like %<me>%". Answered from
+  // the likes table (like-rules.ts), not by list-where.ts.
+  { key: "_liked_by", label: "Liked By", type: "data" },
   { key: "item_code", label: "Item Code (Purchase Order Item)", type: "link", child: "items" },
   { key: "item_name", label: "Item Name (Purchase Order Item)", type: "data", child: "items" },
   { key: "material_request", label: "Material Request (Purchase Order Item)", type: "link", child: "items" },

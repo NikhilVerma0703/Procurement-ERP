@@ -3,12 +3,15 @@
 // The module gate ("attach"), then lib/purchase/orders/attachments.ts.
 // Answers { ok, error } as JSON.
 import { NextResponse, type NextRequest } from "next/server";
-import { addAttachment, MAX_ATTACHMENT_BYTES } from "@/lib/purchase/orders/attachments";
+import { addAttachment, ATTACHMENT_TOO_BIG, MAX_ATTACHMENT_BYTES } from "@/lib/purchase/orders/attachments";
+import { FORM_OVERHEAD_BYTES } from "@/lib/purchase/orders/attachment-limit";
 import { purchaseGate, purchaseRefusal } from "@/lib/purchase/server/gate";
 import { purchaseWrite } from "@/lib/purchase/server/write";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// As the Main ERP's Lab uploads route: storing a file of up to 4 MB in the database, on Vercel.
+export const maxDuration = 30;
 
 const answer = (status: number, body: Record<string, unknown>) => NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
 
@@ -17,10 +20,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!g.ok || !g.user) return answer(g.status, { ok: false, error: g.status === 401 ? purchaseRefusal(g) : "You are not permitted to do this." });
   const user = g.user;
   const { id } = await params;
-  // Refuse an oversized body before reading it. (Next.js cuts request bodies through middleware at
-  // 10 MB, so a larger upload could not be read whole anyway.)
+  // Refuse an oversized body before reading it (Vercel itself refuses a body near 4.5 MB). The form
+  // adds a little around the file, so the declared length may pass the limit by that much.
   const declared = Number(req.headers.get("content-length") ?? 0);
-  if (declared > MAX_ATTACHMENT_BYTES) return answer(413, { ok: false, error: "File size exceeded the maximum allowed size of 10.0 MB" });
+  if (declared > MAX_ATTACHMENT_BYTES + FORM_OVERHEAD_BYTES) return answer(413, { ok: false, error: ATTACHMENT_TOO_BIG });
   let form: FormData;
   try {
     form = await req.formData();
@@ -29,7 +32,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
   const file = form.get("file");
   if (!(file instanceof File)) return answer(400, { ok: false, error: "No file was sent." });
-  if (file.size > MAX_ATTACHMENT_BYTES) return answer(413, { ok: false, error: "File size exceeded the maximum allowed size of 10.0 MB" });
+  if (file.size > MAX_ATTACHMENT_BYTES) return answer(413, { ok: false, error: ATTACHMENT_TOO_BIG });
   const isPrivate = form.get("is_private") !== "0";
   const bytes = Buffer.from(await file.arrayBuffer());
   const w = await purchaseWrite(user, () => addAttachment(user, id, { name: file.name, bytes, isPrivate }));

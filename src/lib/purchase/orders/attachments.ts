@@ -18,8 +18,9 @@ import { deleteStoredPath, readStoredPath, writeStoredPath } from "../server/fil
 import { cleanFileName, withSuffix } from "./attachment-names";
 import type { ActionResult } from "./form-schema";
 
-/** Frappe's default largest upload. */
-export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+import { ATTACHMENT_TOO_BIG, MAX_ATTACHMENT_BYTES } from "./attachment-limit";
+
+export { ATTACHMENT_TOO_BIG, MAX_ATTACHMENT_BYTES } from "./attachment-limit";
 
 const escapeHtml = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 /** The URL as Frappe quoted it in the timeline (quote(file_url, safe="/:")). */
@@ -31,7 +32,7 @@ export async function addAttachment(
   file: { name: string; bytes: Buffer; isPrivate: boolean },
 ): Promise<ActionResult<{ id: string; fileName: string }>> {
   if (!file.bytes.length) return { ok: false, error: "The file is empty." };
-  if (file.bytes.length > MAX_ATTACHMENT_BYTES) return { ok: false, error: "File size exceeded the maximum allowed size of 10.0 MB" };
+  if (file.bytes.length > MAX_ATTACHMENT_BYTES) return { ok: false, error: ATTACHMENT_TOO_BIG };
   const order = await db.purchaseOrder.findUnique({ where: { id: orderId }, select: { id: true, number: true } });
   if (!order) return { ok: false, error: "Purchase Order not found" };
 

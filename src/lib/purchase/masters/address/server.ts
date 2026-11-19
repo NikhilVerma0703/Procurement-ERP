@@ -33,12 +33,13 @@ const ORDER: Record<string, (o: "asc" | "desc") => Prisma.PurchaseAddressOrderBy
 
 export async function listAddresses(q: MasterListQuery): Promise<ListPage> {
   const has = (s: string) => ({ contains: s, mode: "insensitive" as const });
-  const where: Prisma.PurchaseAddressWhereInput = {
+  const base: Prisma.PurchaseAddressWhereInput = {
     // The search covers the name and the doctype's search fields (country, state), and the party.
     ...(q.q ? { OR: [{ code: has(q.q) }, { addressTitle: has(q.q) }, { city: has(q.q) }, { state: has(q.q) }, { links: { some: { linkName: has(q.q) } } }] } : {}),
     ...(q.filters.address_type ? { addressType: q.filters.address_type } : {}),
     ...(q.filters.country ? { country: q.filters.country } : {}),
   };
+  const where: Prisma.PurchaseAddressWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
   const [rows, total] = await Promise.all([
     db.purchaseAddress.findMany({
       where,

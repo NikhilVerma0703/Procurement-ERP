@@ -38,6 +38,7 @@
 | Layouts | 11 Jinja Print Formats; default "PDF PO" | "PDF PO" (default), "Import PO", "PO print format", "Purchase Order 2025", "PURCHASE ORDER TEMPLATE" |
 | Drafts | Print (Print Settings "Allow Print for Draft") | Print |
 | Cancelled POs | "Not allowed to print cancelled documents" | The same message, title "Not Permitted" (HTTP 403) |
+| Several POs at once (the list's Actions → Print) | One PDF, `Purchase-Order.pdf`: each PO's sheet in turn (`download_multi_pdf`) | The same, from each PO's own sheet, joined with pdf-lib ([05](05-list-screen.md) §2) |
 | File name | The PO name, `/` → `-` | `PUR-ORD-25-26-02510.pdf` |
 | Figures | As stored | As stored. Nothing is recomputed: an approved PO prints what was approved. |
 | Paper | A4, 15 mm margins | The same |
@@ -140,6 +141,14 @@ npx tsx --conditions=react-server scripts/check-sheets.ts [--keep <dir>]
 - 01426 matches except the words its old PDF garbled.
 - One each in the four later layouts.
 - 02530 (a draft) was created after the backup, so it is not in the data.
+
+**Result (19-11-2026, on the 19-11 backup):** 17 of 17 match.
+- 02530, the draft created after the 16-11 backup, is now in the data.
+- Two POs were saved on the old site after the PDFs were captured: 02419 was received (now "To Bill"), and 02530 was
+  approved and received. Their sheets print the status as it is now, so only the status words differ ("Receive",
+  "Draft"). The check accepts exactly that for a PO saved after the capture, and nothing else.
+- Every PO created or saved since the 16-11 backup (18 new, 9 saved again) renders in all five layouts: 135 sheets,
+  0 failed.
 
 **Every PO, every layout (18-11-2026).** All 3,199 imported POs were rendered in all five layouts:
 - 15,825 sheets rendered and 0 failed.

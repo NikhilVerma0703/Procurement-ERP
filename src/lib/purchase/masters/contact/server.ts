@@ -34,10 +34,11 @@ export const contactIndicator = (c: { status: string | null }) =>
 
 export async function listContacts(q: MasterListQuery): Promise<ListPage> {
   const has = (s: string) => ({ contains: s, mode: "insensitive" as const });
-  const where: Prisma.PurchaseContactWhereInput = {
+  const base: Prisma.PurchaseContactWhereInput = {
     ...(q.q ? { OR: [{ code: has(q.q) }, { firstName: has(q.q) }, { lastName: has(q.q) }, { emailId: has(q.q) }, { companyName: has(q.q) }] } : {}),
     ...(q.filters.status ? { status: q.filters.status } : {}),
   };
+  const where: Prisma.PurchaseContactWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
   const [rows, total] = await Promise.all([
     db.purchaseContact.findMany({
       where,

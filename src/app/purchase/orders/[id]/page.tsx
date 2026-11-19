@@ -5,6 +5,7 @@ import { OrderFooter } from "@/components/purchase/activity/OrderFooter";
 import { OrderSidebar } from "@/components/purchase/activity/OrderSidebar";
 import { OrderForm } from "@/components/purchase/form/OrderForm";
 import { purchaseCan } from "@/lib/purchase/access";
+import { likesOf, NO_LIKES } from "@/lib/purchase/likes";
 import { loadOrderActivity } from "@/lib/purchase/orders/activity";
 import { formMasters, loadOrderDoc } from "@/lib/purchase/orders/form-load";
 import { PO_LAYOUTS } from "@/lib/purchase/pdf/layouts/index";
@@ -27,8 +28,8 @@ export default async function PurchaseOrderPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const doc = await loadOrderDoc(id);
   if (!doc) notFound();
-  const [masters, activity] = await Promise.all([formMasters(), loadOrderActivity(doc.id!)]);
   const user = gate.user!;
+  const [masters, activity, likes] = await Promise.all([formMasters(), loadOrderActivity(doc.id!), likesOf("orders", [doc.id!], user.email)]);
   const allowed = [
     ...allowedActions(gate.user, {
       docStatus: doc.docStatus,
@@ -57,6 +58,8 @@ export default async function PurchaseOrderPage({ params }: { params: Promise<{ 
             orderId={doc.id!}
             attachments={activity.attachments}
             commentCount={activity.commentCount}
+            likes={likes[doc.id!] ?? NO_LIKES}
+            canLike={purchaseCan(user, "like")}
             created={activity.created}
             edited={activity.edited}
             canAttach={purchaseCan(user, "attach")}

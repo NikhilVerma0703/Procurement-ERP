@@ -6,10 +6,10 @@
 //
 //   npx tsx --conditions=react-server scripts/check-drafts.ts [--only <number>,<number>] [--all]
 // --all re-checks submitted POs too (as Approve re-checks a draft).
-import { orderRecord } from "../src/lib/purchase/orders/load";
-import { orderFormValues } from "../src/lib/purchase/orders/record";
-import { prepareOrder } from "../src/lib/purchase/orders/save";
-import { db } from "../src/lib/purchase/server/db";
+import { orderRecord } from "@/lib/purchase/orders/load";
+import { orderFormValues } from "@/lib/purchase/orders/record";
+import { prepareOrder } from "@/lib/purchase/orders/save";
+import { db } from "@/lib/purchase/server/db";
 
 const args = process.argv.slice(2);
 const onlyAt = args.indexOf("--only");

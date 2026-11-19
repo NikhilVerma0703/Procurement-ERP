@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MasterList } from "@/components/purchase/masters/MasterList";
+import { masterListPage } from "@/lib/purchase/masters/list-likes";
 import { purchaseCan } from "@/lib/purchase/access";
 import { parseMasterQuery } from "@/lib/purchase/masters/list-query";
 import { listTerms, TERMS_LIST } from "@/lib/purchase/masters/templates/server";
@@ -13,9 +14,13 @@ export const dynamic = "force-dynamic";
 export default async function TermsListPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const gate = await purchasePageGate();
   const query = parseMasterQuery(await searchParams, TERMS_LIST);
-  const page = await listTerms(query);
+  const page = await masterListPage("terms", query, gate.user!.email, listTerms);
   return (
     <MasterList
+      kind="terms"
+      viewer={gate.user!.email}
+      canLike={purchaseCan(gate.user, "like")}
+      canDelete={purchaseCan(gate.user, "masters")}
       title="Terms and Conditions"
       titleLabel="Title"
       rows={page.rows}

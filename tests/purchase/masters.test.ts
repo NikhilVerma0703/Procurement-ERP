@@ -168,9 +168,13 @@ describe("master lists, links and access", () => {
 
   it("reads and writes a list's state in the address bar", () => {
     const q = parseMasterQuery({ q: " acme ", supplier_group: "Raw Material", sort: "name", order: "desc", limit: "100", other: "x" }, shape);
-    expect(q).toEqual({ q: "acme", filters: { supplier_group: "Raw Material" }, sort: "name", order: "desc", limit: 100 });
+    expect(q).toEqual({ q: "acme", filters: { supplier_group: "Raw Material" }, sort: "name", order: "desc", limit: 100, likedBy: "" });
     expect(masterQueryParams(q, shape).toString()).toBe("q=acme&supplier_group=Raw+Material&sort=name&order=desc&limit=100");
     expect(parseMasterQuery({ sort: "evil" }, shape)).toMatchObject({ sort: "modified", order: "asc", limit: 20 });
+    // The ♥ heading's filter rides in the address bar too ("Liked By like %<e-mail>%").
+    const liked = parseMasterQuery({ _liked_by: " a@example.com " }, shape);
+    expect(liked.likedBy).toBe("a@example.com");
+    expect(masterQueryParams(liked, shape).toString()).toBe("_liked_by=a%40example.com");
   });
 
   it("links a new address or contact to its party and returns only within the module", () => {

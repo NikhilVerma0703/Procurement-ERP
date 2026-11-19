@@ -59,6 +59,8 @@ only in this PC's database; remove it with `npm run users -- disable test.admin@
 | Figures | `₹ 189,125.68` (groups of three, 2 decimals unless the value has 3), dates `dd-mm-yyyy`, times in Asia/Kolkata. |
 | Comes back as you left it (filters and sort, per user) | Same: kept in the browser for each login. |
 | Clicking the status pill filters by it; clicking a row opens the PO | Same. The PO opens as a read-only summary until Step 6. |
+| ☐ before each row and ☐ Select All in the heading; shift-click ticks the rows in between | Same, added by owner decision 19-11-2026. While rows are ticked, the heading reads "N items selected" (ERPNext 14's words, "1 items selected" too) and **+ Add Purchase Order** gives way to **Actions** (below). |
+| ♡ before each row: red when you liked it, how many did beside it, who on hover. ♡ in the heading shows only what you liked | Same, added by owner decision 19-11-2026. The heading's heart adds the filter "Liked By like %you%", which the filter builder shows and edits like any other ("Liked By" is one of its fields, as in Frappe). Liking a PO writes "{name} Liked" on its timeline ([08](08-activity-and-email.md) §2). |
 
 **How ERPNext's filters are matched:**
 - Text ignores case.
@@ -74,6 +76,28 @@ sent to a colleague.
 - *Purchase Order Item:* each PO's rows.
 
 The old users' saved report views included item columns, hence the second sheet.
+
+**Actions on the ticked rows** (Frappe's list Actions menu), each PO through the same rule as on its own page:
+- **Approve, Reject** (above a divider, where Frappe put workflow actions): offered when every ticked PO is a draft
+  awaiting approval and you may approve. The POs are approved one at a time with the same checks as the form's
+  button, then the "Workflow Status" dialog lists the Successful and the Failed Transactions, each failure with its
+  reason. Approve sends the approval notifications as on one PO (when they are switched on). Frappe ran more than 20
+  in the background; here they go 20 a request, one request after another, with a count on the button ("40 of 120"),
+  up to its limit of 500, so each request stays inside Vercel's time limit ([10](10-merge-guide.md) §7). Delete goes
+  in turns of 20 too.
+- **Export:** the ticked POs as the same Excel file as ⋯ Export (Frappe opened its Data Export tool on them).
+- **Print:** "Print Documents" asks for the Print Format (default PDF PO), then saves one PDF, `Purchase-Order.pdf`,
+  every PO's sheet in the list's order (Frappe's `download_multi_pdf`). A cancelled PO stops it: "You selected Draft
+  or Cancelled documents" (drafts print, as the old Print Settings allowed). Frappe's dialog also asked for a Letter
+  Head and a Page Size: the layouts draw their own logo on A4, as in the print view ([07](07-po-sheet.md) §1). At
+  most 40 sheets a file ("You can only print upto 40 documents at a time", Frappe's words): one answer must stay under
+  Vercel's 4.5 MB, and a sheet is up to 93 KB ([10](10-merge-guide.md) §7). Print more in turns.
+- **Delete** (for the roles that may delete drafts): "Delete N items permanently?", then each PO through its own
+  Delete, newest number first and again for any refused while others went (Frappe's `delete_bulk`). A submitted PO is
+  refused with Frappe's message ("Purchase Order X: Submitted Record cannot be deleted. You must Cancel it first.").
+  Whatever was refused is listed afterwards.
+- **Not offered:** Assign To, Apply Assignment Rule and Add Tags. They need assignments and tags, which are not built
+  (never used on the old site, §4).
 
 ## 3. Side-by-side check
 
@@ -102,10 +126,11 @@ The production build (`npm run build`) succeeds.
 ## 4. Left out, and why
 
 **Never used on the old site:**
-- likes, Assigned To, tags, named saved filters: 0 of 3,199 POs, 0 saved filters;
+- Assigned To, tags, named saved filters: 0 of 3,199 POs, 0 saved filters;
 - the "assigned to" placeholder in each row.
 
-Leaving out what was never used is the plan's default (plan §5).
+Leaving out what was never used is the plan's default (plan §5). Likes were never used either (0 POs), but the owner
+asked for them on 19-11-2026 (§2).
 
 **Count:** shown exactly ("20 of 2,643"). ERPNext stopped counting at "1,000+" to save time; here the count is
 instant.
@@ -114,13 +139,15 @@ instant.
 Five accounts had saved a layout in it, sales support and stores among them. The list's Excel export gives the same
 columns, item rows included.
 
-**Selecting rows** (checkboxes, then bulk Edit / Delete / Print / Export of the selection): not added, by owner
-decision (17-11-2026). A PO is printed or changed from its own page, and the export covers the filtered list.
+**Selecting rows** (checkboxes, then the Actions menu): first left out by owner decision (17-11-2026), then added by
+the owner's decision of 19-11-2026 (§2). Frappe's bulk Edit is not on a PO list there either: it is hidden for a
+doctype with a workflow.
 
 ## 5. Decisions
 
 Both list extras the plan left to the owner (plan §5) were decided on 17-11-2026: no Report view, no row selection
-for bulk actions (§4).
+for bulk actions (§4). On 19-11-2026 the owner asked for the old list's checkboxes and hearts after all: row
+selection with the Actions menu, and likes (§2).
 
 ## 6. Next
 

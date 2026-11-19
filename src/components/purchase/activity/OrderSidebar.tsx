@@ -4,17 +4,22 @@
 //   * Attachments: "Attach File", then each file as a pill (a lock when it is
 //     private, its name opening it, × removing it after "Are you sure you want
 //     to delete the attachment?"); the newest 10, then "Show All";
-//   * the comment count (it takes you to the comment box);
+//   * the likes and the comment count, "♥ 0 · 💬 2" (form-sidebar-stats): the
+//     heart likes or unlikes the PO and writes "{name} Liked" on its timeline,
+//     on hover it names who liked it (added by owner decision 19-11-2026); the
+//     count takes you to the comment box;
 //   * who last edited the PO, and who created it.
 // Left out, as unused in 2.5 years (plan §5: kept out unless the owner says
-// otherwise): Assigned To (0 POs), Shared With, Tags (0), likes (0), Follow.
+// otherwise): Assigned To (0 POs), Shared With, Tags (0), Follow.
 import { Lock, MessageSquare, Paperclip, Plus, Unlock, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { removeAttachmentAction } from "@/app/purchase/orders/activity-actions";
 import { ConfirmDialog } from "@/components/purchase/form/Grid";
+import type { LikeInfo } from "@/lib/purchase/like-rules";
 import type { OrderAttachment } from "@/lib/purchase/orders/activity";
+import { LikeButton } from "../likes/LikeButton";
 import { AttachDialog } from "./AttachDialog";
 import { When } from "./bits";
 
@@ -27,6 +32,8 @@ export function OrderSidebar({
   orderId,
   attachments,
   commentCount,
+  likes,
+  canLike,
   created,
   edited,
   canAttach,
@@ -34,6 +41,8 @@ export function OrderSidebar({
   orderId: string;
   attachments: OrderAttachment[];
   commentCount: number;
+  likes: LikeInfo;
+  canLike: boolean;
   created: Person;
   edited: Person;
   canAttach: boolean;
@@ -96,9 +105,14 @@ export function OrderSidebar({
         </ul>
       </section>
 
-      <a href="#po-comment-box" className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-800" title="Comments">
-        <MessageSquare className="h-3.5 w-3.5" aria-hidden /> {commentCount}
-      </a>
+      <div className="flex items-center gap-1.5 text-gray-500">
+        {/* A like adds a line to the timeline below: refresh to show it. */}
+        <LikeButton kind="orders" id={orderId} likes={likes} canLike={canLike} showZero onChange={() => router.refresh()} />
+        <span aria-hidden>·</span>
+        <a href="#po-comment-box" className="inline-flex items-center gap-1 hover:text-gray-800" title="Comments">
+          <MessageSquare className="h-3.5 w-3.5" aria-hidden /> {commentCount}
+        </a>
+      </div>
 
       <hr className="border-gray-200" />
       <ul className="space-y-2 text-xs text-gray-500">

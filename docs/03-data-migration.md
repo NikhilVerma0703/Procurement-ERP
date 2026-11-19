@@ -14,6 +14,7 @@
 | Read | `dump.ts` | Streams the backup's `…-database.sql.gz` directly; no ERPNext needed. Only the tables the PO needs are read, filtered while reading. |
 | Map | `build.ts`, `convert.ts` | ERPNext rows → the new tables (`docs/02-data-model.md`). ERPNext names become foreign keys. Times are converted from the old site's Asia/Kolkata to UTC. Money stays exact. |
 | Load | `load.ts` | **One transaction:** empties the module's tables, then inserts everything in dependency order. Any failure rolls back, and the database is left exactly as it was. |
+| Likes | `build.ts` | Each record's `_liked_by` list (POs and the masters) becomes rows of `purchase_likes`, one per liker. The backup has none; the rows are there for the final backup. |
 | Files | `files.ts` | Copies the PO attachments and the letter-head logo out of the backup's file archives into the module's file store, the `purchase_files` table (a folder, `data/storage/purchase/files/`, until Step 9). |
 | Check | `reconcile.ts` | Compares the result with the backup and writes the report to `data/reports/`. |
 | Record | `run.ts` | Logs every run (backup file, SHA-256, counts, verdict) in `purchase_import_runs`. |
@@ -31,7 +32,14 @@
   - Payment-term names that ERPNext later renamed are kept beside the link.
 - **Every original row** is kept in `legacy` on documents and masters.
 - **Reload guard.** The import refuses to run if POs have already been raised in this system, because a reload would
-  wipe them. `--force` overrides this, deliberately.
+  wipe them. Since 19-11-2026 it also refuses when anything changed after the last import: a row added or removed in
+  any module table (a comment, a like, an upload, a deleted draft), or a PO or master saved after it. After go-live
+  that is what stops the old site's data being loaded over the team's work. `--force` overrides this, deliberately.
+- **Which database.** It prints `Database: <host>/<database>` first (never the user or password). It writes to a
+  database on another machine only when `--target <that host>` names it, because in the Main ERP the repo's `.env`
+  is production by convention (`lib/purchase/migrate/target.ts`).
+- **Read-only proof.** `npm run verify:erpnext` compares a loaded database with the backup without writing: every
+  count, money total, relation and spot check, and the stored files byte for byte (19-11-2026: 6 of 6 files, ✓).
 
 ## Result of the 16-11-2026 import
 
@@ -47,6 +55,21 @@
 | Relations | 0 placeholder suppliers or items. 548 suppliers and 3,822 items linked to their POs. All 33 amended POs linked to their originals. |
 | Spot checks | PUR-ORD/25-26/02510, 02486, 02512, 02263 (USD), 01426 (40 lines), 02015-1 (amended), 24-25/00001: field by field equal |
 | Files | 5 PO attachments + the logo restored |
+
+### Re-run on the 19-11-2026 backup: 3,217 POs
+
+The owner asked for every PO raised since 16-11 (3,217 on the old site that afternoon). With the owner's go-ahead the
+old site's Backups page took a new backup (⋯ › Download Files Backup, 19-11-2026 15:21:55), and its three files were
+downloaded into `data/erpnext-backup`. Then `npm run import:erpnext -- --force` (`--force` because the local copy held
+test POs): 40 s, every check matches (`data/reports/import-20261119-095918.md`).
+
+- **Rows:** POs **3,217**, lines **8,765**, tax rows **4,736**, cost overheads **377**, payment rows **3,237**,
+  suppliers **626**, items **7,342**, addresses **1,226**, contacts **375**, customers **422**, UOM conversions
+  **12,437**, item tax rows **5,443**, item variant attributes **7,637**, GST HSN codes **21,923**, timeline entries
+  **16,774**, attachments **5**, users **28**, likes **0**: each equal to the backup.
+- **Since 16-11:** 18 new POs, and 9 older ones saved again (approved, received).
+- **Files:** both file archives are byte for byte the 16-11 ones; no attachment was added or removed.
+- **Issues:** the same 26, word for word.
 
 ### The 26 issues noted, none of which loses data
 
@@ -65,7 +88,8 @@
    npm run import:erpnext -- --dry-run
    ```
    Check the issues listed in `data/reports/import-dry-run-…md`.
-3. Import (the newest backup is chosen automatically):
+3. Import (the newest backup is chosen automatically). On another machine's database (the production cut-over,
+   [10](10-merge-guide.md) §4) add `--target <its host>`:
    ```bash
    npm run import:erpnext
    ```
@@ -73,5 +97,7 @@
    - Exit code 0 means everything matches.
    - Exit code 2 means it imported with differences; the report names them.
    - Exit code 1 means nothing was changed.
+
+5. Prove it, read-only: `npm run verify:erpnext`.
 
 To browse the imported data: `npm run db:studio`.

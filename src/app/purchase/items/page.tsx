@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MasterList } from "@/components/purchase/masters/MasterList";
+import { masterListPage } from "@/lib/purchase/masters/list-likes";
 import { purchaseCan } from "@/lib/purchase/access";
 import { ITEM_LIST, itemGroupNames, listItems } from "@/lib/purchase/masters/item/server";
 import { parseMasterQuery } from "@/lib/purchase/masters/list-query";
@@ -14,9 +15,13 @@ export const dynamic = "force-dynamic";
 export default async function ItemListPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const gate = await purchasePageGate();
   const query = parseMasterQuery(await searchParams, ITEM_LIST);
-  const [page, groups] = await Promise.all([listItems(query), itemGroupNames()]);
+  const [page, groups] = await Promise.all([masterListPage("items", query, gate.user!.email, listItems), itemGroupNames()]);
   return (
     <MasterList
+      kind="items"
+      viewer={gate.user!.email}
+      canLike={purchaseCan(gate.user, "like")}
+      canDelete={purchaseCan(gate.user, "masters")}
       title="Item"
       titleLabel="Item Name"
       rows={page.rows}

@@ -449,7 +449,7 @@ function scheduleRows(d: OrderFormData, r: Ok, c: PurchaseOrderCalcResult, rows:
       ...kept(s, rows, KEEP_ROW),
       idx: i + 1,
       paymentTermName: s.paymentTerm,
-      paymentTermId: s.paymentTerm ? r.termBy.get(s.paymentTerm)!.id : null,
+      paymentTermId: s.paymentTerm ? (r.termBy.get(s.paymentTerm)?.id ?? null) : null,
       description: s.description,
       dueDate: day(s.dueDate)!,
       modeOfPayment: s.modeOfPayment,
@@ -517,6 +517,11 @@ export async function prepareOrder(values: unknown): Promise<{ ok: true; value: 
   if (Object.keys(r.errors).length) return { ok: false, error: Object.values(r.errors)[0], fieldErrors: r.errors };
   const resolved = r as Ok;
   let data = await withSchedule(withTaxCategories(parsed.data, resolved));
+  // set_payment_schedule can bring the template's own terms, which the values did not name: look them up
+  // too, so the schedule rows link to them (found 19-11-2026: a duplicated PO, its schedule left empty as
+  // Frappe's no_copy leaves it, failed to save when its template named its terms).
+  const unnamed = uniq(data.paymentSchedule.map((s) => s.paymentTerm)).filter((t) => !resolved.termBy.has(t));
+  if (unnamed.length) for (const t of await db.purchasePaymentTerm.findMany({ where: { code: { in: unnamed } } })) resolved.termBy.set(t.code, t);
   const masters = await engineMasters(resolved.company.defaultCurrency ?? "INR");
   const calc = calculatePurchaseOrder(engineInput(data, masters));
   // AccountsController.validate: validate_value("base_grand_total", ">=", 0).

@@ -1,5 +1,11 @@
 import { Toaster } from "sonner";
 
+// Every page of the module, and the server actions it runs (Save, Approve, the list's bulk actions,
+// Email with the sheet attached), gets the Main ERP's longest function time on Vercel. The bulk
+// actions also send a large selection in turns (orders/selection.ts, BULK_BATCH), so each request
+// stays far inside it.
+export const maxDuration = 60;
+
 /**
  * Purchase module shell.
  *

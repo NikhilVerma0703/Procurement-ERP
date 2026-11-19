@@ -10,7 +10,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { PrismaClient } from "@prisma/client";
-import { EXCEPTIONS, goldenCheck } from "../src/lib/purchase/calc/golden";
+import { EXCEPTIONS, goldenCheck } from "@/lib/purchase/calc/golden";
 
 const args = process.argv.slice(2);
 const valueOf = (flag: string) => {
@@ -73,7 +73,7 @@ goldenCheck(db, { only })
       lines.push("");
     }
 
-    const dir = resolve(__dirname, "..", "data", "reports");
+    const dir = resolve(process.cwd(), "data", "reports");
     mkdirSync(dir, { recursive: true });
     const stamp = new Date().toISOString().replace(/[-:]/g, "").replace("T", "-").slice(0, 15);
     const path = resolve(dir, `golden-${stamp}.md`);

@@ -10,20 +10,25 @@
 // its spaces and line breaks taken out ("1.2-" and "2.5MM" on two lines is
 // "1.2-2.5MM"), and ligature characters count as their letters ("ﬁ" is
 // "fi"). A word not found is a difference to explain. A cancelled PO must be
-// refused, as the old site refused it. Read-only.
+// refused, as the old site refused it. A PO saved on the old site after the
+// capture (a later backup) may differ only in the words of its status, which
+// the sheet prints (REMARKS, a draft's "Draft"); anything else is still a
+// difference. Read-only.
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { isPoLayout } from "../src/lib/purchase/pdf/layouts/index";
-import { renderOrderPdf } from "../src/lib/purchase/pdf/render";
-import { db } from "../src/lib/purchase/server/db";
+import { PO_STATUSES } from "@/lib/purchase/calc/status";
+import { isPoLayout } from "@/lib/purchase/pdf/layouts/index";
+import { renderOrderPdf } from "@/lib/purchase/pdf/render";
+import { db } from "@/lib/purchase/server/db";
 
 const ROOT = join(process.cwd(), "docs/reference/live-capture/pdfs");
 const keepAt = process.argv.indexOf("--keep");
 const outDir = keepAt >= 0 ? process.argv[keepAt + 1] : mkdtempSync(join(tmpdir(), "po-sheets-"));
 
 interface Entry {
+  captured_at?: string;
   file?: string;
   print_format?: string;
   purchase_order?: string;
@@ -58,8 +63,12 @@ const GARBLED: Record<string, string> = {
   "PUR-ORD/25-26/01426": "the old PDF drew each repeated heading over the items table",
 };
 
+/** The words of the statuses a sheet prints ("To Receive and Bill", "Draft" …). */
+const STATUS_WORDS = new Set<string>(PO_STATUSES.flatMap((s) => s.split(" ")));
+
 async function main() {
   const manifest = JSON.parse(readFileSync(join(ROOT, "manifest.json"), "utf8")) as Entry[];
+  const capturedAt = new Date(manifest.find((e) => e.captured_at)?.captured_at ?? "2026-11-16T00:00:00Z");
   let same = 0;
   let checked = 0;
   for (const e of manifest) {
@@ -69,7 +78,7 @@ async function main() {
       console.log(`- ${label}: layout not built`);
       continue;
     }
-    const o = await db.purchaseOrder.findUnique({ where: { number: e.purchase_order }, select: { id: true } });
+    const o = await db.purchaseOrder.findUnique({ where: { number: e.purchase_order }, select: { id: true, updatedAt: true, status: true } });
     if (!o) {
       console.log(`- ${label}: PO not in the imported data (made after the backup)`);
       continue;
@@ -97,6 +106,10 @@ async function main() {
       const ok = notIn(ours, ref).every((w) => /^(SNO|PRODUCT|DESCRIPTION)$/.test(w) || /^[\d.]+₹$/.test(w));
       if (ok) same++;
       console.log(`${ok ? "≈" : "✗"} ${label}: ${GARBLED[e.purchase_order]}; ${missing.length} garbled words of the old PDF not reproduced`);
+    } else if (o.updatedAt > capturedAt && [...missing, ...extra].every((w) => STATUS_WORDS.has(w))) {
+      // Saved on the old site after the capture: the sheet prints the PO's status as it is now.
+      same++;
+      console.log(`≈ ${label}: saved on the old site after the capture (${o.updatedAt.toISOString().slice(0, 10)}); only its status words differ: ${JSON.stringify(missing)} → ${JSON.stringify(extra)}`);
     } else {
       console.log(`✗ ${label}: ${words(ref).length} words; not printed ${JSON.stringify(missing.slice(0, 20))}; printed only here ${JSON.stringify(extra.slice(0, 20))}`);
     }

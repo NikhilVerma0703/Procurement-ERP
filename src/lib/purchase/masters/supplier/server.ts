@@ -41,10 +41,11 @@ const ORDER: Record<string, (o: "asc" | "desc") => Prisma.PurchaseSupplierOrderB
 };
 
 export async function listSuppliers(q: MasterListQuery): Promise<ListPage> {
-  const where: Prisma.PurchaseSupplierWhereInput = {
+  const base: Prisma.PurchaseSupplierWhereInput = {
     ...(q.q ? { OR: [{ code: { contains: q.q, mode: "insensitive" } }, { supplierName: { contains: q.q, mode: "insensitive" } }] } : {}),
     ...(q.filters.supplier_group ? { supplierGroup: { code: q.filters.supplier_group } } : {}),
   };
+  const where: Prisma.PurchaseSupplierWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
   const [rows, total] = await Promise.all([
     db.purchaseSupplier.findMany({
       where,

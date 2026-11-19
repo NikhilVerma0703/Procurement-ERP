@@ -6,19 +6,12 @@
 // refused with the old site's message.
 import { NextResponse, type NextRequest } from "next/server";
 import { DEFAULT_PO_LAYOUT, isPoLayout } from "@/lib/purchase/pdf/layouts/index";
+import { refusalPage as refusal } from "@/lib/purchase/pdf/refusal";
 import { renderOrderPdf } from "@/lib/purchase/pdf/render";
 import { purchaseGate, purchaseRefusal } from "@/lib/purchase/server/gate";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const escape = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
-
-/** Frappe's refusal page: a title and the message. */
-function refusal(status: number, title: string, message: string) {
-  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${escape(title)}</title></head><body style="font-family:system-ui,sans-serif;padding:48px;color:#1f2937"><h1 style="font-size:20px;margin:0 0 8px">${escape(title)}</h1><p style="margin:0">${escape(message)}</p></body></html>`;
-  return new NextResponse(html, { status, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
-}
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const gate = await purchaseGate("view");

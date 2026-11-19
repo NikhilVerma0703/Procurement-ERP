@@ -43,13 +43,14 @@ const ORDER: Record<string, (o: "asc" | "desc") => Prisma.PurchaseItemOrderByWit
 export async function listItems(q: MasterListQuery): Promise<ListPage> {
   const has = (s: string) => ({ contains: s, mode: "insensitive" as const });
   const yes = (k: string) => (q.filters[k] === "Yes" ? true : q.filters[k] === "No" ? false : undefined);
-  const where: Prisma.PurchaseItemWhereInput = {
+  const base: Prisma.PurchaseItemWhereInput = {
     ...(q.q ? { OR: [{ code: has(q.q) }, { itemName: has(q.q) }] } : {}),
     ...(q.filters.item_group ? { itemGroup: { code: q.filters.item_group } } : {}),
     ...(yes("has_variants") !== undefined ? { hasVariants: yes("has_variants") } : {}),
     ...(yes("disabled") !== undefined ? { disabled: yes("disabled") } : {}),
     ...(q.filters.variant_of ? { variantOf: { code: q.filters.variant_of } } : {}),
   };
+  const where: Prisma.PurchaseItemWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
   const today = siteToday();
   const [rows, total] = await Promise.all([
     db.purchaseItem.findMany({

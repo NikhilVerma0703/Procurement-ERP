@@ -20,7 +20,8 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
-const root = resolve(__dirname, "..");
+// The repository root: npm runs scripts there (here, and from scripts/purchase/ in the Main ERP).
+const root = process.cwd();
 const schema = readFileSync(join(root, "prisma/schema.prisma"), "utf8").replace(/\r\n/g, "\n");
 const lines = schema.split("\n");
 
@@ -134,9 +135,10 @@ const sql = `-- NNNN: the Purchase module — the PURCHASE value on "Role", and 
 --   the ERP's users and roles replace.
 --
 -- THE MODULE DOES NOT START EMPTY. After this script the module's importer loads the old site's
--- final backup into these tables (\`npm run import:erpnext\` with DATABASE_URL on this database:
--- 3,199 POs and every master they point at), then reconciles the counts and recomputes every PO
--- (docs/10-merge-guide.md, "Cut-over"). Nothing here inserts data.
+-- final backup into these tables, once (\`npm run import:erpnext -- --target <this database's host>\`:
+-- 3,217 POs on the 19-11-2026 backup, and every master they point at), reconciles the counts, and
+-- \`npm run verify:erpnext\` proves the result read-only (docs/10-merge-guide.md, "Cut-over"). The
+-- importer refuses a second load once anything is done in the module. Nothing here inserts data.
 --
 -- CONVENTIONS. Prisma's own DDL for the block (\`prisma migrate diff --from-empty\`), so
 -- \`prisma migrate diff\` against the ERP's schema stays clean once this has run: TEXT ids
