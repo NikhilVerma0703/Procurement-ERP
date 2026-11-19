@@ -5,6 +5,7 @@ import "server-only";
 import { defaultEmailSubject } from "../notify/compose";
 import { pdfFileName } from "../pdf/sheet";
 import { orderPdfPath } from "../routes";
+import { loginNames } from "../server/current-user";
 import { db } from "../server/db";
 import { buildTimeline, type TimelineItem } from "./timeline";
 
@@ -35,10 +36,10 @@ export async function namesOf(emails: Iterable<string>): Promise<(email: string)
   const list = [...new Set([...emails].filter(Boolean).map((e) => e.toLowerCase()))];
   const [users, logins] = await Promise.all([
     db.purchaseUser.findMany({ where: { email: { in: list, mode: "insensitive" } }, select: { email: true, fullName: true, firstName: true, lastName: true } }),
-    db.purchaseLogin.findMany({ where: { email: { in: list } }, select: { email: true, name: true } }),
+    // Today's logins through the seam (server/current-user.ts), so the merge rewires one place.
+    loginNames(list),
   ]);
-  const names = new Map<string, string>();
-  for (const l of logins) names.set(l.email.toLowerCase(), l.name);
+  const names = new Map<string, string>(logins);
   for (const u of users) {
     const full = u.fullName || [u.firstName, u.lastName].filter(Boolean).join(" ");
     if (full) names.set(u.email.toLowerCase(), full);

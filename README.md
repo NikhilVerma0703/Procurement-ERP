@@ -24,6 +24,9 @@ Forms use react-hook-form + zod, notices use sonner, and icons come from lucide-
 - **Step 8** (notifications, attachments, timeline, masters screens) ✅ — part 1 (timeline, comments, attachments,
   email, notifications) [docs/08-activity-and-email.md](docs/08-activity-and-email.md); part 2 (Supplier, Item,
   Address, Contact, the tax, payment-terms and T&C templates) [docs/09-masters.md](docs/09-masters.md)
+- **Step 9** (acceptance and merge readiness) in progress — the merge guide and the module's SQL script for the Main
+  ERP [docs/10-merge-guide.md](docs/10-merge-guide.md); the acceptance checklist, sign-off and open decisions
+  [docs/11-acceptance.md](docs/11-acceptance.md). Waiting on the acceptance run with the Procurement Manager.
 
 ## Commands
 
@@ -38,6 +41,7 @@ npm run db:studio    # browse the database
 npm run import:erpnext             # import the old site's data from data/erpnext-backup (newest backup)
 npm run import:erpnext -- --dry-run # read and map only; nothing written
 npm run golden                     # check the calculation engine against every imported PO
+npm run merge:sql                  # rebuild merge/ (the SQL script and schema block for the Main ERP)
 npm run users -- list              # standalone sign-in accounts (add / password / role / disable)
 ```
 

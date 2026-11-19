@@ -18,6 +18,7 @@
     "db:studio": "prisma studio",
     "import:erpnext": "tsx scripts/import-erpnext.ts",
     "golden": "tsx scripts/golden-check.ts",
+    "merge:sql": "tsx scripts/make-merge-sql.ts",
     "users": "tsx scripts/purchase-users.ts"
   },
   "dependencies": {

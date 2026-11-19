@@ -30,3 +30,13 @@ export const currentUser = cache(async (): Promise<PurchaseUser | null> => {
   if (!login?.active) return null;
   return { id: login.id, email: login.email, name: login.name, role: login.role };
 });
+
+/**
+ * The names of the logins with these emails (lower-cased email → name), for the history lines
+ * that name who did what. STANDALONE: this app's logins. AT THE MERGE: the Main ERP's users.
+ */
+export async function loginNames(emails: string[]): Promise<Map<string, string>> {
+  if (!emails.length) return new Map();
+  const logins = await db.purchaseLogin.findMany({ where: { email: { in: emails, mode: "insensitive" } }, select: { email: true, name: true } });
+  return new Map(logins.map((l) => [l.email.toLowerCase(), l.name]));
+}

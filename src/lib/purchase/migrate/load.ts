@@ -43,12 +43,25 @@ export function moduleTables(): string[] {
     .filter((t) => t.startsWith("purchase_") && !KEEP_ON_RELOAD.includes(t));
 }
 
-/** Refuses a reload that would wipe POs raised in this system (they have no `legacy`). */
+/**
+ * Refuses a reload that would wipe records made in this system: POs raised here, and suppliers,
+ * items, addresses and contacts made on the masters screens (Step 8). Imported rows carry
+ * `legacy`; these do not.
+ */
 export async function assertReloadAllowed(db: PrismaClient, force: boolean): Promise<void> {
-  const native = await db.purchaseOrder.count({ where: { legacy: { equals: Prisma.DbNull } } });
-  if (native > 0 && !force) {
+  const none = { legacy: { equals: Prisma.DbNull } };
+  const [orders, suppliers, items, addresses, contacts] = await Promise.all([
+    db.purchaseOrder.count({ where: none }),
+    db.purchaseSupplier.count({ where: none }),
+    db.purchaseItem.count({ where: none }),
+    db.purchaseAddress.count({ where: none }),
+    db.purchaseContact.count({ where: none }),
+  ]);
+  const made = [[orders, "purchase order"], [suppliers, "supplier"], [items, "item"], [addresses, "address"], [contacts, "contact"]] as const;
+  const found = made.filter(([n]) => n > 0).map(([n, what]) => `${n} ${what}${n === 1 ? "" : what.endsWith("s") ? "es" : "s"}`);
+  if (found.length && !force) {
     throw new Error(
-      `${native} purchase order(s) were raised in this system after the import. Reloading the old site's data ` +
+      `${found.join(", ")} were made in this system after the import. Reloading the old site's data ` +
         `would delete them. Nothing was changed. (Run with --force only if that is really intended.)`,
     );
   }
@@ -64,7 +77,9 @@ export async function loadAll(db: PrismaClient, built: Built, log: (msg: string)
   await db.$transaction(
     async (tx) => {
       const tables = moduleTables().map((t) => `"${t}"`).join(", ");
-      await tx.$executeRawUnsafe(`TRUNCATE ${tables} CASCADE`);
+      // All the module's tables in one statement, and no CASCADE: inside the Main ERP, a table of
+      // another module pointing at one of these makes Postgres refuse rather than empty it too.
+      await tx.$executeRawUnsafe(`TRUNCATE ${tables}`);
       for (const key of INSERT_ORDER) {
         const data = built[key] as unknown[];
         const delegate = (tx as unknown as Record<string, CreateMany>)[DELEGATE[key]];

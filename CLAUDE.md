@@ -16,6 +16,7 @@ npm run typecheck
 npm test           # vitest over tests/purchase/**
 npm run db:migrate # prisma migrate dev (local Postgres only)
 npm run golden     # engine vs all imported POs (local data)
+npm run merge:sql  # rebuild merge/ for the Main ERP after any schema change
 ```
 
 ## Rules of this codebase
@@ -66,4 +67,6 @@ npm run golden     # engine vs all imported POs (local data)
 | PO sheet PDF: layouts, printed values, measurements, check | `docs/07-po-sheet.md` (code: `src/lib/purchase/pdf/`; check: `scripts/check-sheets.ts`) |
 | PO timeline, comments, attachments, email, notifications | `docs/08-activity-and-email.md` (code: `src/lib/purchase/{orders,notify}/`, `src/components/purchase/activity/`) |
 | Masters screens (Supplier, Item, Address, Contact, templates): rules, quick entry, variants, rename | `docs/09-masters.md` (code: `src/lib/purchase/masters/`, `src/components/purchase/masters/`) |
+| Merge into the Main ERP: what moves, seams, SQL script, cut-over | `docs/10-merge-guide.md` (files: `merge/`, made by `scripts/make-merge-sql.ts`) |
+| Acceptance checklist, sign-off, every open owner decision | `docs/11-acceptance.md` |
 | Main ERP conventions | `C:\Users\User\Desktop\Pacific-ERP-payment-tracking` (read `origin/main` through git; don't modify that checkout) |
