@@ -94,3 +94,29 @@ export function timeAgoMini(d: Date | string | null | undefined, now: Date = new
   if (days < 365) return `${Math.floor(days / 30)} M`;
   return `${Math.floor(days / 365)} y`;
 }
+
+/**
+ * Frappe's prettyDate(date) / comment_when, the form timeline's wording: "just now", "5 minutes ago",
+ * "yesterday", "1 week ago", "3 months ago", "2 years ago" (frappe/utils/pretty_date.js, v14).
+ */
+export function timeAgo(d: Date | string | null | undefined, now: Date = new Date()): string {
+  if (!d) return "";
+  const diff = (now.getTime() - new Date(d).getTime()) / 1000;
+  const days = Math.floor(diff / 86400);
+  if (Number.isNaN(days) || days < 0) return "";
+  if (days === 0) {
+    if (diff < 60) return "just now";
+    if (diff < 120) return "1 minute ago";
+    if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+    if (diff < 7200) return "1 hour ago";
+    return `${Math.floor(diff / 3600)} hours ago`;
+  }
+  if (days === 1) return "yesterday";
+  if (days < 7) return `${days} days ago`;
+  if (days < 14) return "1 week ago";
+  if (days < 31) return `${Math.floor(days / 7)} weeks ago`;
+  if (days < 62) return "1 month ago";
+  if (days < 365) return `${Math.floor(days / 30)} months ago`;
+  if (days < 730) return "1 year ago";
+  return `${Math.floor(days / 365)} years ago`;
+}

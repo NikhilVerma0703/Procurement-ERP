@@ -334,15 +334,19 @@ model PurchaseNamingSeries {
 // ---------------------------------------------------------------------------
 
 model PurchaseTaxTemplate {
-  id            String  @id @default(cuid())
+  id            String   @id @default(cuid())
   /// e.g. "Input GST In-state - PESPL".
-  code          String  @unique
+  code          String   @unique
   title         String
-  isDefault     Boolean @default(false) @map("is_default")
-  disabled      Boolean @default(false)
-  companyId     String? @map("company_id")
-  taxCategoryId String? @map("tax_category_id")
+  isDefault     Boolean  @default(false) @map("is_default")
+  disabled      Boolean  @default(false)
+  companyId     String?  @map("company_id")
+  taxCategoryId String?  @map("tax_category_id")
   legacy        Json?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdBy     String?  @map("created_by")
+  updatedBy     String?  @map("updated_by")
 
   company     PurchaseCompany?         @relation(fields: [companyId], references: [id])
   taxCategory PurchaseTaxCategory?     @relation(fields: [taxCategoryId], references: [id])
@@ -425,6 +429,10 @@ model PurchasePaymentTerm {
   discountValidityBasedOn String?  @map("discount_validity_based_on")
   discountValidity        Int      @default(0) @map("discount_validity")
   legacy                  Json?
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+  createdBy               String?  @map("created_by")
+  updatedBy               String?  @map("updated_by")
 
   templateRows   PurchasePaymentTermsTemplateRow[]
   orderSchedules PurchaseOrderPaymentSchedule[]
@@ -433,10 +441,14 @@ model PurchasePaymentTerm {
 }
 
 model PurchasePaymentTermsTemplate {
-  id                                 String  @id @default(cuid())
-  code                               String  @unique
-  allocatePaymentBasedOnPaymentTerms Boolean @default(false) @map("allocate_payment_based_on_payment_terms")
+  id                                 String   @id @default(cuid())
+  code                               String   @unique
+  allocatePaymentBasedOnPaymentTerms Boolean  @default(false) @map("allocate_payment_based_on_payment_terms")
   legacy                             Json?
+  createdAt                          DateTime @default(now()) @map("created_at")
+  updatedAt                          DateTime @updatedAt @map("updated_at")
+  createdBy                          String?  @map("created_by")
+  updatedBy                          String?  @map("updated_by")
 
   rows      PurchasePaymentTermsTemplateRow[]
   orders    PurchaseOrder[]
@@ -474,14 +486,18 @@ model PurchasePaymentTermsTemplateRow {
 
 /// "Terms" (ERPNext Terms and Conditions) — used as the PO's delivery term.
 model PurchaseTermsTemplate {
-  id       String  @id @default(cuid())
+  id        String   @id @default(cuid())
   /// e.g. "2 WEEKS", "10-15 Days".
-  code     String  @unique
-  title    String
-  terms    String? @db.Text
-  disabled Boolean @default(false)
-  buying   Boolean @default(true)
-  selling  Boolean @default(true)
+  code      String   @unique
+  title     String
+  terms     String?  @db.Text
+  disabled  Boolean  @default(false)
+  buying    Boolean  @default(true)
+  selling   Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdBy String?  @map("created_by")
+  updatedBy String?  @map("updated_by")
 
   orders PurchaseOrder[]
 
@@ -603,6 +619,8 @@ model PurchaseAddress {
   legacy               Json?
   createdAt            DateTime @default(now()) @map("created_at")
   updatedAt            DateTime @updatedAt @map("updated_at")
+  createdBy            String?  @map("created_by")
+  updatedBy            String?  @map("updated_by")
 
   links            PurchaseAddressLink[]
   suppliersPrimary PurchaseSupplier[]    @relation("SupplierPrimaryAddress")
@@ -657,6 +675,8 @@ model PurchaseContact {
   legacy           Json?
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
+  createdBy        String?  @map("created_by")
+  updatedBy        String?  @map("updated_by")
 
   emails            PurchaseContactEmail[]
   phones            PurchaseContactPhone[]
@@ -774,14 +794,15 @@ model PurchaseItem {
   createdBy          String?   @map("created_by")
   updatedBy          String?   @map("updated_by")
 
-  itemGroup      PurchaseItemGroup?          @relation(fields: [itemGroupId], references: [id])
-  stockUomRef    PurchaseUom                 @relation("ItemStockUom", fields: [stockUom], references: [name])
-  purchaseUomRef PurchaseUom?                @relation("ItemPurchaseUom", fields: [purchaseUom], references: [name])
-  variantOf      PurchaseItem?               @relation("ItemVariants", fields: [variantOfId], references: [id])
-  variants       PurchaseItem[]              @relation("ItemVariants")
+  itemGroup      PurchaseItemGroup?             @relation(fields: [itemGroupId], references: [id])
+  stockUomRef    PurchaseUom                    @relation("ItemStockUom", fields: [stockUom], references: [name])
+  purchaseUomRef PurchaseUom?                   @relation("ItemPurchaseUom", fields: [purchaseUom], references: [name])
+  variantOf      PurchaseItem?                  @relation("ItemVariants", fields: [variantOfId], references: [id])
+  variants       PurchaseItem[]                 @relation("ItemVariants")
   uomConversions PurchaseItemUomConversion[]
   defaults       PurchaseItemDefault[]
   taxes          PurchaseItemTax[]
+  attributes     PurchaseItemVariantAttribute[]
   orderItems     PurchaseOrderItem[]
   costOverheads  PurchaseOrderCostOverhead[]
 
@@ -846,6 +867,66 @@ model PurchaseItemTax {
 
   @@index([itemId])
   @@map("purchase_item_taxes")
+}
+
+/// India Compliance's GST HSN Code list: what an Item's HSN/SAC must be one of.
+model PurchaseHsnCode {
+  code        String  @id
+  description String? @db.Text
+
+  @@map("purchase_hsn_codes")
+}
+
+/// Item Attribute: what a template's variants differ in (Finish, Thickness, …), with the values
+/// it takes and their abbreviations, which make a variant's code and name.
+model PurchaseItemAttribute {
+  id            String  @id @default(cuid())
+  code          String  @unique
+  numericValues Boolean @default(false) @map("numeric_values")
+  fromRange     Decimal @default(0) @map("from_range") @db.Decimal(21, 9)
+  toRange       Decimal @default(0) @map("to_range") @db.Decimal(21, 9)
+  increment     Decimal @default(0) @db.Decimal(21, 9)
+  legacy        Json?
+
+  values PurchaseItemAttributeValue[]
+
+  @@map("purchase_item_attributes")
+}
+
+model PurchaseItemAttributeValue {
+  id             String  @id @default(cuid())
+  erpnextName    String? @unique @map("erpnext_name")
+  attributeId    String  @map("attribute_id")
+  idx            Int     @default(1)
+  attributeValue String  @map("attribute_value")
+  abbr           String
+
+  attribute PurchaseItemAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+
+  @@index([attributeId])
+  @@map("purchase_item_attribute_values")
+}
+
+/// An item's Variant Attributes: on a template, the attributes its variants differ in; on a
+/// variant, the value of each. The attribute is kept by name, as ERPNext linked it.
+model PurchaseItemVariantAttribute {
+  id             String  @id @default(cuid())
+  erpnextName    String? @unique @map("erpnext_name")
+  itemId         String  @map("item_id")
+  idx            Int     @default(1)
+  attribute      String
+  attributeValue String? @map("attribute_value")
+  /// The template's code, on a variant's rows.
+  variantOf      String? @map("variant_of")
+  numericValues  Boolean @default(false) @map("numeric_values")
+  fromRange      Decimal @default(0) @map("from_range") @db.Decimal(21, 9)
+  toRange        Decimal @default(0) @map("to_range") @db.Decimal(21, 9)
+  increment      Decimal @default(0) @db.Decimal(21, 9)
+
+  item PurchaseItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+  @@map("purchase_item_variant_attributes")
 }
 
 // ---------------------------------------------------------------------------

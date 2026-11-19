@@ -1,8 +1,9 @@
 "use client";
 
-// The Terms and Conditions editor. The old form used Quill; the terms POs
-// carry are simple (paragraphs, bold, lists), so this keeps to those: a
-// paragraph style, bold / italic / underline / strike, lists, quote, clear.
+// The rich-text editor of the Terms and Conditions, the comment box and the
+// New Email message. The old form used Quill; what POs carry is simple
+// (paragraphs, bold, lists), so this keeps to those: a paragraph style,
+// bold / italic / underline / strike, lists, quote, clear.
 // What it produces is cleaned again by the server (lib/purchase/html.ts)
 // before it is stored or printed.
 import { Bold, Italic, List, ListOrdered, Quote, RemoveFormatting, Strikethrough, Underline } from "lucide-react";
@@ -21,7 +22,23 @@ const TOOLS = [
   { cmd: "removeFormat", icon: RemoveFormatting, label: "Clear formatting" },
 ] as const;
 
-export function HtmlEditor({ value, onChange, disabled }: { value: string; onChange: (html: string) => void; disabled?: boolean }) {
+export function HtmlEditor({
+  value,
+  onChange,
+  disabled,
+  label = "Terms and Conditions",
+  minHeightClass = "min-h-[220px]",
+  onSubmit,
+}: {
+  value: string;
+  onChange: (html: string) => void;
+  disabled?: boolean;
+  /** What a screen reader calls the box. */
+  label?: string;
+  minHeightClass?: string;
+  /** Ctrl+Enter (⌘+Enter) sends it, as the old comment box did. */
+  onSubmit?: () => void;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const clean = sanitizeHtml(value ?? "");
 
@@ -67,13 +84,19 @@ export function HtmlEditor({ value, onChange, disabled }: { value: string; onCha
       </div>
       <div
         ref={ref}
-        className={cn("po-html min-h-[220px] px-3 py-2 text-gray-800 outline-none")}
+        className={cn("po-html px-3 py-2 text-gray-800 outline-none", minHeightClass)}
         contentEditable
         suppressContentEditableWarning
         role="textbox"
         aria-multiline="true"
-        aria-label="Terms and Conditions"
+        aria-label={label}
         onInput={(e) => onChange((e.target as HTMLDivElement).innerHTML)}
+        onKeyDown={(e) => {
+          if (onSubmit && e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            onSubmit();
+          }
+        }}
         onPaste={(e) => {
           // Paste as cleaned HTML, never another page's scripts or styles.
           const html = e.clipboardData.getData("text/html");

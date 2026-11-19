@@ -10,6 +10,7 @@
 // Results: { value, description } — the name, and what Frappe showed under it.
 import { NextResponse, type NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
+import { COUNTRIES } from "@/lib/purchase/countries";
 import { siteToday } from "@/lib/purchase/format";
 import { purchaseGate, purchaseRefusal } from "@/lib/purchase/server/gate";
 import { db } from "@/lib/purchase/server/db";
@@ -24,6 +25,7 @@ interface Args {
   supplier: string | null;
   customer: string | null;
   item: string | null;
+  attribute: string | null;
 }
 
 const has = (q: string) => ({ contains: q, mode: "insensitive" as const });
@@ -56,6 +58,55 @@ const LOOKUPS: Record<string, (a: Args) => Promise<Row[]>> = {
 
   company: async ({ q }) =>
     (await db.purchaseCompany.findMany({ where: q ? { code: has(q) } : {}, select: { code: true }, take: LIMIT })).map((c) => ({ value: c.code })),
+
+  // The masters' own links (Step 8).
+  country: async ({ q }) => COUNTRIES.filter((c) => !q || c.toLowerCase().includes(q.toLowerCase())).slice(0, 60).map((c) => ({ value: c })),
+
+  supplierGroup: async ({ q }) =>
+    (await db.purchaseSupplierGroup.findMany({ where: q ? { code: has(q) } : {}, select: { code: true }, take: 60 })).map((g) => ({ value: g.code })),
+
+  itemGroup: async ({ q }) =>
+    (await db.purchaseItemGroup.findMany({ where: q ? { code: has(q) } : {}, select: { code: true }, take: 60, orderBy: { code: "asc" } })).map((g) => ({ value: g.code })),
+
+  // India Compliance: "You can search code by the description of the category."
+  hsnCode: async ({ q }) =>
+    (await db.purchaseHsnCode.findMany({
+      where: q ? { OR: [{ code: { startsWith: q } }, { description: has(q) }] } : {},
+      select: { code: true, description: true },
+      take: 60,
+      orderBy: { code: "asc" },
+    })).map((h) => ({ value: h.code, description: h.description ? h.description.slice(0, 120) : null })),
+
+  itemAttribute: async ({ q }) =>
+    (await db.purchaseItemAttribute.findMany({ where: q ? { code: has(q) } : {}, select: { code: true }, take: 60 })).map((a) => ({ value: a.code })),
+
+  // An attribute's values (the variant's Attribute Value), with the abbreviation its code takes.
+  itemAttributeValue: async ({ q, attribute }) =>
+    attribute
+      ? (await db.purchaseItemAttributeValue.findMany({
+          where: { attribute: { code: attribute }, ...(q ? { attributeValue: has(q) } : {}) },
+          select: { attributeValue: true, abbr: true },
+          orderBy: { idx: "asc" },
+          take: 60,
+        })).map((v) => ({ value: v.attributeValue, description: v.abbr !== v.attributeValue ? v.abbr : null }))
+      : [],
+
+  // A contact's User Id: the old site's users.
+  user: async ({ q }) =>
+    (await db.purchaseUser.findMany({
+      where: { enabled: true, ...(q ? { OR: [{ email: has(q) }, { fullName: has(q) }] } : {}) },
+      select: { email: true, fullName: true },
+      take: 60,
+    })).map((u) => ({ value: u.email, description: u.fullName })),
+
+  // No Tax Withholding Category table came across (one supplier ever had one): the values in use.
+  taxWithholdingCategory: async ({ q }) =>
+    (await db.purchaseSupplier.findMany({
+      where: { taxWithholdingCategory: q ? has(q) : { not: null } },
+      select: { taxWithholdingCategory: true },
+      distinct: ["taxWithholdingCategory"],
+      take: 60,
+    })).filter((s) => s.taxWithholdingCategory).map((s) => ({ value: s.taxWithholdingCategory! })),
 
   item: async ({ q }) => {
     const today = new Date(`${siteToday()}T00:00:00Z`);
@@ -216,6 +267,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unknown lookup" }, { status: 400 });
   }
   const q = (sp.get("q") ?? "").trim().slice(0, 140);
-  const rows = await lookup({ q, company: sp.get("company"), supplier: sp.get("supplier"), customer: sp.get("customer"), item: sp.get("item") });
+  const rows = await lookup({ q, company: sp.get("company"), supplier: sp.get("supplier"), customer: sp.get("customer"), item: sp.get("item"), attribute: sp.get("attribute") });
   return NextResponse.json({ results: rank(rows, q) });
 }

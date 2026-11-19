@@ -6,7 +6,9 @@
 // which re-validate and recompute on the server and answer
 // { ok, error, fieldErrors }.
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import type { PurchaseAction } from "@/lib/purchase/access";
+import { notifyOrder } from "@/lib/purchase/notify/outbox";
 import type { ActionResult } from "@/lib/purchase/orders/form-schema";
 import { saveOrder, type SaveRequest } from "@/lib/purchase/orders/save";
 import {
@@ -32,8 +34,20 @@ function refresh(id?: string) {
 }
 
 export async function saveOrderAction(req: SaveRequest): Promise<ActionResult<{ id: string; number: string }>> {
-  const r = await gated("save", (u) => saveOrder(u, req));
-  if (r.ok) refresh(r.value.id);
+  let actor = "";
+  const r = await gated("save", (u) => {
+    actor = u.email;
+    return saveOrder(u, req);
+  });
+  if (r.ok) {
+    refresh(r.value.id);
+    // The old site's "Is Save" notification: a PO saved for the first time (lib/purchase/notify).
+    // After the answer, so mail never slows or undoes the save.
+    if (!req.id) {
+      const id = r.value.id;
+      after(() => notifyOrder("New", id, actor));
+    }
+  }
   return r;
 }
 
@@ -44,7 +58,18 @@ const run = (action: PurchaseAction, fn: (u: PurchaseUser) => Promise<ActionResu
   });
 
 export async function approveOrderAction(req: ActionRequest) {
-  return run("approve", (u) => submitOrder(u, req, "approve"), req.id);
+  let actor = "";
+  const r = await run(
+    "approve",
+    (u) => {
+      actor = u.email;
+      return submitOrder(u, req, "approve");
+    },
+    req.id,
+  );
+  // The old site's two approval notifications ("Is Submit", "Purchase order approved").
+  if (r.ok) after(() => notifyOrder("Submit", req.id, actor));
+  return r;
 }
 
 export async function rejectOrderAction(req: ActionRequest) {

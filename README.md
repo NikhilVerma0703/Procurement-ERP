@@ -20,7 +20,10 @@ Forms use react-hook-form + zod, notices use sonner, and icons come from lucide-
 - **Step 4** (calculation, GST and status engine) ✅ — [docs/04-calculation-engine.md](docs/04-calculation-engine.md)
 - **Step 5** (PO list screen, standalone sign-in) ✅ — [docs/05-list-screen.md](docs/05-list-screen.md)
 - **Step 6** (PO form: save, approve/reject, cancel, amend, duplicate, close/hold, Update Items) ✅ — [docs/06-po-form.md](docs/06-po-form.md)
-- **Step 7** (the PDF PO sheet) is next
+- **Step 7** (the PO sheet PDF: "PDF PO" and the four other layouts with reference PDFs) ✅ — [docs/07-po-sheet.md](docs/07-po-sheet.md)
+- **Step 8** (notifications, attachments, timeline, masters screens) ✅ — part 1 (timeline, comments, attachments,
+  email, notifications) [docs/08-activity-and-email.md](docs/08-activity-and-email.md); part 2 (Supplier, Item,
+  Address, Contact, the tax, payment-terms and T&C templates) [docs/09-masters.md](docs/09-masters.md)
 
 ## Commands
 
@@ -65,7 +68,8 @@ src/components/standalone/ STANDALONE ONLY: the app's sidebar
 prisma/schema.prisma       Purchase* models → purchase_* tables (Step 2 onward)
 scripts/analysis/          Python helpers used for the first export and setup extraction
 docs/                      plan, reference material (below)
-scripts/                   import-erpnext.ts, golden-check.ts (read data/; reports to data/reports/), purchase-users.ts
+scripts/                   import-erpnext.ts, golden-check.ts (read data/; reports to data/reports/), purchase-users.ts,
+                           check-drafts.ts (stored drafts vs the save rules), check-sheets.ts (PO sheets vs the old PDFs)
 data/                      company data — NOT in git (below)
 stopgap/                   TEMPORARY: the old ERPNext running on this PC until this ERP is live (stopgap/README.md)
 ```

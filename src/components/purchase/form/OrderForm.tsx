@@ -15,9 +15,10 @@
 //     (Frappe's remove_empty_rows), and shows refused fields in red; the
 //     server re-validates and recomputes everything (CLAUDE.md).
 // Ctrl+S saves, as in Frappe; leaving with unsaved changes asks first.
-import { ChevronDown, Loader2, MoreHorizontal } from "lucide-react";
+import { ChevronDown, Loader2, MoreHorizontal, Printer } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import {
   approveOrderAction, cancelOrderAction, closeOrderAction, deleteOrderAction, holdOrderAction, rejectOrderAction,
@@ -28,7 +29,8 @@ import { timeAgoMini } from "@/lib/purchase/format";
 import type { FormMasters, OrderDoc } from "@/lib/purchase/orders/form-load";
 import { fieldErrorsOf, orderFormSchema, type ActionResult } from "@/lib/purchase/orders/form-schema";
 import type { PoAction } from "@/lib/purchase/orders/workflow";
-import { orderNewPath, orderPath, PURCHASE_PATHS } from "@/lib/purchase/routes";
+import { orderNewPath, orderPath, orderPrintPath, PURCHASE_PATHS } from "@/lib/purchase/routes";
+import { useCompose } from "../activity/compose";
 import { usePopover } from "../ui/usePopover";
 import { FormContext, useFormState, type FormCtx } from "./context";
 import { DetailsTab } from "./DetailsTab";
@@ -55,7 +57,26 @@ const PILL = {
   gray: "bg-gray-100 text-gray-700",
 } as const;
 
-export function OrderForm({ doc, masters, allowed: allowedList, userEmail }: { doc: OrderDoc; masters: FormMasters; allowed: PoAction[]; userEmail: string }) {
+export function OrderForm({
+  doc,
+  masters,
+  allowed: allowedList,
+  userEmail,
+  sidebar,
+  footer,
+  canEmail = false,
+}: {
+  doc: OrderDoc;
+  masters: FormMasters;
+  allowed: PoAction[];
+  userEmail: string;
+  /** A saved PO's sidebar (attachments, who created and edited it). */
+  sidebar?: ReactNode;
+  /** A saved PO's comment box and timeline, below the tabs. */
+  footer?: ReactNode;
+  /** May this user email the PO (New Email)? */
+  canEmail?: boolean;
+}) {
   const allowed = useMemo(() => new Set(allowedList), [allowedList]);
   const f = useFormState(doc, masters, allowed);
   const t = useTriggers(f);
@@ -136,18 +157,25 @@ export function OrderForm({ doc, masters, allowed: allowedList, userEmail }: { d
     }
   }, [router, showErrors]);
 
-  // Ctrl+S saves (or updates), as in Frappe.
+  // New Email, from the ⋯ menu or Ctrl+E: a saved PO that is not cancelled, for a user who may email.
+  const compose = useCompose();
+  const openEmail = canEmail && compose && !isNew && doc.docStatus !== "Cancelled" ? () => compose.open() : null;
+
+  // Ctrl+S saves (or updates), Ctrl+E opens New Email, as in Frappe.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
         e.preventDefault();
         if (f.editable && (isNew || f.dirty)) void save();
         else if (f.updatable && f.dirty) void update();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "e" && openEmail) {
+        e.preventDefault();
+        openEmail();
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [f.editable, f.updatable, f.dirty, isNew, save, update]);
+  }, [f.editable, f.updatable, f.dirty, isNew, save, update, openEmail]);
 
   // Leaving with unsaved changes asks first.
   useEffect(() => {
@@ -213,12 +241,16 @@ export function OrderForm({ doc, masters, allowed: allowedList, userEmail }: { d
             onDelete={() => setConfirm({ message: `Permanently delete ${doc.number}?`, yes: "Yes", run: () => act("delete", () => deleteOrderAction(req()), "Deleted", () => router.push(PURCHASE_PATHS.orders)) })}
             onReload={() => router.refresh()}
             onNew={() => router.push(PURCHASE_PATHS.orderNew)}
+            onEmail={openEmail ?? undefined}
             onUpdateItems={() => setUpdatingItems(true)}
           />
         </div>
       </div>
 
-      <div className="po-card">
+      {/* The old form's layout: the sidebar on the left, the tabs and, below them, the comments and
+          timeline. On a narrow screen they stack: tabs, sidebar, comments. */}
+      <div className={cn(sidebar && "grid gap-x-6 lg:grid-cols-[13rem_minmax(0,1fr)]")}>
+      <div className={cn("po-card", sidebar && "min-w-0 lg:col-start-2 lg:row-start-1")}>
         <div className="flex gap-1 overflow-x-auto border-b border-gray-200 px-3 sm:px-4" role="tablist">
           {tabs.map(([key, label]) => (
             <button
@@ -240,8 +272,11 @@ export function OrderForm({ doc, masters, allowed: allowedList, userEmail }: { d
         <div hidden={tab !== "more"}><MoreInfoTab /></div>
         {!isNew && <div hidden={tab !== "connections"}><ConnectionsTab /></div>}
       </div>
+      {sidebar && <aside className="mt-4 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:mt-0" aria-label="Sidebar">{sidebar}</aside>}
+      {footer && <div className="min-w-0 lg:col-start-2 lg:row-start-2">{footer}</div>}
+      </div>
 
-      {!isNew && (
+      {!isNew && !footer && (
         <p className="mt-4 px-1 text-xs text-gray-500">
           {doc.updatedBy && doc.updatedAt && (
             <span>
@@ -299,6 +334,8 @@ function Buttons(p: {
   onDelete: () => void;
   onReload: () => void;
   onNew: () => void;
+  /** Opens New Email (absent when the user may not email). */
+  onEmail?: () => void;
   onUpdateItems: () => void;
 }) {
   const { f, isNew, busy } = p;
@@ -315,6 +352,8 @@ function Buttons(p: {
       ].filter(Boolean) as { label: string; run: () => void }[])
     : [];
   const more = [
+    // Frappe's menu: Email (Ctrl+E) for a saved PO that is not cancelled.
+    !isNew && p.onEmail && doc.docStatus !== "Cancelled" && { label: "Email", run: p.onEmail },
     !isNew && a.has("duplicate") && { label: "Duplicate", run: p.onDuplicate },
     !isNew && a.has("delete") && { label: "Delete", run: p.onDelete, danger: true },
     !isNew && { label: "Reload", run: p.onReload },
@@ -329,6 +368,11 @@ function Buttons(p: {
         </button>
       )}
       {status.length > 0 && !f.dirty && <Menu label="Status" items={status} disabled={Boolean(busy)} />}
+      {!isNew && doc.id && (
+        <Link href={orderPrintPath(doc.id)} className="po-btn-secondary px-2.5" aria-label="Print" title="Print">
+          <Printer className="h-4 w-4" />
+        </Link>
+      )}
       {more.length > 0 && <Menu icon items={more} disabled={Boolean(busy)} />}
       {doc.docStatus === "Submitted" && a.has("cancel") && !f.dirty && (
         <button type="button" className="po-btn-secondary" disabled={Boolean(busy)} onClick={p.onCancel}>

@@ -33,9 +33,9 @@ npm run golden     # engine vs all imported POs (local data)
   - The server action re-validates with the same zod schema and **recomputes every total, tax and status itself**.
     It never stores the browser's numbers.
   - It writes in one transaction and returns `{ ok, error, fieldErrors }`.
-- **Seams:** `src/lib/purchase/server/{db,current-user,gate,page,write,audit}.ts`
+- **Seams:** `src/lib/purchase/server/{db,current-user,gate,page,write,audit,files,mail}.ts`
   and a pure `src/lib/purchase/access.ts`. At the merge they are rewired to the Main ERP's `currentUser()`, View-as
-  guard and action_log. Nothing else in the module may reach past them: every page starts with
+  guard, action_log, file storage and mailer. Nothing else in the module may reach past them: every page starts with
   `purchasePageGate()`, every API route and server action with `purchaseGate(action)`, all queries use `server/db`.
 - **Behave like the original.** Labels, field order, tabs, buttons, statuses and number formats follow the old
   ERPNext screens (`docs/reference/`). Do not add features the original lacked. Do not drop ones it had without
@@ -63,4 +63,7 @@ npm run golden     # engine vs all imported POs (local data)
 | Live UI details | `docs/reference/live-capture/ui-notes.md` (+ local `screens/`, `pdfs/`) |
 | Calculation rules, old-site defects, golden check | `docs/04-calculation-engine.md` (code: `src/lib/purchase/calc/`) |
 | PO form: save, workflow, GST checks, fetches, history | `docs/06-po-form.md` (code: `src/lib/purchase/orders/`, `src/components/purchase/form/`) |
+| PO sheet PDF: layouts, printed values, measurements, check | `docs/07-po-sheet.md` (code: `src/lib/purchase/pdf/`; check: `scripts/check-sheets.ts`) |
+| PO timeline, comments, attachments, email, notifications | `docs/08-activity-and-email.md` (code: `src/lib/purchase/{orders,notify}/`, `src/components/purchase/activity/`) |
+| Masters screens (Supplier, Item, Address, Contact, templates): rules, quick entry, variants, rename | `docs/09-masters.md` (code: `src/lib/purchase/masters/`, `src/components/purchase/masters/`) |
 | Main ERP conventions | `C:\Users\User\Desktop\Pacific-ERP-payment-tracking` (read `origin/main` through git; don't modify that checkout) |

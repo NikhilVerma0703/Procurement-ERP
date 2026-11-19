@@ -50,13 +50,15 @@ export function Field({ label, required, error, children, description, className
 
 const invalid = (error?: string) => (error ? "border-red-400 bg-red-50/40 focus:border-red-400 focus:ring-red-100" : "");
 
-export function TextInput({ value, onChange, disabled, error, placeholder, onBlur }: {
+export function TextInput({ value, onChange, disabled, error, placeholder, onBlur, list }: {
   value: string | null | undefined;
   onChange: (v: string) => void;
   disabled?: boolean;
   error?: string;
   placeholder?: string;
   onBlur?: () => void;
+  /** The id of a <datalist> of suggestions (an Autocomplete field). */
+  list?: string;
 }) {
   const name = useFieldName();
   return (
@@ -68,6 +70,8 @@ export function TextInput({ value, onChange, disabled, error, placeholder, onBlu
       disabled={disabled}
       placeholder={placeholder}
       aria-invalid={error ? true : undefined}
+      list={list}
+      autoComplete={list ? "off" : undefined}
       onChange={(e) => onChange(e.target.value)}
       onBlur={onBlur}
     />
@@ -244,9 +248,11 @@ export function SelectInput<T extends string>({ value, onChange, options, disabl
 
 export function CheckInput({ label, checked, onChange, disabled }: { label: ReactNode; checked: boolean | undefined; onChange: (v: boolean) => void; disabled?: boolean }) {
   const id = useId();
+  // In a grid cell there is no label beside the box: it takes the column's name ("Is Primary (row 1)").
+  const cell = useFieldName();
   return (
     <label htmlFor={id} className={cn("flex items-center gap-2 py-1 text-[13px] text-gray-700", disabled ? "cursor-default" : "cursor-pointer")}>
-      <input id={id} type="checkbox" className="h-3.5 w-3.5 rounded border-gray-300 accent-gray-800" checked={Boolean(checked)} disabled={disabled} onChange={(e) => onChange(e.target.checked)} />
+      <input id={id} type="checkbox" aria-label={label ? undefined : cell.label} className="h-3.5 w-3.5 rounded border-gray-300 accent-gray-800" checked={Boolean(checked)} disabled={disabled} onChange={(e) => onChange(e.target.checked)} />
       {label}
     </label>
   );

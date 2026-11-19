@@ -33,6 +33,14 @@ export const PURCHASE_ACTIONS = [
   "approve",
   /** After approval: cancel, close, hold, resume, and update the fields that may change then. */
   "manage",
+  /** Comment on a PO, and edit or delete one's own comments (ERPNext asked only to read the PO). */
+  "comment",
+  /** Attach files to a PO and remove them, whatever its state (as the old form's sidebar allowed). */
+  "attach",
+  /** Email a PO from its timeline (New Email), its sheet attached. */
+  "email",
+  /** Create and edit the masters a PO links to: suppliers, items, addresses, contacts, templates. */
+  "masters",
 ] as const;
 
 export type PurchaseAction = (typeof PURCHASE_ACTIONS)[number];
@@ -47,6 +55,12 @@ export const PURCHASE_ACTORS: Record<PurchaseAction, readonly PurchaseTier[]> = 
   save: ["PURCHASE", "ADMIN"],
   approve: ["APPROVER", "ADMIN"],
   manage: ["APPROVER", "ADMIN"],
+  comment: ["PURCHASE", "APPROVER", "ADMIN"],
+  attach: ["PURCHASE", "APPROVER", "ADMIN"],
+  email: ["PURCHASE", "APPROVER", "ADMIN"],
+  // The people who raise POs keep the records they need (ERPNext: Purchase Master Manager, Item
+  // Manager); approvers see them.
+  masters: ["PURCHASE", "ADMIN"],
 };
 
 /** May this user do this? An action nobody defined fails closed, a prototype key included. */

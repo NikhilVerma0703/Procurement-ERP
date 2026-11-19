@@ -10,27 +10,12 @@
 // about accounts missing from an Item Tax Template. GST Settings had overseas
 // transactions enabled, so that refusal never applied. Pure.
 import type { PurchaseOrderCalcResult } from "../calc/index";
+import { GSTIN_FORMATS } from "../gstin";
 import type { OrderFormData } from "./form-schema";
 import { PLACES_OF_SUPPLY } from "./options";
 
 /** Rounding allowance on an Actual GST row's per-item amounts (ALLOWED_TAX_DIFFERENCE). */
 const ALLOWED_TAX_DIFFERENCE = 1;
-
-// gst_india/constants: GSTIN formats by GST Category.
-const NORMAL = "^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z1-9ABD-J]{1}[0-9A-Z]{1}$";
-const GOVT_DEPTID = "^[0-9]{2}[A-Z]{4}[0-9]{5}[A-Z]{1}[0-9]{1}[Z]{1}[0-9]{1}$";
-const REGISTERED = new RegExp(`${NORMAL}|${GOVT_DEPTID}`);
-const OVERSEAS = /^[0-9]{4}[A-Z]{3}[0-9]{5}[N][R][0-9A-Z]{1}$|^[9][9][0-9]{2}[A-Z]{3}[0-9]{5}[O][S][0-9A-Z]{1}$/;
-const GSTIN_FORMATS: Record<string, RegExp> = {
-  "Registered Regular": REGISTERED,
-  "Registered Composition": REGISTERED,
-  SEZ: REGISTERED,
-  Overseas: OVERSEAS,
-  "Deemed Export": REGISTERED,
-  "UIN Holders": /^[0-9]{4}[A-Z]{3}[0-9]{5}[UO]{1}[N][A-Z0-9]{1}$/,
-  "Tax Deductor": /^[0-9]{2}[A-Z]{4}[A-Z0-9]{1}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[D][0-9A-Z]$/,
-  "Tax Collector": /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[C]{1}[0-9A-Z]{1}$/,
-};
 
 export interface GstContext {
   companyGstin: string | null;

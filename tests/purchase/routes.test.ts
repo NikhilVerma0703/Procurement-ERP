@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { PURCHASE_API_PATHS, PURCHASE_API_ROOT, PURCHASE_NAV, PURCHASE_PATHS, PURCHASE_ROOT, orderPath } from "@/lib/purchase/routes";
+import {
+  PURCHASE_API_PATHS, PURCHASE_API_ROOT, PURCHASE_NAV, PURCHASE_PATHS, PURCHASE_ROOT, orderPath, orderPdfPath, orderPrintPath,
+} from "@/lib/purchase/routes";
 
 // The module's paths are the merge boundary: everything the Main ERP takes
 // over must live under /purchase (pages) and /api/purchase (APIs).
@@ -13,6 +15,15 @@ describe("purchase routes", () => {
       expect(path.startsWith(`${PURCHASE_API_ROOT}/`)).toBe(true);
     }
     expect(orderPath("po_x/1")).toBe("/purchase/orders/po_x%2F1");
+  });
+
+  it("puts a PO's print view under its page and its PDF under the module's API", () => {
+    expect(orderPrintPath("po_1")).toBe("/purchase/orders/po_1/print");
+    expect(orderPdfPath("po_1")).toBe("/api/purchase/orders/po_1/pdf");
+    expect(orderPdfPath("po_1", { format: "PURCHASE ORDER TEMPLATE", download: true })).toBe(
+      "/api/purchase/orders/po_1/pdf?format=PURCHASE+ORDER+TEMPLATE&download=1",
+    );
+    expect(orderPdfPath("po_x/1", { format: "PDF PO" }).startsWith(`${PURCHASE_API_ROOT}/orders/po_x%2F1/pdf?`)).toBe(true);
   });
 
   it("builds the sidebar only from known module paths, once each", () => {

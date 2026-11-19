@@ -67,6 +67,12 @@ export const SOURCE_TABLES: readonly TableSpec[] = [
   { table: "tabUOM Conversion Detail", where: parentIs("Item") },
   { table: "tabItem Default", where: parentIs("Item") },
   { table: "tabItem Tax", where: parentIs("Item") },
+  // The Item screen's variants (Step 8): attributes, their values, and each item's attribute rows.
+  { table: "tabItem Attribute" },
+  { table: "tabItem Attribute Value", where: parentIs("Item Attribute") },
+  { table: "tabItem Variant Attribute", where: parentIs("Item") },
+  // India Compliance's HSN/SAC list, which an item's HSN/SAC links to.
+  { table: "tabGST HSN Code", columns: ["name", "hsn_code", "description"] },
   { table: "tabPurchase Order" },
   { table: "tabPurchase Order Item", where: parentIs(PO) },
   { table: "tabServices Items", where: parentIs(PO) },
@@ -144,6 +150,10 @@ export interface Built {
   itemUomConversions: Prisma.PurchaseItemUomConversionCreateManyInput[];
   itemDefaults: Prisma.PurchaseItemDefaultCreateManyInput[];
   itemTaxes: Prisma.PurchaseItemTaxCreateManyInput[];
+  itemAttributes: Prisma.PurchaseItemAttributeCreateManyInput[];
+  itemAttributeValues: Prisma.PurchaseItemAttributeValueCreateManyInput[];
+  itemVariantAttributes: Prisma.PurchaseItemVariantAttributeCreateManyInput[];
+  hsnCodes: Prisma.PurchaseHsnCodeCreateManyInput[];
   orders: Prisma.PurchaseOrderCreateManyInput[];
   orderItems: Prisma.PurchaseOrderItemCreateManyInput[];
   orderTaxes: Prisma.PurchaseOrderTaxCreateManyInput[];
@@ -165,6 +175,7 @@ export const INSERT_ORDER = [
   "itemTaxTemplateRates", "paymentTerms", "paymentTermsTemplates", "paymentTermsTemplateRows", "termsTemplates",
   "supplierGroups", "addresses", "contacts", "contactEmails", "contactPhones", "customers", "suppliers",
   "addressLinks", "contactLinks", "itemGroups", "items", "itemUomConversions", "itemDefaults", "itemTaxes",
+  "itemAttributes", "itemAttributeValues", "itemVariantAttributes", "hsnCodes",
   "orders", "orderItems", "orderTaxes", "orderCostOverheads", "orderPaymentSchedules", "orderLinks",
   "orderEvents", "attachments", "users",
 ] as const satisfies readonly (keyof Built)[];
@@ -195,6 +206,7 @@ export function build(tables: Map<string, DumpTable>): Built {
     return id ?? null;
   };
   const stamps = (r: Row) => ({ createdAt: localDateTime(r.creation) ?? undefined, updatedAt: localDateTime(r.modified) ?? undefined });
+  const byOf = (r: Row) => ({ createdBy: text(r.owner), updatedBy: text(r.modified_by) });
   /** A child row whose parent (or required link) is not in the backup cannot be stored: say so. */
   const keep = (ok: boolean, why: string) => {
     if (!ok) issues.push(why);
@@ -301,6 +313,7 @@ export function build(tables: Map<string, DumpTable>): Built {
   out.taxTemplates = rows("tabPurchase Taxes and Charges Template").map((r) => ({
     id: taxTemplateIds.get(r.name!)!, code: r.name!, title: r.title ?? r.name!, isDefault: bool(r.is_default), disabled: bool(r.disabled),
     companyId: opt(companyIds, r.company, `Tax template ${r.name}`), taxCategoryId: opt(taxCategoryIds, r.tax_category, `Tax template ${r.name}`), legacy: legacyOf(r),
+    ...stamps(r), ...byOf(r),
   }));
   const taxRows = rows("tabPurchase Taxes and Charges");
   out.taxTemplateRows = taxRows
@@ -335,11 +348,12 @@ export function build(tables: Map<string, DumpTable>): Built {
     discountValidityBasedOn: text(r.discount_validity_based_on), discountValidity: int(r.discount_validity),
   });
   out.paymentTerms = rows("tabPayment Term").map((r) => ({
-    id: paymentTermIds.get(r.name!)!, code: r.name!, invoicePortion: decOrNull(r.invoice_portion), ...termFields(r), legacy: legacyOf(r),
+    id: paymentTermIds.get(r.name!)!, code: r.name!, invoicePortion: decOrNull(r.invoice_portion), ...termFields(r), legacy: legacyOf(r), ...stamps(r), ...byOf(r),
   }));
   const paymentTermsTemplateIds = idMap("tabPayment Terms Template", "ptt2");
   out.paymentTermsTemplates = rows("tabPayment Terms Template").map((r) => ({
     id: paymentTermsTemplateIds.get(r.name!)!, code: r.name!, allocatePaymentBasedOnPaymentTerms: bool(r.allocate_payment_based_on_payment_terms), legacy: legacyOf(r),
+    ...stamps(r), ...byOf(r),
   }));
   out.paymentTermsTemplateRows = rows("tabPayment Terms Template Detail")
     .filter((r) => keep(paymentTermsTemplateIds.has(r.parent!), `Payment terms template row ${r.name}: its template "${r.parent}" is not in the backup — orphan row not imported`))
@@ -352,6 +366,7 @@ export function build(tables: Map<string, DumpTable>): Built {
   const termsIds = idMap("tabTerms and Conditions", "tnc");
   out.termsTemplates = rows("tabTerms and Conditions").map((r) => ({
     id: termsIds.get(r.name!)!, code: r.name!, title: r.title ?? r.name!, terms: text(r.terms), disabled: bool(r.disabled), buying: bool(r.buying), selling: bool(r.selling),
+    ...stamps(r), ...byOf(r),
   }));
 
   // Parties -----------------------------------------------------------------
@@ -367,7 +382,7 @@ export function build(tables: Map<string, DumpTable>): Built {
       state: text(r.state), country: req(r, "country", where), pincode: text(r.pincode), emailId: text(r.email_id), phone: text(r.phone), fax: text(r.fax),
       isPrimaryAddress: bool(r.is_primary_address), isShippingAddress: bool(r.is_shipping_address), isYourCompanyAddress: bool(r.is_your_company_address),
       disabled: bool(r.disabled), taxCategory: text(r.tax_category), gstin: text(r.gstin), gstState: text(r.gst_state), gstStateNumber: text(r.gst_state_number),
-      gstCategory: text(r.gst_category), legacy: legacyOf(r), ...stamps(r),
+      gstCategory: text(r.gst_category), legacy: legacyOf(r), ...stamps(r), ...byOf(r),
     };
   });
 
@@ -376,7 +391,7 @@ export function build(tables: Map<string, DumpTable>): Built {
     id: contactIds.get(r.name!)!, code: r.name!, salutation: text(r.salutation), firstName: text(r.first_name) ?? r.name!, middleName: text(r.middle_name),
     lastName: text(r.last_name), designation: text(r.designation), gender: text(r.gender), emailId: text(r.email_id), phone: text(r.phone), mobileNo: text(r.mobile_no),
     companyName: text(r.company_name), status: text(r.status), isPrimaryContact: bool(r.is_primary_contact), isBillingContact: bool(r.is_billing_contact),
-    userEmail: text(r.user), legacy: legacyOf(r), ...stamps(r),
+    userEmail: text(r.user), legacy: legacyOf(r), ...stamps(r), ...byOf(r),
   }));
   out.contactEmails = rows("tabContact Email").filter((r) => keep(contactIds.has(r.parent!), `Contact email ${r.name}: its contact "${r.parent}" is not in the backup — not imported`)).map((r) => ({
     id: importId("cte", r.name!), erpnextName: r.name!, contactId: contactIds.get(r.parent!)!, idx: int(r.idx), emailId: r.email_id ?? "", isPrimary: bool(r.is_primary),
@@ -469,6 +484,26 @@ export function build(tables: Map<string, DumpTable>): Built {
     taxCategoryId: opt(taxCategoryIds, r.tax_category, `Item ${r.parent} tax row ${r.idx}`), validFrom: dateOnly(r.valid_from),
     minimumNetRate: dec(r.minimum_net_rate), maximumNetRate: dec(r.maximum_net_rate),
   }));
+
+  const attributeIds = idMap("tabItem Attribute", "iat");
+  out.itemAttributes = rows("tabItem Attribute").map((r) => ({
+    id: attributeIds.get(r.name!)!, code: r.name!, numericValues: bool(r.numeric_values), fromRange: dec(r.from_range), toRange: dec(r.to_range),
+    increment: dec(r.increment), legacy: legacyOf(r),
+  }));
+  out.itemAttributeValues = rows("tabItem Attribute Value")
+    .filter((r) => keep(attributeIds.has(r.parent!), `Item attribute value ${r.name}: its attribute "${r.parent}" is not in the backup — not imported`))
+    .map((r) => ({
+      id: importId("iav", r.name!), erpnextName: r.name!, attributeId: attributeIds.get(r.parent!)!, idx: int(r.idx),
+      attributeValue: r.attribute_value ?? "", abbr: r.abbr ?? "",
+    }));
+  out.itemVariantAttributes = rows("tabItem Variant Attribute")
+    .filter((r) => keep(itemIds.has(r.parent!), `Item variant attribute ${r.name}: its item "${r.parent}" is not in the backup — not imported`))
+    .map((r) => ({
+      id: importId("iva", r.name!), erpnextName: r.name!, itemId: itemIds.get(r.parent!)!, idx: int(r.idx), attribute: r.attribute ?? "",
+      attributeValue: text(r.attribute_value), variantOf: text(r.variant_of), numericValues: bool(r.numeric_values), fromRange: dec(r.from_range),
+      toRange: dec(r.to_range), increment: dec(r.increment),
+    }));
+  out.hsnCodes = rows("tabGST HSN Code").map((r) => ({ code: r.hsn_code ?? r.name!, description: text(r.description) }));
 
   // Purchase Orders -----------------------------------------------------------
   const poRows = [...rows("tabPurchase Order")].sort((a, b) => (a.creation ?? "").localeCompare(b.creation ?? ""));

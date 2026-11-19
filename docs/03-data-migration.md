@@ -41,7 +41,7 @@
 
 | Check | Result |
 |---|---|
-| Rows | POs **3,199**, lines **8,709**, tax rows **4,707**, cost overheads **373**, payment rows **3,219**, suppliers **625**, items **7,331**, addresses **1,225**, contacts **375**, customers **422**, UOM conversions **12,425**, item tax rows **5,443**, timeline entries **16,672**, attachments **5**, users **28**: each equal to the backup |
+| Rows | POs **3,199**, lines **8,709**, tax rows **4,707**, cost overheads **373**, payment rows **3,219**, suppliers **625**, items **7,331**, addresses **1,225**, contacts **375**, customers **422**, UOM conversions **12,425**, item tax rows **5,443**, item variant attributes **7,637** and GST HSN codes **21,923** (added for the masters screens, Step 8), timeline entries **16,672**, attachments **5**, users **28**: each equal to the backup |
 | Money (exact) | Grand totals: INR 3,371,577,288.245 · USD 5,764,769.283 · EUR 4,107,038.771 · JPY 210,000. Base grand total, net totals, taxes, rounded totals, quantities and line amounts are all equal to the backup. |
 | Per PO | 0 POs with a missing or extra line or tax row. Every PO's lines add up to its total. |
 | Relations | 0 placeholder suppliers or items. 548 suppliers and 3,822 items linked to their POs. All 33 amended POs linked to their originals. |

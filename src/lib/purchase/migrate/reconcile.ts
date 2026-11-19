@@ -90,6 +90,8 @@ export async function reconcile(
     ["Customers", "customers", src("tabCustomer").length, () => db.purchaseCustomer.count(), () => db.purchaseCustomer.count()],
     ["Item UOM conversions", "itemUomConversions", src("tabUOM Conversion Detail").length, () => db.purchaseItemUomConversion.count(), () => db.purchaseItemUomConversion.count()],
     ["Item tax rows", "itemTaxes", src("tabItem Tax").length, () => db.purchaseItemTax.count(), () => db.purchaseItemTax.count()],
+    ["Item variant attributes", "itemVariantAttributes", src("tabItem Variant Attribute").length, () => db.purchaseItemVariantAttribute.count(), () => db.purchaseItemVariantAttribute.count()],
+    ["GST HSN codes", "hsnCodes", src("tabGST HSN Code").length, () => db.purchaseHsnCode.count(), () => db.purchaseHsnCode.count()],
     ["PO timeline entries", "orderEvents", src("tabVersion").length + src("tabComment").length + src("tabCommunication").length, () => db.purchaseOrderEvent.count(), () => db.purchaseOrderEvent.count()],
     ["PO attachments", "attachments", src("tabFile").filter((r) => r.is_folder !== "1").length, () => db.purchaseAttachment.count(), () => db.purchaseAttachment.count()],
     ["Users", "users", src("tabUser").length, () => db.purchaseUser.count(), () => db.purchaseUser.count()],
