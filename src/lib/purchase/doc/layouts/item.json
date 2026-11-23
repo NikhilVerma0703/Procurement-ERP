@@ -1,0 +1,737 @@
+{
+ "doctype": "Item",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:item_code",
+ "showTitleFieldInLink": false,
+ "titleField": "item_name",
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": "item_name,description,item_group,customer_code",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "details",
+   "label": "Details",
+   "fieldtype": "Tab Break",
+   "options": "fa fa-flag"
+  },
+  {
+   "fieldname": "naming_series",
+   "label": "Series",
+   "fieldtype": "Select",
+   "options": "STO-ITEM-.YYYY.-",
+   "hidden": true
+  },
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Data",
+   "reqd": true,
+   "bold": true
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "bold": true
+  },
+  {
+   "fieldname": "item_group",
+   "label": "Item Group",
+   "fieldtype": "Link",
+   "options": "Item Group",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "gst_hsn_code",
+   "label": "HSN/SAC",
+   "fieldtype": "Link",
+   "options": "GST HSN Code",
+   "mandatoryDependsOn": "eval:gst_settings.validate_hsn_code && doc.is_sales_item",
+   "description": "You can search code by the description of the category.",
+   "fetchFrom": "item_group.gst_hsn_code"
+  },
+  {
+   "fieldname": "stock_uom",
+   "label": "Default Unit of Measure",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "reqd": true
+  },
+  {
+   "fieldname": "custom_item_color",
+   "label": "Item Color",
+   "fieldtype": "Color"
+  },
+  {
+   "fieldname": "column_break0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "disabled",
+   "label": "Disabled",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "allow_alternative_item",
+   "label": "Allow Alternative Item",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "is_stock_item",
+   "label": "Maintain Stock",
+   "fieldtype": "Check",
+   "dependsOn": "eval:!doc.is_fixed_asset",
+   "bold": true,
+   "default": "1"
+  },
+  {
+   "fieldname": "has_variants",
+   "label": "Has Variants",
+   "fieldtype": "Check",
+   "dependsOn": "eval:!doc.variant_of",
+   "inStandardFilter": true,
+   "description": "If this item has variants, then it cannot be selected in sales orders etc."
+  },
+  {
+   "fieldname": "include_item_in_manufacturing",
+   "label": "Include Item In Manufacturing",
+   "fieldtype": "Check",
+   "dependsOn": "eval:!doc.is_fixed_asset",
+   "default": "1"
+  },
+  {
+   "fieldname": "opening_stock",
+   "label": "Opening Stock",
+   "fieldtype": "Float",
+   "dependsOn": "eval:(doc.__islocal&&doc.is_stock_item && !doc.has_serial_no && !doc.has_batch_no)",
+   "bold": true
+  },
+  {
+   "fieldname": "valuation_rate",
+   "label": "Valuation Rate",
+   "fieldtype": "Currency",
+   "dependsOn": "is_stock_item"
+  },
+  {
+   "fieldname": "standard_rate",
+   "label": "Standard Selling Rate",
+   "fieldtype": "Currency",
+   "dependsOn": "eval:doc.__islocal",
+   "bold": true
+  },
+  {
+   "fieldname": "is_fixed_asset",
+   "label": "Is Fixed Asset",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "auto_create_assets",
+   "label": "Auto Create Assets on Purchase",
+   "fieldtype": "Check",
+   "dependsOn": "is_fixed_asset"
+  },
+  {
+   "fieldname": "is_grouped_asset",
+   "label": "Create Grouped Asset",
+   "fieldtype": "Check",
+   "dependsOn": "auto_create_assets"
+  },
+  {
+   "fieldname": "asset_category",
+   "label": "Asset Category",
+   "fieldtype": "Link",
+   "options": "Asset Category",
+   "dependsOn": "is_fixed_asset",
+   "mandatoryDependsOn": "is_fixed_asset"
+  },
+  {
+   "fieldname": "asset_naming_series",
+   "label": "Asset Naming Series",
+   "fieldtype": "Select",
+   "dependsOn": "is_fixed_asset"
+  },
+  {
+   "fieldname": "over_delivery_receipt_allowance",
+   "label": "Over Delivery/Receipt Allowance (%)",
+   "fieldtype": "Float",
+   "dependsOn": "eval:!doc.__islocal && !doc.is_fixed_asset"
+  },
+  {
+   "fieldname": "over_billing_allowance",
+   "label": "Over Billing Allowance (%)",
+   "fieldtype": "Float",
+   "dependsOn": "eval:!doc.__islocal && !doc.is_fixed_asset"
+  },
+  {
+   "fieldname": "image",
+   "label": "Image",
+   "fieldtype": "Attach Image",
+   "options": "image",
+   "hidden": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_11",
+   "label": "Description",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "brand",
+   "label": "Brand",
+   "fieldtype": "Link",
+   "options": "Brand",
+   "printHide": true
+  },
+  {
+   "fieldname": "dashboard_tab",
+   "label": "Dashboard",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "inventory_section",
+   "label": "Inventory",
+   "fieldtype": "Tab Break",
+   "options": "fa fa-truck",
+   "dependsOn": "is_stock_item",
+   "collapsible": true,
+   "collapsibleDependsOn": "is_stock_item"
+  },
+  {
+   "fieldname": "inventory_settings_section",
+   "label": "Inventory Settings",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "shelf_life_in_days",
+   "label": "Shelf Life In Days",
+   "fieldtype": "Int",
+   "mandatoryDependsOn": "eval:doc.has_batch_no && doc.has_expiry_date"
+  },
+  {
+   "fieldname": "end_of_life",
+   "label": "End of Life",
+   "fieldtype": "Date",
+   "dependsOn": "is_stock_item",
+   "default": "2099-12-31"
+  },
+  {
+   "fieldname": "default_material_request_type",
+   "label": "Default Material Request Type",
+   "fieldtype": "Select",
+   "options": "Purchase\nMaterial Transfer\nMaterial Issue\nManufacture\nCustomer Provided",
+   "default": "Purchase"
+  },
+  {
+   "fieldname": "valuation_method",
+   "label": "Valuation Method",
+   "fieldtype": "Select",
+   "options": "\nFIFO\nMoving Average\nLIFO",
+   "dependsOn": "is_stock_item"
+  },
+  {
+   "fieldname": "column_break1",
+   "fieldtype": "Column Break",
+   "dependsOn": "is_stock_item"
+  },
+  {
+   "fieldname": "warranty_period",
+   "label": "Warranty Period (in days)",
+   "fieldtype": "Data",
+   "dependsOn": "eval:doc.is_stock_item"
+  },
+  {
+   "fieldname": "weight_per_unit",
+   "label": "Weight Per Unit",
+   "fieldtype": "Float",
+   "dependsOn": "is_stock_item"
+  },
+  {
+   "fieldname": "weight_uom",
+   "label": "Weight UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "dependsOn": "eval:doc.is_stock_item"
+  },
+  {
+   "fieldname": "allow_negative_stock",
+   "label": "Allow Negative Stock",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "sb_barcodes",
+   "label": "Barcodes",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "barcodes",
+   "label": "Barcodes",
+   "fieldtype": "Table",
+   "options": "Item Barcode"
+  },
+  {
+   "fieldname": "reorder_section",
+   "label": "Auto re-order",
+   "fieldtype": "Section Break",
+   "options": "fa fa-rss",
+   "dependsOn": "is_stock_item",
+   "collapsible": true
+  },
+  {
+   "fieldname": "reorder_levels",
+   "label": "Reorder level based on Warehouse",
+   "fieldtype": "Table",
+   "options": "Item Reorder",
+   "description": "Will also apply for variants unless overrridden"
+  },
+  {
+   "fieldname": "unit_of_measure_conversion",
+   "label": "Units of Measure",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "uoms",
+   "label": "UOMs",
+   "fieldtype": "Table",
+   "options": "UOM Conversion Detail",
+   "description": "Will also apply for variants"
+  },
+  {
+   "fieldname": "serial_nos_and_batches",
+   "label": "Serial Nos and Batches",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:doc.is_stock_item",
+   "collapsible": true,
+   "collapsibleDependsOn": "eval:doc.has_batch_no || doc.has_serial_no"
+  },
+  {
+   "fieldname": "has_batch_no",
+   "label": "Has Batch No",
+   "fieldtype": "Check",
+   "dependsOn": "eval:doc.is_stock_item"
+  },
+  {
+   "fieldname": "create_new_batch",
+   "label": "Automatically Create New Batch",
+   "fieldtype": "Check",
+   "dependsOn": "has_batch_no"
+  },
+  {
+   "fieldname": "batch_number_series",
+   "label": "Batch Number Series",
+   "fieldtype": "Data",
+   "dependsOn": "eval:doc.has_batch_no==1 && doc.create_new_batch==1",
+   "description": "Example: ABCD.#####. If series is set and Batch No is not mentioned in transactions, then automatic batch number will be created based on this series. If you always want to explicitly mention Batch No for this item, leave this blank. Note: this setting will take priority over the Naming Series Prefix in Stock Settings."
+  },
+  {
+   "fieldname": "has_expiry_date",
+   "label": "Has Expiry Date",
+   "fieldtype": "Check",
+   "dependsOn": "has_batch_no"
+  },
+  {
+   "fieldname": "retain_sample",
+   "label": "Retain Sample",
+   "fieldtype": "Check",
+   "dependsOn": "has_batch_no"
+  },
+  {
+   "fieldname": "sample_quantity",
+   "label": "Max Sample Quantity",
+   "fieldtype": "Int",
+   "dependsOn": "eval: (doc.retain_sample && doc.has_batch_no)",
+   "description": "Maximum sample quantity that can be retained"
+  },
+  {
+   "fieldname": "column_break_37",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "has_serial_no",
+   "label": "Has Serial No",
+   "fieldtype": "Check",
+   "dependsOn": "eval:doc.is_stock_item"
+  },
+  {
+   "fieldname": "serial_no_series",
+   "label": "Serial Number Series",
+   "fieldtype": "Data",
+   "dependsOn": "has_serial_no",
+   "description": "Example: ABCD.#####\nIf series is set and Serial No is not mentioned in transactions, then automatic serial number will be created based on this series. If you always want to explicitly mention Serial Nos for this item. leave this blank."
+  },
+  {
+   "fieldname": "variants_section",
+   "label": "Variants",
+   "fieldtype": "Tab Break",
+   "dependsOn": "eval:!doc.is_fixed_asset",
+   "collapsible": true,
+   "collapsibleDependsOn": "attributes"
+  },
+  {
+   "fieldname": "variant_of",
+   "label": "Variant Of",
+   "fieldtype": "Link",
+   "options": "Item",
+   "readOnly": true,
+   "dependsOn": "variant_of",
+   "inStandardFilter": true,
+   "description": "If item is a variant of another item then description, image, pricing, taxes etc will be set from the template unless explicitly specified"
+  },
+  {
+   "fieldname": "variant_based_on",
+   "label": "Variant Based On",
+   "fieldtype": "Select",
+   "options": "Item Attribute\nManufacturer",
+   "dependsOn": "has_variants",
+   "default": "Item Attribute"
+  },
+  {
+   "fieldname": "attributes",
+   "label": "Variant Attributes",
+   "fieldtype": "Table",
+   "options": "Item Variant Attribute",
+   "hidden": true,
+   "dependsOn": "eval:(doc.has_variants || doc.variant_of) && doc.variant_based_on==='Item Attribute'",
+   "mandatoryDependsOn": "eval:(doc.has_variants || doc.variant_of) && doc.variant_based_on==='Item Attribute'"
+  },
+  {
+   "fieldname": "accounting",
+   "label": "Accounting",
+   "fieldtype": "Tab Break",
+   "dependsOn": "eval:!doc.is_fixed_asset"
+  },
+  {
+   "fieldname": "deferred_accounting_section",
+   "label": "Deferred Accounting",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "enable_deferred_expense",
+   "label": "Enable Deferred Expense",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "no_of_months_exp",
+   "label": "No of Months (Expense)",
+   "fieldtype": "Int",
+   "dependsOn": "enable_deferred_expense"
+  },
+  {
+   "fieldname": "column_break_9s9o",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "enable_deferred_revenue",
+   "label": "Enable Deferred Revenue",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "no_of_months",
+   "label": "No of Months (Revenue)",
+   "fieldtype": "Int",
+   "dependsOn": "enable_deferred_revenue"
+  },
+  {
+   "fieldname": "section_break_avcp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_defaults",
+   "label": "Item Defaults",
+   "fieldtype": "Table",
+   "options": "Item Default"
+  },
+  {
+   "fieldname": "purchasing_tab",
+   "label": "Purchasing",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "purchase_uom",
+   "label": "Default Purchase Unit of Measure",
+   "fieldtype": "Link",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "min_order_qty",
+   "label": "Minimum Order Qty",
+   "fieldtype": "Float",
+   "dependsOn": "is_stock_item",
+   "description": "Minimum quantity should be as per Stock UOM",
+   "default": "0.00"
+  },
+  {
+   "fieldname": "safety_stock",
+   "label": "Safety Stock",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "is_purchase_item",
+   "label": "Allow Purchase",
+   "fieldtype": "Check",
+   "default": "1"
+  },
+  {
+   "fieldname": "purchase_details_cb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lead_time_days",
+   "label": "Lead Time in days",
+   "fieldtype": "Int",
+   "description": "Average time taken by the supplier to deliver"
+  },
+  {
+   "fieldname": "last_purchase_rate",
+   "label": "Last Purchase Rate",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "is_customer_provided_item",
+   "label": "Is Customer Provided Item",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "customer",
+   "label": "Customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "dependsOn": "eval:doc.is_customer_provided_item==1"
+  },
+  {
+   "fieldname": "supplier_details",
+   "label": "Supplier Details",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:!doc.is_fixed_asset",
+   "collapsible": true
+  },
+  {
+   "fieldname": "delivered_by_supplier",
+   "label": "Delivered by Supplier (Drop Ship)",
+   "fieldtype": "Check",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "supplier_items",
+   "label": "Supplier Items",
+   "fieldtype": "Table",
+   "options": "Item Supplier"
+  },
+  {
+   "fieldname": "foreign_trade_details",
+   "label": "Foreign Trade Details",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "country_of_origin",
+   "label": "Country of Origin",
+   "fieldtype": "Link",
+   "options": "Country"
+  },
+  {
+   "fieldname": "column_break_59",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customs_tariff_number",
+   "label": "Customs Tariff Number",
+   "fieldtype": "Link",
+   "options": "Customs Tariff Number"
+  },
+  {
+   "fieldname": "sales_details",
+   "label": "Sales",
+   "fieldtype": "Tab Break",
+   "options": "fa fa-tag",
+   "collapsible": true
+  },
+  {
+   "fieldname": "sales_uom",
+   "label": "Default Sales Unit of Measure",
+   "fieldtype": "Link",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "grant_commission",
+   "label": "Grant Commission",
+   "fieldtype": "Check",
+   "default": "1"
+  },
+  {
+   "fieldname": "is_sales_item",
+   "label": "Allow Sales",
+   "fieldtype": "Check",
+   "default": "1"
+  },
+  {
+   "fieldname": "column_break3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "max_discount",
+   "label": "Max Discount (%)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "customer_details",
+   "label": "Customer Details",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:!doc.is_fixed_asset",
+   "collapsible": true
+  },
+  {
+   "fieldname": "customer_items",
+   "label": "Customer Items",
+   "fieldtype": "Table",
+   "options": "Item Customer Detail"
+  },
+  {
+   "fieldname": "item_tax_section_break",
+   "label": "Tax",
+   "fieldtype": "Tab Break",
+   "options": "fa fa-money",
+   "collapsible": true,
+   "collapsibleDependsOn": "taxes"
+  },
+  {
+   "fieldname": "tax_type",
+   "label": "Tax Type",
+   "fieldtype": "Select",
+   "options": "\nStatic Tax\nDynamic Tax",
+   "hidden": true
+  },
+  {
+   "fieldname": "column_break_c8htu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_rule",
+   "label": "Tax Rule",
+   "fieldtype": "Select",
+   "options": "\nMinimum Tax\nMaximum Tax",
+   "hidden": true
+  },
+  {
+   "fieldname": "section_break_c5lsp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "is_ineligible_for_itc",
+   "label": "Is Ineligible for Input Tax Credit",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "taxes",
+   "label": "Taxes",
+   "fieldtype": "Table",
+   "options": "Item Tax",
+   "description": "Will also apply for variants"
+  },
+  {
+   "fieldname": "quality_tab",
+   "label": "Quality",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "inspection_required_before_purchase",
+   "label": "Inspection Required before Purchase",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "quality_inspection_template",
+   "label": "Quality Inspection Template",
+   "fieldtype": "Link",
+   "options": "Quality Inspection Template",
+   "printHide": true
+  },
+  {
+   "fieldname": "inspection_required_before_delivery",
+   "label": "Inspection Required before Delivery",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "manufacturing",
+   "label": "Manufacturing",
+   "fieldtype": "Tab Break",
+   "options": "fa fa-cogs",
+   "dependsOn": "is_stock_item",
+   "collapsible": true
+  },
+  {
+   "fieldname": "is_sub_contracted_item",
+   "label": "Supply Raw Materials for Purchase",
+   "fieldtype": "Check",
+   "description": "If subcontracted to a vendor"
+  },
+  {
+   "fieldname": "default_bom",
+   "label": "Default BOM",
+   "fieldtype": "Link",
+   "options": "BOM",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_74",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_code",
+   "label": "Customer Code",
+   "fieldtype": "Small Text",
+   "hidden": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "default_item_manufacturer",
+   "label": "Default Item Manufacturer",
+   "fieldtype": "Link",
+   "options": "Manufacturer",
+   "readOnly": true
+  },
+  {
+   "fieldname": "default_manufacturer_part_no",
+   "label": "Default Manufacturer Part No",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "published_in_website",
+   "label": "Published in Website",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "dependsOn": "published_in_website"
+  },
+  {
+   "fieldname": "total_projected_qty",
+   "label": "Total Projected Qty",
+   "fieldtype": "Float",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "service_item",
+   "label": "Service Item",
+   "fieldtype": "Check"
+  }
+ ]
+}

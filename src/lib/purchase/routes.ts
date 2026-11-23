@@ -22,10 +22,19 @@ export const PURCHASE_PATHS = {
   paymentTermsTemplates: "/purchase/payment-terms-templates",
   paymentTerms: "/purchase/payment-terms",
   terms: "/purchase/terms",
+  // Phase II: Stock › Stock Transactions and Stock Reports.
+  receipts: "/purchase/receipts",
+  stockLedger: "/purchase/stock-ledger",
+  stockBalance: "/purchase/stock-balance",
 } as const;
 
 /** One Purchase Order's page. */
 export const orderPath = (id: string) => `${PURCHASE_PATHS.orders}/${encodeURIComponent(id)}`;
+
+/** One Purchase Receipt's page (Phase II). */
+export const receiptPath = (id: string) => `${PURCHASE_PATHS.receipts}/${encodeURIComponent(id)}`;
+/** A new receipt: blank, or made from a submitted PO (its Create › Purchase Receipt). */
+export const receiptNewPath = (fromOrder?: string) => `${PURCHASE_PATHS.receipts}/new${fromOrder ? `?purchase_order=${encodeURIComponent(fromOrder)}` : ""}`;
 
 /** The masters: their lists, a record's page, and a new one's (with query parameters to prefill it). */
 export type MasterKey = "suppliers" | "items" | "addresses" | "contacts" | "taxTemplates" | "paymentTermsTemplates" | "paymentTerms" | "terms";
@@ -80,3 +89,41 @@ export const PURCHASE_NAV = [
   { href: PURCHASE_PATHS.paymentTerms, label: "Payment Term" },
   { href: PURCHASE_PATHS.terms, label: "Terms and Conditions" },
 ] as const;
+
+/** A sidebar row. */
+export interface PurchaseNavRow {
+  readonly href: string;
+  readonly label: string;
+}
+
+/**
+ * THE SIDEBAR'S MODULES (Phase II, owner 21-11-2026: "make Buying the main section"). As the old
+ * site's workspaces: a module heading, then its cards in the old order — Buying's nine sections
+ * (Althaf's), and Stock › Masters & Reports' three cards (Thiru R's; docs/12 §3). A card lists only
+ * the sections built so far, and is not drawn while it has none; who sees a module is nav.ts.
+ * Item is in both, as on the old site: one screen, two menus.
+ */
+export interface PurchaseNavModule {
+  readonly key: "buying" | "stock";
+  readonly label: string;
+  readonly groups: readonly { readonly label: string | null; readonly rows: readonly PurchaseNavRow[] }[];
+}
+
+export const PURCHASE_MODULES: readonly PurchaseNavModule[] = [
+  { key: "buying", label: "Buying", groups: [{ label: null, rows: PURCHASE_NAV }] },
+  {
+    key: "stock",
+    label: "Stock",
+    groups: [
+      { label: "Items and Pricing", rows: [{ href: PURCHASE_PATHS.items, label: "Item" }] },
+      { label: "Stock Transactions", rows: [{ href: PURCHASE_PATHS.receipts, label: "Purchase Receipt" }] },
+      {
+        label: "Stock Reports",
+        rows: [
+          { href: PURCHASE_PATHS.stockLedger, label: "Stock Ledger" },
+          { href: PURCHASE_PATHS.stockBalance, label: "Stock Balance" },
+        ],
+      },
+    ],
+  },
+];

@@ -90,7 +90,26 @@ export interface TimelineEmail {
 
 export type TimelineItem = TimelineLine | TimelineComment | TimelineEmail;
 
+/**
+ * Which field a version names, and how (Frappe: the field's label, when the field is not hidden and the
+ * reader may see it — level 0). The PO's are doc-meta.ts; a stock document's come from its captured
+ * layout (doc/timeline-labels.ts, Phase II).
+ */
+export interface TimelineLabels {
+  /** A field of the document itself. */
+  field: (fieldname: string) => string | undefined;
+  /** A field of a child row, by the table's fieldname. */
+  rowField: (tablefield: string, fieldname: string) => string | undefined;
+}
+
+const PO_LABELS: TimelineLabels = {
+  field: (f) => FIELD_LABELS["Purchase Order"][f],
+  rowField: (t, f) => (TABLE_DOCTYPES[t] ? FIELD_LABELS[TABLE_DOCTYPES[t]][f] : undefined),
+};
+
 export interface TimelineOptions {
+  /** The labels versions name fields by; the PO's when absent. */
+  labels?: TimelineLabels;
   /** A user's full name by email (the email itself when unknown, as Frappe's user_info did). */
   nameOf: (email: string) => string;
   /** The link for a file the old site served at this URL, when it is still attached. */
@@ -118,9 +137,13 @@ export function textContent(html: string): string {
     .replace(/&amp;/g, "&");
 }
 
-/** format_content_for_timeline: the value's text, cut to 40 characters, bold; "" for nothing. */
+/**
+ * format_content_for_timeline: the value's text, cut to 40 characters, bold; "" for an empty text.
+ * Frappe 14.101's html2text hands the value to DOMParser.parseFromString, which reads a null as the
+ * text "null" — so a field that had no value shows "from null" (as on the old site's receipts, 21-11).
+ */
 export function timelineValue(v: unknown): Run {
-  let text = v === null || v === undefined ? "" : textContent(String(v));
+  let text = textContent(String(v));
   if (text.length > 40) text = `${text.slice(0, 40)}...`;
   return { text: text || '""', bold: true };
 }
@@ -139,7 +162,7 @@ interface VersionShape {
 }
 
 /** The lines one version gives (version_timeline_content_builder.js). */
-export function versionLines(data: unknown, user: string): Run[][] {
+export function versionLines(data: unknown, user: string, labels: TimelineLabels = PO_LABELS): Run[][] {
   const v = (data ?? {}) as VersionShape;
   const who: Run = { text: user, bold: true };
   if (v.comment) return [[{ text: textContent(v.comment) }]];
@@ -156,7 +179,7 @@ export function versionLines(data: unknown, user: string): Run[][] {
       if (p[2] === 1) out.push([who, { text: " submitted this document" }, ...tail]);
       else if (p[2] === 2) out.push([who, { text: " cancelled this document" }, ...tail]);
     } else {
-      const label = FIELD_LABELS["Purchase Order"][p[0]];
+      const label = labels.field(p[0]);
       if (label) parts.push([{ text: `${label} from ` }, timelineValue(p[1]), { text: " to " }, timelineValue(p[2])]);
     }
     if (parts.length >= 3) break;
@@ -166,9 +189,8 @@ export function versionLines(data: unknown, user: string): Run[][] {
   // Values changed in the rows, three at most over all the rows.
   const rowParts: Run[][] = [];
   rows: for (const row of v.row_changed ?? []) {
-    const doctype = TABLE_DOCTYPES[row[0]];
     for (const p of row[3] ?? []) {
-      const label = doctype ? FIELD_LABELS[doctype][p[0]] : undefined;
+      const label = labels.rowField(row[0], p[0]);
       if (label) rowParts.push([{ text: `${label} from ` }, timelineValue(p[1]), { text: " to " }, timelineValue(p[2]), { text: ` in row #${Number(row[1]) + 1}` }]);
       if (rowParts.length >= 3) break rows;
     }
@@ -177,8 +199,8 @@ export function versionLines(data: unknown, user: string): Run[][] {
 
   // Rows added or removed: the table's name once per row.
   for (const key of ["added", "removed"] as const) {
-    const labels = (v[key] ?? []).map((p) => FIELD_LABELS["Purchase Order"][p[0]]).filter(Boolean);
-    if (labels.length) out.push([who, { text: ` ${key} rows for ${labels.join(", ")}` }]);
+    const tables = (v[key] ?? []).map((p) => labels.field(p[0])).filter(Boolean);
+    if (tables.length) out.push([who, { text: ` ${key} rows for ${tables.join(", ")}` }]);
   }
 
   if (v.audit_user) return out.map((runs) => [...runs, { text: " · " }, { text: `[Action taken by ${v.audit_user}]`, bold: true }]);
@@ -247,7 +269,7 @@ export function buildTimeline(events: TimelineEvent[], o: TimelineOptions): Time
     items.push({ type: "comment", id: e.id, at: at(e), byEmail: e.byEmail ?? "", byName: name(e), html: e.content ?? "" });
   }
   for (const e of of("VERSION").slice(0, VERSIONS_SHOWN)) {
-    versionLines(e.data, name(e)).forEach((runs, i) => items.push({ type: "line", id: `${e.id}:${i}`, at: at(e), icon: null, runs }));
+    versionLines(e.data, name(e), o.labels).forEach((runs, i) => items.push({ type: "line", id: `${e.id}:${i}`, at: at(e), icon: null, runs }));
   }
   for (const e of of("WORKFLOW")) {
     items.push({ type: "line", id: e.id, at: at(e), icon: "workflow", runs: [{ text: name(e), bold: true }, { text: ` ${e.content ?? ""}` }] });

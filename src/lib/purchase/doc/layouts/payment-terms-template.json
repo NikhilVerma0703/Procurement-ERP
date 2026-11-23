@@ -1,0 +1,34 @@
+{
+ "doctype": "Payment Terms Template",
+ "module": "Accounts",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:template_name",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "template_name",
+   "label": "Template Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "allocate_payment_based_on_payment_terms",
+   "label": "Allocate Payment Based On Payment Terms",
+   "fieldtype": "Check",
+   "description": "If this checkbox is checked, paid amount will be splitted and allocated as per the amounts in payment schedule against each payment term"
+  },
+  {
+   "fieldname": "terms",
+   "label": "Payment Terms",
+   "fieldtype": "Table",
+   "options": "Payment Terms Template Detail",
+   "reqd": true
+  }
+ ]
+}

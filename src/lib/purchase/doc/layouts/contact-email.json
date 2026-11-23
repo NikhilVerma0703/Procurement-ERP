@@ -1,0 +1,31 @@
+{
+ "doctype": "Contact Email",
+ "module": "Contacts",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "email_id",
+   "label": "Email ID",
+   "fieldtype": "Data",
+   "options": "Email",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "is_primary",
+   "label": "Is Primary",
+   "fieldtype": "Check",
+   "inListView": true,
+   "columns": 2
+  }
+ ]
+}

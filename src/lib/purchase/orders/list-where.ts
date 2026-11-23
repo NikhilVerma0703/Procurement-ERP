@@ -211,7 +211,7 @@ export function buildWhere(filters: readonly ListFilter[]): Where {
   return filters.length ? { AND: filters.map(filterWhere) } : {};
 }
 
-const SORT_COLUMNS: Record<SortKey, keyof Prisma.PurchaseOrderOrderByWithRelationInput> = {
+export const SORT_COLUMNS: Record<SortKey, keyof Prisma.PurchaseOrderOrderByWithRelationInput> = {
   modified: "updatedAt",
   name: "number",
   creation: "createdAt",

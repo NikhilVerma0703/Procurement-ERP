@@ -1,0 +1,187 @@
+{
+ "doctype": "Item Price",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "hash",
+ "showTitleFieldInLink": false,
+ "titleField": "item_name",
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "packing_unit",
+   "label": "Packing Unit",
+   "fieldtype": "Int",
+   "description": "Quantity  that must be bought or sold per UOM"
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "brand",
+   "label": "Brand",
+   "fieldtype": "Link",
+   "options": "Brand",
+   "readOnly": true,
+   "inListView": true,
+   "fetchFrom": "item_code.brand"
+  },
+  {
+   "fieldname": "item_description",
+   "label": "Item Description",
+   "fieldtype": "Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "price_list_details",
+   "label": "Price List",
+   "fieldtype": "Section Break",
+   "options": "fa fa-tags"
+  },
+  {
+   "fieldname": "price_list",
+   "label": "Price List",
+   "fieldtype": "Link",
+   "options": "Price List",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "uom_factor",
+   "label": "UOM Factor",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "default": "Nos"
+  },
+  {
+   "fieldname": "customer",
+   "label": "Customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "dependsOn": "eval:doc.selling == 1",
+   "bold": true
+  },
+  {
+   "fieldname": "supplier",
+   "label": "Supplier",
+   "fieldtype": "Link",
+   "options": "Supplier",
+   "dependsOn": "eval:doc.buying == 1"
+  },
+  {
+   "fieldname": "batch_no",
+   "label": "Batch No",
+   "fieldtype": "Link",
+   "options": "Batch"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "buying",
+   "label": "Buying",
+   "fieldtype": "Check",
+   "readOnly": true
+  },
+  {
+   "fieldname": "selling",
+   "label": "Selling",
+   "fieldtype": "Check",
+   "readOnly": true
+  },
+  {
+   "fieldname": "item_details",
+   "fieldtype": "Section Break",
+   "options": "fa fa-tag"
+  },
+  {
+   "fieldname": "currency",
+   "label": "Currency",
+   "fieldtype": "Link",
+   "options": "Currency",
+   "readOnly": true,
+   "bold": true
+  },
+  {
+   "fieldname": "col_br_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "price_list_rate",
+   "label": "Rate",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "section_break_15",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "valid_from",
+   "label": "Valid From",
+   "fieldtype": "Date",
+   "default": "Today"
+  },
+  {
+   "fieldname": "lead_time_days",
+   "label": "Lead Time in days",
+   "fieldtype": "Int"
+  },
+  {
+   "fieldname": "column_break_18",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "valid_upto",
+   "label": "Valid Upto",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "section_break_24",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "note",
+   "label": "Note",
+   "fieldtype": "Text"
+  },
+  {
+   "fieldname": "reference",
+   "label": "Reference",
+   "fieldtype": "Data",
+   "inListView": true,
+   "inStandardFilter": true
+  }
+ ]
+}

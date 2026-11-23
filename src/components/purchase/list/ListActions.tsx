@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Download, Loader2, MoreHorizontal, Plus, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { bulkDeleteOrdersAction, bulkWorkflowAction } from "@/app/purchase/orders/actions";
+import { bulkCloseAction, bulkDeleteOrdersAction, bulkWorkflowAction } from "@/app/purchase/orders/actions";
 import { cn } from "@/lib/purchase/cn";
 import type { BulkOutcome } from "@/lib/purchase/bulk-delete";
 import { MAX_PRINT_SHEETS, TOO_MANY_TO_PRINT } from "@/lib/purchase/orders/selection";
@@ -32,7 +32,7 @@ type Dialog =
   | { kind: "message"; lines: string[] }
   | { kind: "workflow"; outcome: BulkOutcome };
 
-export function ListActions({ exportHref, selectionExportAction, layouts, defaultLayout, canApprove, canDelete }: {
+export function ListActions({ exportHref, selectionExportAction, layouts, defaultLayout, canApprove, canDelete, canManage }: {
   /** The filtered list as Excel (the ⋯ menu). */
   exportHref: string;
   /** Where the selection's Export posts its ids (the list's sort kept). */
@@ -42,6 +42,8 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
   defaultLayout: string;
   canApprove: boolean;
   canDelete: boolean;
+  /** May close and re-open POs (the ⋯ menu's Close / Reopen). */
+  canManage: boolean;
 }) {
   const router = useRouter();
   const [refreshing, startTransition] = useTransition();
@@ -98,6 +100,26 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
     }
   };
 
+  /** ⋯ › Close / Reopen: the ticked POs that can take it; ERPNext said nothing about the others. */
+  const runClose = async (to: "Closed" | "Submitted") => {
+    menu.setOpen(false);
+    if (!ids.length) return router.refresh();
+    setBusy(to);
+    try {
+      const r = await inBatches(ids, (batch) => bulkCloseAction(batch, to), onProgress);
+      if (!r.ok) return setDialog({ kind: "message", lines: [r.error] });
+      if (r.value.failed.length) setDialog({ kind: "message", lines: r.value.failed.map((f) => f.error) });
+      clear();
+      router.refresh();
+    } catch {
+      toast.error("The server could not be reached. What was done before that stays done; refresh to see it.");
+      router.refresh();
+    } finally {
+      setBusy(null);
+      setProgress(null);
+    }
+  };
+
   const print = () => {
     // bulk_operations.print: with "Allow Print for Cancelled" off, a cancelled PO stops the whole print.
     if (chosen.some((r) => r.docStatus === "Cancelled")) return setDialog({ kind: "message", lines: ["You selected Draft or Cancelled documents"] });
@@ -130,6 +152,18 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
         </button>
         {menu.open && (
           <div className="absolute right-0 z-20 mt-2 w-56 rounded-xl border border-gray-200 bg-white py-1 shadow-lg" role="menu">
+            {/* purchase_order_list.js: Close and Reopen act on the ticked POs (nothing ticked, nothing done). */}
+            {canManage && (
+              <>
+                <button type="button" role="menuitem" onClick={() => void runClose("Closed")} className="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                  Close
+                </button>
+                <button type="button" role="menuitem" onClick={() => void runClose("Submitted")} className="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                  Reopen
+                </button>
+                <div className="my-1 border-t border-gray-100" role="separator" />
+              </>
+            )}
             <a href={exportHref} role="menuitem" onClick={() => menu.setOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
               <Download className="h-4 w-4" aria-hidden />
               Export (Excel)

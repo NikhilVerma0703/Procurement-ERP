@@ -1,0 +1,164 @@
+{
+ "doctype": "Packing Slip",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": true,
+ "autoname": "MAT-PAC-.YYYY.-.#####",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": "delivery_note",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "packing_slip_details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "delivery_note",
+   "label": "Delivery Note",
+   "fieldtype": "Link",
+   "options": "Delivery Note",
+   "reqd": true,
+   "inListView": true,
+   "description": "Indicates that the package is a part of this delivery (Only Draft)"
+  },
+  {
+   "fieldname": "column_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "naming_series",
+   "label": "Series",
+   "fieldtype": "Select",
+   "options": "MAT-PAC-.YYYY.-",
+   "reqd": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break0",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_case_no",
+   "label": "From Package No.",
+   "fieldtype": "Int",
+   "reqd": true,
+   "inListView": true,
+   "description": "Identification of the package for the delivery (for print)"
+  },
+  {
+   "fieldname": "column_break3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_case_no",
+   "label": "To Package No.",
+   "fieldtype": "Int",
+   "inListView": true,
+   "description": "If more than one package of the same type (for print)"
+  },
+  {
+   "fieldname": "no_of_slabes",
+   "label": "No Of Slabes",
+   "fieldtype": "Int"
+  },
+  {
+   "fieldname": "package_item_details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "items",
+   "label": "Items",
+   "fieldtype": "Table",
+   "options": "Packing Slip Item",
+   "reqd": true
+  },
+  {
+   "fieldname": "package_weight_details",
+   "label": "Package Weight Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "net_weight_pkg",
+   "label": "Net Weight",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "description": "The net weight of this package. (calculated automatically as sum of net weight of items)"
+  },
+  {
+   "fieldname": "net_weight_uom",
+   "label": "Net Weight UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gross_weight_pkg",
+   "label": "Gross Weight",
+   "fieldtype": "Float",
+   "description": "The gross weight of the package. Usually net weight + packaging material weight. (for print)"
+  },
+  {
+   "fieldname": "gross_weight_uom",
+   "label": "Gross Weight UOM",
+   "fieldtype": "Link",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "custom_net_area_sqmt",
+   "label": "Net  Area (SFT/SQM)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "custom_samples",
+   "label": "Samples",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "custom_sample_items",
+   "label": "Sample Items",
+   "fieldtype": "Table",
+   "options": "Sample Item"
+  },
+  {
+   "fieldname": "letter_head_details",
+   "label": "Letter Head",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "letter_head",
+   "label": "Letter Head",
+   "fieldtype": "Link",
+   "options": "Letter Head",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "misc_details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "label": "Amended From",
+   "fieldtype": "Link",
+   "options": "Packing Slip",
+   "readOnly": true,
+   "printHide": true
+  }
+ ]
+}

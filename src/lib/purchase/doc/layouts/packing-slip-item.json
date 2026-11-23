@@ -1,0 +1,178 @@
+{
+ "doctype": "Packing Slip Item",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "hash",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "fetchFrom": "item_code.item_name"
+  },
+  {
+   "fieldname": "custom_item_description_",
+   "label": "Item Description ",
+   "fieldtype": "Data",
+   "fetchFrom": "item_code.description"
+  },
+  {
+   "fieldname": "batch_no",
+   "label": "Batch No",
+   "fieldtype": "Link",
+   "options": "Batch",
+   "readOnly": true
+  },
+  {
+   "fieldname": "custom_serial_no",
+   "label": "Serial No",
+   "fieldtype": "Link",
+   "options": "Serial No",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "custom_grade",
+   "label": "Grade",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "fetchFrom": "custom_serial_no.custom_grade"
+  },
+  {
+   "fieldname": "custom_lenght",
+   "label": "Lenght",
+   "fieldtype": "Data",
+   "fetchFrom": "custom_serial_no.custom_length"
+  },
+  {
+   "fieldname": "custom_width",
+   "label": "Width",
+   "fieldtype": "Data",
+   "fetchFrom": "custom_serial_no.custom_width"
+  },
+  {
+   "fieldname": "custom_thickness",
+   "label": "Thickness",
+   "fieldtype": "Data",
+   "fetchFrom": "custom_serial_no.custom_thickness"
+  },
+  {
+   "fieldname": "desc_section",
+   "label": "Description",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "quantity_section",
+   "label": "Quantity",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "qty",
+   "label": "Quantity",
+   "fieldtype": "Float",
+   "reqd": true,
+   "readOnly": true,
+   "inListView": true,
+   "columns": 1
+  },
+  {
+   "fieldname": "quantity",
+   "label": " Area (SFT/SQM)",
+   "fieldtype": "Float",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "net_weight",
+   "label": "Net Weight",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "crate",
+   "label": "Crate / Container",
+   "fieldtype": "Data",
+   "inListView": true,
+   "columns": 1
+  },
+  {
+   "fieldname": "crate_dimension",
+   "label": "Crate Dimension (MM)",
+   "fieldtype": "Data",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "custom_crate_weight",
+   "label": "Crate Weight",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "stock_uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "readOnly": true
+  },
+  {
+   "fieldname": "weight_uom",
+   "label": "Weight UOM",
+   "fieldtype": "Link",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "page_break",
+   "label": "Page Break",
+   "fieldtype": "Check",
+   "inListView": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "dn_detail",
+   "label": "Delivery Note Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "pi_detail",
+   "label": "Delivery Note Packed Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true
+  }
+ ]
+}

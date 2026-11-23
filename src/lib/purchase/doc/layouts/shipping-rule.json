@@ -1,0 +1,124 @@
+{
+ "doctype": "Shipping Rule",
+ "module": "Accounts",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:label",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "label",
+   "label": "Shipping Rule Label",
+   "fieldtype": "Data",
+   "reqd": true,
+   "description": "example: Next Day Shipping"
+  },
+  {
+   "fieldname": "disabled",
+   "label": "Disabled",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shipping_rule_type",
+   "label": "Shipping Rule Type",
+   "fieldtype": "Select",
+   "options": "Selling\nBuying"
+  },
+  {
+   "fieldname": "section_break_10",
+   "label": "Accounting",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:!doc.disabled"
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "reqd": true
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "account",
+   "label": "Shipping Account",
+   "fieldtype": "Link",
+   "options": "Account",
+   "reqd": true
+  },
+  {
+   "fieldname": "accounting_dimensions_section",
+   "label": "Accounting Dimensions",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "label": "Cost Center",
+   "fieldtype": "Link",
+   "options": "Cost Center",
+   "reqd": true
+  },
+  {
+   "fieldname": "dimension_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shipping_amount_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "calculate_based_on",
+   "label": "Calculate Based On",
+   "fieldtype": "Select",
+   "options": "Fixed\nNet Total\nNet Weight",
+   "inListView": true,
+   "inStandardFilter": true,
+   "default": "Fixed"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shipping_amount",
+   "label": "Shipping Amount",
+   "fieldtype": "Currency",
+   "dependsOn": "eval:doc.calculate_based_on==='Fixed'"
+  },
+  {
+   "fieldname": "rule_conditions_section",
+   "label": "Shipping Rule Conditions",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:doc.calculate_based_on!=='Fixed'"
+  },
+  {
+   "fieldname": "conditions",
+   "label": "Shipping Rule Conditions",
+   "fieldtype": "Table",
+   "options": "Shipping Rule Condition"
+  },
+  {
+   "fieldname": "section_break_6",
+   "label": "Restrict to Countries",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "countries",
+   "label": "Valid for Countries",
+   "fieldtype": "Table",
+   "options": "Shipping Rule Country"
+  }
+ ]
+}

@@ -6,7 +6,7 @@ import { likedByWhere, likesOf } from "../likes";
 import { db } from "../server/db";
 import { PO_STATUS_KEYS, labelOf } from "./labels";
 import { allFilters, type ListQuery } from "./list";
-import { buildOrderBy, buildWhere } from "./list-where";
+import { buildOrderBy, buildWhere, SORT_COLUMNS } from "./list-where";
 
 const WORKFLOW_LABEL = { CREATED: "Created", APPROVED: "Approved", REJECTED: "Rejected" } as const;
 const DOCSTATUS_LABEL = { DRAFT: "Draft", SUBMITTED: "Submitted", CANCELLED: "Cancelled" } as const;
@@ -88,6 +88,28 @@ export async function listOrders(q: ListQuery, viewer: string): Promise<{ rows: 
     likes: likes[o.id] ?? NO_LIKES,
   }));
   return { rows, total };
+}
+
+/**
+ * The form's ‹ › (Previous / Next Document): the PO next to this one in the list as the user last
+ * left it, its filters and sort kept (frappe.desk.form.utils.get_next). "Next" follows the list's
+ * order; "Previous" goes back. Strictly past this PO's value of the sort field, as Frappe compared;
+ * null at the end of the list ("No further records").
+ */
+export async function adjacentOrderId(id: string, prev: boolean, q: ListQuery): Promise<string | null> {
+  const column = SORT_COLUMNS[q.sort] as string;
+  const current = (await db.purchaseOrder.findUnique({ where: { id }, select: { [column]: true } as Prisma.PurchaseOrderSelect })) as Record<string, unknown> | null;
+  const value = current?.[column];
+  if (value === null || value === undefined) return null;
+  let order: "asc" | "desc" = q.order;
+  let past: "gt" | "lt" = order === "asc" ? "gt" : "lt";
+  if (prev) {
+    order = order === "asc" ? "desc" : "asc";
+    past = past === "gt" ? "lt" : "gt";
+  }
+  const where: Prisma.PurchaseOrderWhereInput = { AND: [await orderWhere(q), { [column]: { [past]: value } } as Prisma.PurchaseOrderWhereInput] };
+  const next = await db.purchaseOrder.findFirst({ where, orderBy: { [column]: order } as Prisma.PurchaseOrderOrderByWithRelationInput, select: { id: true } });
+  return next?.id ?? null;
 }
 
 /** What the Supplier and Company quick filters suggest as you type (their link values). */

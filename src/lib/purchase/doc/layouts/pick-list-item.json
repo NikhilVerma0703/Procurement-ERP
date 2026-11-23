@@ -1,0 +1,172 @@
+{
+ "doctype": "Pick List Item",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "label": "Item",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "fetchFrom": "item_code.item_name"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text",
+   "readOnly": true,
+   "fetchFrom": "item_code.description"
+  },
+  {
+   "fieldname": "item_group",
+   "label": "Item Group",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "fetchFrom": "item_code.item_group"
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "warehouse",
+   "label": "Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "quantity_section",
+   "label": "Quantity",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "qty",
+   "label": "Qty",
+   "fieldtype": "Float",
+   "reqd": true,
+   "inListView": true,
+   "default": "1"
+  },
+  {
+   "fieldname": "stock_qty",
+   "label": "Stock Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "picked_qty",
+   "label": "Picked Qty",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "conversion_factor",
+   "label": "UOM Conversion Factor",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "stock_uom",
+   "label": "Stock UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "readOnly": true
+  },
+  {
+   "fieldname": "serial_no_and_batch_section",
+   "label": "Serial No and Batch",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "serial_no",
+   "label": "Serial No",
+   "fieldtype": "Small Text",
+   "dependsOn": "serial_no"
+  },
+  {
+   "fieldname": "column_break_20",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "batch_no",
+   "label": "Batch No",
+   "fieldtype": "Link",
+   "options": "Batch",
+   "dependsOn": "batch_no"
+  },
+  {
+   "fieldname": "column_break_15",
+   "label": "Reference",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sales_order",
+   "label": "Sales Order",
+   "fieldtype": "Link",
+   "options": "Sales Order",
+   "readOnly": true
+  },
+  {
+   "fieldname": "sales_order_item",
+   "label": "Sales Order Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "product_bundle_item",
+   "label": "Product Bundle Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "description": "product bundle item row's name in sales order. Also indicates that picked item is to be used for a product bundle"
+  },
+  {
+   "fieldname": "material_request",
+   "label": "Material Request",
+   "fieldtype": "Link",
+   "options": "Material Request",
+   "readOnly": true
+  },
+  {
+   "fieldname": "material_request_item",
+   "label": "Material Request Item",
+   "fieldtype": "Data",
+   "readOnly": true
+  }
+ ]
+}

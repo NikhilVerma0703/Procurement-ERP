@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FileText, LogOut, Menu, ShoppingCart, X } from "lucide-react";
 import { signOutAction } from "@/app/login/actions";
-import { PURCHASE_NAV } from "@/lib/purchase/routes";
+import { navModulesFor } from "@/lib/purchase/nav";
 import { cn } from "@/lib/purchase/cn";
 
 export interface SidebarUser {
@@ -14,36 +14,47 @@ export interface SidebarUser {
   role: string;
 }
 
-const ROLE_LABEL: Record<string, string> = { PURCHASE: "Purchase", APPROVER: "Approver", ADMIN: "Admin" };
+const ROLE_LABEL: Record<string, string> = { PURCHASE: "Purchase", STORE: "Store", APPROVER: "Approver", ADMIN: "Admin" };
 
 // STANDALONE ONLY — the app's own sidebar while it runs on its own (the
 // standalone Pigment ERP's Sidebar, same look). At the merge the Main ERP's
 // sidebar shows the module's rows from PURCHASE_NAV instead, and this file
 // stays behind.
 
-function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
+// The modules the login may open (lib/purchase/nav.ts): Buying, then Stock with the old site's
+// card names over its rows (owner, 21-11-2026).
+function NavLinks({ user, onNavigate }: { user: SidebarUser; onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
-    <nav className="flex flex-col gap-1">
-      <div className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">Buying</div>
-      {PURCHASE_NAV.map(({ href, label }) => {
-        const active = pathname === href || pathname.startsWith(`${href}/`);
-        return (
-          <Link
-            key={href}
-            href={href}
-            onClick={onNavigate}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
-              active ? "bg-brand text-white shadow-sm" : "text-gray-700 hover:bg-brand-50 hover:text-brand-700",
-            )}
-          >
-            <FileText className="h-4 w-4 shrink-0" aria-hidden />
-            <span>{label}</span>
-          </Link>
-        );
-      })}
+    <nav className="flex flex-col gap-4 overflow-y-auto">
+      {navModulesFor(user).map((m) => (
+        <div key={m.key} className="flex flex-col gap-1">
+          <div className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">{m.label}</div>
+          {m.groups.map((g) => (
+            <div key={g.label ?? m.key} className="flex flex-col gap-1">
+              {g.label && <div className="px-3 pt-1 text-[11px] font-medium text-gray-400">{g.label}</div>}
+              {g.rows.map(({ href, label }) => {
+                const active = pathname === href || pathname.startsWith(`${href}/`);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={onNavigate}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
+                      active ? "bg-brand text-white shadow-sm" : "text-gray-700 hover:bg-brand-50 hover:text-brand-700",
+                    )}
+                  >
+                    <FileText className="h-4 w-4 shrink-0" aria-hidden />
+                    <span>{label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      ))}
     </nav>
   );
 }
@@ -90,7 +101,7 @@ export function StandaloneSidebar({ user }: { user: SidebarUser }) {
       {/* Desktop rail */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-6 border-r border-gray-200/70 bg-white/70 px-4 py-5 backdrop-blur md:flex print:hidden">
         <Brand />
-        <NavLinks />
+        <NavLinks user={user} />
         <UserCard user={user} />
       </aside>
 
@@ -111,7 +122,7 @@ export function StandaloneSidebar({ user }: { user: SidebarUser }) {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <NavLinks onNavigate={() => setOpen(false)} />
+            <NavLinks user={user} onNavigate={() => setOpen(false)} />
             <UserCard user={user} />
           </div>
         </div>

@@ -1,0 +1,68 @@
+{
+ "doctype": "Price List",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:price_list_name",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": "currency",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "enabled",
+   "label": "Enabled",
+   "fieldtype": "Check",
+   "default": "1"
+  },
+  {
+   "fieldname": "sb_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "price_list_name",
+   "label": "Price List Name",
+   "fieldtype": "Data",
+   "reqd": true
+  },
+  {
+   "fieldname": "currency",
+   "label": "Currency",
+   "fieldtype": "Link",
+   "options": "Currency",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "buying",
+   "label": "Buying",
+   "fieldtype": "Check",
+   "inListView": true
+  },
+  {
+   "fieldname": "selling",
+   "label": "Selling",
+   "fieldtype": "Check",
+   "inListView": true
+  },
+  {
+   "fieldname": "price_not_uom_dependent",
+   "label": "Price Not UOM Dependent",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "countries",
+   "label": "Applicable for Countries",
+   "fieldtype": "Table",
+   "options": "Price List Country"
+  }
+ ]
+}

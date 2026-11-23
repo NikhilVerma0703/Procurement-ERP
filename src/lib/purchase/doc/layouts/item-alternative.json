@@ -1,0 +1,51 @@
+{
+ "doctype": "Item Alternative",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": "item_code",
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "inListView": true
+  },
+  {
+   "fieldname": "alternative_item_code",
+   "label": "Alternative Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "inListView": true
+  },
+  {
+   "fieldname": "two_way",
+   "label": "Two-way",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Read Only",
+   "fetchFrom": "item_code.item_name"
+  },
+  {
+   "fieldname": "alternative_item_name",
+   "label": "Alternative Item Name",
+   "fieldtype": "Read Only",
+   "fetchFrom": "alternative_item_code.item_name"
+  }
+ ]
+}

@@ -1,0 +1,52 @@
+{
+ "doctype": "Item Reorder",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "hash",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "warehouse_group",
+   "label": "Check in (group)",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "inListView": true
+  },
+  {
+   "fieldname": "warehouse",
+   "label": "Request for",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "warehouse_reorder_level",
+   "label": "Re-order Level",
+   "fieldtype": "Float",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "warehouse_reorder_qty",
+   "label": "Re-order Qty",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "material_request_type",
+   "label": "Material Request Type",
+   "fieldtype": "Select",
+   "options": "Purchase\nTransfer\nMaterial Issue\nManufacture",
+   "reqd": true,
+   "inListView": true
+  }
+ ]
+}

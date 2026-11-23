@@ -10,6 +10,7 @@
 //   submitted, nothing received or billed in full --Update Items
 //   submitted --Update (the fields allowed after submit: Order Confirmation, print settings, dates)
 //   draft --Delete;  any --Duplicate (a new draft from it)
+//   submitted, not On Hold / Closed / Delivered, not fully received --Create › Purchase Receipt (Phase II)
 //
 // Who may do each is access.ts; here, which actions a state allows. Pure.
 import { purchaseCan } from "../access";
@@ -18,7 +19,7 @@ export type DocStatus = "Draft" | "Submitted" | "Cancelled";
 
 export const PO_ACTIONS = [
   "save", "approve", "reject", "delete", "duplicate", "cancel", "amend",
-  "close", "hold", "resume", "reopen", "update", "updateItems",
+  "close", "hold", "resume", "reopen", "update", "updateItems", "makeReceipt",
 ] as const;
 export type PoAction = (typeof PO_ACTIONS)[number];
 
@@ -65,6 +66,9 @@ export function stateAllows(s: PoState, action: PoAction): boolean {
       return submitted;
     case "updateItems":
       return submitted && !ENDED.has(s.status) && s.perReceived < 100 && s.perBilled < 100;
+    case "makeReceipt":
+      // purchase_order.js: Create › Purchase Receipt while not On Hold, Closed or Delivered and not all received.
+      return submitted && !ENDED.has(s.status) && s.status !== "On Hold" && s.perReceived < 100;
   }
 }
 
@@ -76,6 +80,8 @@ export const ACTION_NEEDS = {
   save: "save", delete: "save", duplicate: "save", amend: "save",
   approve: "approve", reject: "approve", updateItems: "approve",
   cancel: "manage", close: "manage", hold: "manage", resume: "manage", reopen: "manage", update: "manage",
+  // Receiving is the stores' part (Thiru R): the Stock module's access (Phase II).
+  makeReceipt: "stock",
 } as const satisfies Record<PoAction, string>;
 
 /** May this user do this to a PO in this state? */

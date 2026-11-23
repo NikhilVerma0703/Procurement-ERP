@@ -1,0 +1,24 @@
+{
+ "doctype": "Price List Country",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "country",
+   "label": "Country",
+   "fieldtype": "Link",
+   "options": "Country",
+   "reqd": true,
+   "inListView": true
+  }
+ ]
+}

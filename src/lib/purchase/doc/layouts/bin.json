@@ -1,0 +1,136 @@
+{
+ "doctype": "Bin",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "hash",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": "item_code,warehouse",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "readOnly": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "column_break_yreo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "warehouse",
+   "label": "Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "reqd": true,
+   "readOnly": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "section_break_stag",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "actual_qty",
+   "label": "Actual Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true,
+   "default": "0.00"
+  },
+  {
+   "fieldname": "planned_qty",
+   "label": "Planned Qty",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "indented_qty",
+   "label": "Requested Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "default": "0.00"
+  },
+  {
+   "fieldname": "ordered_qty",
+   "label": "Ordered Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true,
+   "default": "0.00"
+  },
+  {
+   "fieldname": "column_break_xn5j",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reserved_qty",
+   "label": "Reserved Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true,
+   "default": "0.00"
+  },
+  {
+   "fieldname": "reserved_qty_for_production",
+   "label": "Reserved Qty for Production",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "reserved_qty_for_sub_contract",
+   "label": "Reserved Qty for Subcontract",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "reserved_qty_for_production_plan",
+   "label": "Reserved Qty for Production Plan",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "projected_qty",
+   "label": "Projected Qty",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "section_break_pmrs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "stock_uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_0slj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "valuation_rate",
+   "label": "Valuation Rate",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "stock_value",
+   "label": "Stock Value",
+   "fieldtype": "Float",
+   "readOnly": true
+  }
+ ]
+}

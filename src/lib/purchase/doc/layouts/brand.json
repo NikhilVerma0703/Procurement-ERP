@@ -1,0 +1,45 @@
+{
+ "doctype": "Brand",
+ "module": "Setup",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:brand",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "brand",
+   "label": "Brand Name",
+   "fieldtype": "Data",
+   "reqd": true
+  },
+  {
+   "fieldname": "image",
+   "label": "Image",
+   "fieldtype": "Attach Image",
+   "hidden": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text",
+   "inListView": true
+  },
+  {
+   "fieldname": "defaults",
+   "label": "Defaults",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "brand_defaults",
+   "label": "Brand Defaults",
+   "fieldtype": "Table",
+   "options": "Item Default"
+  }
+ ]
+}

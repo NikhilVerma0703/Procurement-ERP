@@ -1,0 +1,197 @@
+{
+ "doctype": "Packed Item",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "parent_item",
+   "label": "Parent Item",
+   "fieldtype": "Link",
+   "options": "Item",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text Editor",
+   "inListView": true
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "warehouse",
+   "label": "From Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "target_warehouse",
+   "label": "To Warehouse (Optional)",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "printHide": true
+  },
+  {
+   "fieldname": "conversion_factor",
+   "label": "Conversion Factor",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "qty",
+   "label": "Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "rate",
+   "label": "Rate",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "inListView": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "readOnly": true
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "serial_no",
+   "label": "Serial No",
+   "fieldtype": "Text"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "batch_no",
+   "label": "Batch No",
+   "fieldtype": "Link",
+   "options": "Batch"
+  },
+  {
+   "fieldname": "actual_batch_qty",
+   "label": "Actual Batch Quantity",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "dependsOn": "batch_no",
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_13",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "actual_qty",
+   "label": "Actual Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "projected_qty",
+   "label": "Projected Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "ordered_qty",
+   "label": "Ordered Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "packed_qty",
+   "label": "Packed Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "dependsOn": "eval: doc.packed_qty",
+   "nonNegative": true
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "incoming_rate",
+   "label": "Incoming Rate",
+   "fieldtype": "Currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "picked_qty",
+   "label": "Picked Qty",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "page_break",
+   "label": "Page Break",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "prevdoc_doctype",
+   "label": "Prevdoc DocType",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "parent_detail_docname",
+   "label": "Parent Detail docname",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  }
+ ]
+}

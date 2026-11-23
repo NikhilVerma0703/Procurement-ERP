@@ -1,0 +1,175 @@
+{
+ "doctype": "Pick List",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": true,
+ "autoname": "naming_series:",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "label": "Series",
+   "fieldtype": "Select",
+   "options": "STO-PICK-.YYYY.-",
+   "reqd": true
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "purpose",
+   "label": "Purpose",
+   "fieldtype": "Select",
+   "options": "Material Transfer for Manufacture\nMaterial Transfer\nDelivery",
+   "default": "Material Transfer for Manufacture"
+  },
+  {
+   "fieldname": "customer",
+   "label": "Customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "dependsOn": "eval:doc.purpose==='Delivery'",
+   "inListView": true
+  },
+  {
+   "fieldname": "customer_name",
+   "label": "Customer Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "dependsOn": "eval:doc.purpose==='Delivery' && doc.customer",
+   "fetchFrom": "customer.customer_name"
+  },
+  {
+   "fieldname": "work_order",
+   "label": "Work Order",
+   "fieldtype": "Link",
+   "options": "Work Order",
+   "dependsOn": "eval:doc.purpose==='Material Transfer for Manufacture'"
+  },
+  {
+   "fieldname": "material_request",
+   "label": "Material Request",
+   "fieldtype": "Link",
+   "options": "Material Request",
+   "dependsOn": "eval:['Material Transfer', 'Material Issue'].includes(doc.purpose)"
+  },
+  {
+   "fieldname": "for_qty",
+   "label": "Qty of Finished Goods Item",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "dependsOn": "eval:doc.purpose==='Material Transfer for Manufacture'",
+   "description": "Qty of raw materials will be decided based on the qty of the Finished Goods Item"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "parent_warehouse",
+   "label": "Parent Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "description": "Items under this warehouse will be suggested"
+  },
+  {
+   "fieldname": "consider_rejected_warehouses",
+   "label": "Consider Rejected Warehouses",
+   "fieldtype": "Check",
+   "description": "Enable it if users want to consider rejected materials to dispatch."
+  },
+  {
+   "fieldname": "get_item_locations",
+   "label": "Get Item Locations",
+   "fieldtype": "Button",
+   "dependsOn": "eval:doc.docstatus===0"
+  },
+  {
+   "fieldname": "pick_manually",
+   "label": "Pick Manually",
+   "fieldtype": "Check",
+   "description": "If enabled then system won't override the picked qty / batches / serial numbers."
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:!doc.docstatus"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "label": "Scan Barcode",
+   "fieldtype": "Data",
+   "options": "Barcode"
+  },
+  {
+   "fieldname": "column_break_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scan_mode",
+   "label": "Scan Mode",
+   "fieldtype": "Check",
+   "description": "If checked, picked qty won't automatically be fulfilled on submit of pick list."
+  },
+  {
+   "fieldname": "prompt_qty",
+   "label": "Prompt Qty",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "section_break_15",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "locations",
+   "label": "Item Locations",
+   "fieldtype": "Table",
+   "options": "Pick List Item",
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "amended_from",
+   "label": "Amended From",
+   "fieldtype": "Link",
+   "options": "Pick List",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "print_settings_section",
+   "label": "Print Settings",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "group_same_items",
+   "label": "Group Same Items",
+   "fieldtype": "Check",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "status",
+   "label": "Status",
+   "fieldtype": "Select",
+   "options": "Draft\nOpen\nCompleted\nCancelled",
+   "hidden": true,
+   "reqd": true,
+   "readOnly": true,
+   "inStandardFilter": true,
+   "default": "Draft",
+   "printHide": true
+  }
+ ]
+}

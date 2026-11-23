@@ -1,0 +1,176 @@
+{
+ "doctype": "Sales Taxes and Charges",
+ "module": "Accounts",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "charge_type",
+   "label": "Type",
+   "fieldtype": "Select",
+   "options": "\nActual\nOn Net Total\nOn Previous Row Amount\nOn Previous Row Total\nOn Item Quantity",
+   "reqd": true,
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "row_id",
+   "label": "Reference Row #",
+   "fieldtype": "Data",
+   "dependsOn": "eval:[\"On Previous Row Amount\", \"On Previous Row Total\"].indexOf(doc.charge_type)!==-1"
+  },
+  {
+   "fieldname": "account_head",
+   "label": "Account Head",
+   "fieldtype": "Link",
+   "options": "Account",
+   "reqd": true,
+   "inListView": true,
+   "columns": 2,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Small Text",
+   "reqd": true
+  },
+  {
+   "fieldname": "included_in_print_rate",
+   "label": "Is this Tax included in Basic Rate?",
+   "fieldtype": "Check",
+   "description": "If checked, the tax amount will be considered as already included in the Print Rate / Print Amount",
+   "printHide": true
+  },
+  {
+   "fieldname": "included_in_paid_amount",
+   "label": "Considered In Paid Amount",
+   "fieldtype": "Check",
+   "dependsOn": "eval:['Sales Taxes and Charges Template', 'Payment Entry'].includes(parent.doctype)",
+   "description": "If checked, the tax amount will be considered as already included in the Paid Amount in Payment Entry"
+  },
+  {
+   "fieldname": "accounting_dimensions_section",
+   "label": "Accounting Dimensions",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "label": "Cost Center",
+   "fieldtype": "Link",
+   "options": "Cost Center",
+   "allowOnSubmit": true,
+   "default": ":Company"
+  },
+  {
+   "fieldname": "dimension_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "rate",
+   "label": "Tax Rate",
+   "fieldtype": "Float",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "gst_tax_type",
+   "label": "GST Tax Type",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "account_currency",
+   "label": "Account Currency",
+   "fieldtype": "Link",
+   "options": "Currency",
+   "readOnly": true,
+   "fetchFrom": "account_head.account_currency"
+  },
+  {
+   "fieldname": "tax_amount",
+   "label": "Amount",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "total",
+   "label": "Total",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "tax_amount_after_discount_amount",
+   "label": "Tax Amount After Discount Amount",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "base_tax_amount",
+   "label": "Amount (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "base_total",
+   "label": "Total (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "base_tax_amount_after_discount_amount",
+   "label": "Tax Amount After Discount Amount (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "dependsOn": "eval:parent.discount_amount"
+  },
+  {
+   "fieldname": "item_wise_tax_detail",
+   "label": "Item Wise Tax Detail",
+   "fieldtype": "Code",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "dont_recompute_tax",
+   "label": "Dont Recompute tax",
+   "fieldtype": "Check",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  }
+ ]
+}

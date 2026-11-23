@@ -1,0 +1,530 @@
+{
+ "doctype": "Stock Entry",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": true,
+ "autoname": "naming_series:",
+ "showTitleFieldInLink": false,
+ "titleField": "stock_entry_type",
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": "posting_date, from_warehouse, to_warehouse, purpose, remarks",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "stock_entry_details_tab",
+   "label": "Details",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "naming_series",
+   "label": "Series",
+   "fieldtype": "Select",
+   "options": "MAT-STE/24-25/",
+   "reqd": true,
+   "default": "MAT-STE/24-25/",
+   "printHide": true
+  },
+  {
+   "fieldname": "stock_entry_type",
+   "label": "Stock Entry Type",
+   "fieldtype": "Link",
+   "options": "Stock Entry Type",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "outgoing_stock_entry",
+   "label": "Stock Entry (Outward GIT)",
+   "fieldtype": "Link",
+   "options": "Stock Entry",
+   "readOnly": true,
+   "dependsOn": "eval:doc.purpose == 'Material Transfer'"
+  },
+  {
+   "fieldname": "purpose",
+   "label": "Purpose",
+   "fieldtype": "Select",
+   "options": "Material Issue\nMaterial Receipt\nMaterial Transfer\nMaterial Transfer for Manufacture\nMaterial Consumption for Manufacture\nManufacture\nRepack\nSend to Subcontractor",
+   "hidden": true,
+   "readOnly": true,
+   "bold": true,
+   "inListView": true,
+   "fetchFrom": "stock_entry_type.purpose"
+  },
+  {
+   "fieldname": "add_to_transit",
+   "label": "Add to Transit",
+   "fieldtype": "Check",
+   "dependsOn": "eval: doc.purpose=='Material Transfer' && !doc.outgoing_stock_entry",
+   "fetchFrom": "stock_entry_type.add_to_transit"
+  },
+  {
+   "fieldname": "work_order",
+   "label": "Work Order",
+   "fieldtype": "Link",
+   "options": "Work Order",
+   "dependsOn": "eval:in_list([\"Material Transfer for Manufacture\", \"Manufacture\", \"Material Consumption for Manufacture\"], doc.purpose)",
+   "printHide": true
+  },
+  {
+   "fieldname": "custom_material_transfer",
+   "label": "Material Transfer",
+   "fieldtype": "Link",
+   "options": "Stock Entry",
+   "hidden": true
+  },
+  {
+   "fieldname": "purchase_order",
+   "label": "Purchase Order",
+   "fieldtype": "Link",
+   "options": "Purchase Order",
+   "dependsOn": "eval:doc.purpose==\"Send to Subcontractor\""
+  },
+  {
+   "fieldname": "subcontracting_order",
+   "label": "Subcontracting Order",
+   "fieldtype": "Link",
+   "options": "Subcontracting Order",
+   "dependsOn": "eval:doc.purpose==\"Send to Subcontractor\""
+  },
+  {
+   "fieldname": "delivery_note_no",
+   "label": "Delivery Note No",
+   "fieldtype": "Link",
+   "options": "Delivery Note",
+   "dependsOn": "eval:doc.purpose==\"Sales Return\"",
+   "printHide": true
+  },
+  {
+   "fieldname": "sales_invoice_no",
+   "label": "Sales Invoice No",
+   "fieldtype": "Link",
+   "options": "Sales Invoice",
+   "dependsOn": "eval:doc.purpose==\"Sales Return\"",
+   "printHide": true
+  },
+  {
+   "fieldname": "pick_list",
+   "label": "Pick List",
+   "fieldtype": "Link",
+   "options": "Pick List",
+   "readOnly": true
+  },
+  {
+   "fieldname": "purchase_receipt_no",
+   "label": "Purchase Receipt No",
+   "fieldtype": "Link",
+   "options": "Purchase Receipt",
+   "dependsOn": "eval:doc.purpose==\"Purchase Return\"",
+   "printHide": true
+  },
+  {
+   "fieldname": "col2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "reqd": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "posting_date",
+   "label": "Posting Date",
+   "fieldtype": "Date",
+   "default": "Today"
+  },
+  {
+   "fieldname": "posting_time",
+   "label": "Posting Time",
+   "fieldtype": "Time",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_eaoa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "set_posting_time",
+   "label": "Edit Posting Date and Time",
+   "fieldtype": "Check",
+   "dependsOn": "eval:doc.docstatus==0",
+   "printHide": true
+  },
+  {
+   "fieldname": "inspection_required",
+   "label": "Inspection Required",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "apply_putaway_rule",
+   "label": "Apply Putaway Rule",
+   "fieldtype": "Check",
+   "dependsOn": "eval:in_list([\"Material Transfer\", \"Material Receipt\"], doc.purpose)"
+  },
+  {
+   "fieldname": "bom_info_section",
+   "label": "BOM Info",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "from_bom",
+   "label": "From BOM",
+   "fieldtype": "Check",
+   "dependsOn": "eval:in_list([\"Material Issue\", \"Material Transfer\", \"Manufacture\", \"Repack\", \"Send to Subcontractor\", \"Material Transfer for Manufacture\", \"Material Consumption for Manufacture\"], doc.purpose)",
+   "printHide": true
+  },
+  {
+   "fieldname": "use_multi_level_bom",
+   "label": "Use Multi-Level BOM",
+   "fieldtype": "Check",
+   "dependsOn": "from_bom",
+   "description": "Including items for sub assemblies",
+   "default": "1",
+   "printHide": true
+  },
+  {
+   "fieldname": "bom_no",
+   "label": "BOM No",
+   "fieldtype": "Link",
+   "options": "BOM",
+   "dependsOn": "from_bom"
+  },
+  {
+   "fieldname": "cb1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fg_completed_qty",
+   "label": "Finished Good Quantity ",
+   "fieldtype": "Float",
+   "dependsOn": "from_bom",
+   "description": "As per Stock UOM",
+   "printHide": true
+  },
+  {
+   "fieldname": "get_items",
+   "label": "Get Items",
+   "fieldtype": "Button",
+   "dependsOn": "from_bom",
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_7qsm",
+   "label": "Process Loss",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval: doc.fg_completed_qty > 0 && in_list([\"Manufacture\", \"Repack\"], doc.purpose)",
+   "collapsible": true
+  },
+  {
+   "fieldname": "process_loss_percentage",
+   "label": "% Process Loss",
+   "fieldtype": "Percent",
+   "dependsOn": "eval:doc.from_bom && doc.fg_completed_qty"
+  },
+  {
+   "fieldname": "column_break_e92r",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "process_loss_qty",
+   "label": "Process Loss Qty",
+   "fieldtype": "Float",
+   "dependsOn": "eval: doc.fg_completed_qty > 0 && in_list([\"Manufacture\", \"Repack\"], doc.purpose)"
+  },
+  {
+   "fieldname": "section_break_jwgn",
+   "label": "Default Warehouse",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "from_warehouse",
+   "label": "Default Source Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "inListView": true,
+   "inStandardFilter": true,
+   "description": "Sets 'Source Warehouse' in each row of the items table.",
+   "printHide": true
+  },
+  {
+   "fieldname": "source_warehouse_address",
+   "label": "Source Warehouse Address",
+   "fieldtype": "Link",
+   "options": "Address",
+   "dependsOn": "from_warehouse"
+  },
+  {
+   "fieldname": "source_address_display",
+   "label": "Source Warehouse Address",
+   "fieldtype": "Small Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "cb0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_warehouse",
+   "label": "Default Target Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "inListView": true,
+   "inStandardFilter": true,
+   "description": "Sets 'Target Warehouse' in each row of the items table.",
+   "printHide": true
+  },
+  {
+   "fieldname": "target_warehouse_address",
+   "label": "Target Warehouse Address",
+   "fieldtype": "Link",
+   "options": "Address",
+   "dependsOn": "to_warehouse"
+  },
+  {
+   "fieldname": "target_address_display",
+   "label": "Target Warehouse Address",
+   "fieldtype": "Small Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "sb0",
+   "fieldtype": "Section Break",
+   "options": "Simple"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "label": "Scan Barcode",
+   "fieldtype": "Data",
+   "options": "Barcode"
+  },
+  {
+   "fieldname": "items_section",
+   "label": "Items",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "items",
+   "label": "Items",
+   "fieldtype": "Table",
+   "options": "Stock Entry Detail",
+   "reqd": true
+  },
+  {
+   "fieldname": "get_stock_and_rate",
+   "label": "Update Rate and Availability",
+   "fieldtype": "Button",
+   "options": "get_stock_and_rate",
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_19",
+   "fieldtype": "Section Break",
+   "printHide": true
+  },
+  {
+   "fieldname": "total_outgoing_value",
+   "label": "Total Outgoing Value (Consumption)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_22",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_incoming_value",
+   "label": "Total Incoming Value (Receipt)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "value_difference",
+   "label": "Total Value Difference (Incoming - Outgoing)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "additional_costs_section",
+   "label": "Additional Costs",
+   "fieldtype": "Tab Break",
+   "collapsible": true,
+   "collapsibleDependsOn": "total_additional_costs"
+  },
+  {
+   "fieldname": "additional_costs",
+   "label": "Additional Costs",
+   "fieldtype": "Table",
+   "options": "Landed Cost Taxes and Charges"
+  },
+  {
+   "fieldname": "total_additional_costs",
+   "label": "Total Additional Costs",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "supplier_info_tab",
+   "label": "Supplier Info",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "contact_section",
+   "label": "Supplier Details",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:doc.purpose === \"Send to Subcontractor\"",
+   "collapsible": true
+  },
+  {
+   "fieldname": "supplier",
+   "label": "Supplier",
+   "fieldtype": "Link",
+   "options": "Supplier",
+   "dependsOn": "eval:doc.purpose === \"Send to Subcontractor\"",
+   "printHide": true
+  },
+  {
+   "fieldname": "supplier_name",
+   "label": "Supplier Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "dependsOn": "eval:doc.purpose === \"Send to Subcontractor\"",
+   "bold": true
+  },
+  {
+   "fieldname": "supplier_address",
+   "label": "Supplier Address",
+   "fieldtype": "Link",
+   "options": "Address",
+   "dependsOn": "eval:doc.purpose === \"Send to Subcontractor\""
+  },
+  {
+   "fieldname": "address_display",
+   "label": "Address",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "accounting_dimensions_section",
+   "label": "Accounting Dimensions",
+   "fieldtype": "Tab Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "project",
+   "label": "Project",
+   "fieldtype": "Link",
+   "options": "Project"
+  },
+  {
+   "fieldname": "other_info_tab",
+   "label": "Other Info",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "printing_settings",
+   "label": "Printing Settings",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "select_print_heading",
+   "label": "Print Heading",
+   "fieldtype": "Link",
+   "options": "Print Heading",
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "print_settings_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "letter_head",
+   "label": "Letter Head",
+   "fieldtype": "Link",
+   "options": "Letter Head"
+  },
+  {
+   "fieldname": "more_info",
+   "label": "More Information",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "is_opening",
+   "label": "Is Opening",
+   "fieldtype": "Select",
+   "options": "No\nYes"
+  },
+  {
+   "fieldname": "remarks",
+   "label": "Remarks",
+   "fieldtype": "Text",
+   "printHide": true
+  },
+  {
+   "fieldname": "col5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "per_transferred",
+   "label": "Per Transferred",
+   "fieldtype": "Percent",
+   "readOnly": true,
+   "inListView": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "total_amount",
+   "label": "Total Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "dependsOn": "total_amount"
+  },
+  {
+   "fieldname": "job_card",
+   "label": "Job Card",
+   "fieldtype": "Link",
+   "options": "Job Card",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "amended_from",
+   "label": "Amended From",
+   "fieldtype": "Link",
+   "options": "Stock Entry",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "credit_note",
+   "label": "Credit Note",
+   "fieldtype": "Link",
+   "options": "Journal Entry",
+   "hidden": true
+  },
+  {
+   "fieldname": "is_return",
+   "label": "Is Return",
+   "fieldtype": "Check",
+   "hidden": true,
+   "readOnly": true,
+   "inListView": true,
+   "printHide": true
+  }
+ ]
+}

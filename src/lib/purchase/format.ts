@@ -25,6 +25,20 @@ export function formatNumber(value: number, decimals: number): string {
   return `${negative ? "-" : ""}${grouped}${frac ? `.${frac}` : ""}`;
 }
 
+/**
+ * Frappe's Float formatter (frappe.form.formatters.Float): the float precision (System Settings, 3),
+ * except that a value whose decimals round to zero shows none ("show 1.000000 as 1"): "541",
+ * "1,022.927", "0.500". Used by the stock reports.
+ */
+export function formatFloat(value: number | string | null | undefined, precision = 3): string {
+  if (value === null || value === undefined || value === "") return "";
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "";
+  const fixed = n.toFixed(precision);
+  const frac = fixed.split(".")[1] ?? "";
+  return formatNumber(n, /^0*$/.test(frac) ? 0 : precision);
+}
+
 /** A whole-number count, as the list's "20 of 3,199". */
 export const formatCount = (n: number) => formatNumber(n, 0);
 

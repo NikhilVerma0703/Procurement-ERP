@@ -1,0 +1,159 @@
+{
+ "doctype": "Purchase Receipt Item Supplied",
+ "module": "Buying",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "main_item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "rm_item_code",
+   "label": "Raw Material Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "bom_detail_no",
+   "label": "BOM Detail No",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "col_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text Editor",
+   "readOnly": true
+  },
+  {
+   "fieldname": "stock_uom",
+   "label": "Stock Uom",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "readOnly": true
+  },
+  {
+   "fieldname": "conversion_factor",
+   "label": "Conversion Factor",
+   "fieldtype": "Float",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "reference_name",
+   "label": "Reference Name",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "secbreak_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "rate",
+   "label": "Rate",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "col_break2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amount",
+   "label": "Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "secbreak_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "required_qty",
+   "label": "Available Qty For Consumption",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "col_break3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "consumed_qty",
+   "label": "Qty to Be Consumed",
+   "fieldtype": "Float",
+   "reqd": true,
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "current_stock",
+   "label": "Current Stock",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "secbreak_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "batch_no",
+   "label": "Batch No",
+   "fieldtype": "Link",
+   "options": "Batch"
+  },
+  {
+   "fieldname": "col_break4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "serial_no",
+   "label": "Serial No",
+   "fieldtype": "Text"
+  },
+  {
+   "fieldname": "purchase_order",
+   "label": "Purchase Order",
+   "fieldtype": "Link",
+   "options": "Purchase Order",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  }
+ ]
+}

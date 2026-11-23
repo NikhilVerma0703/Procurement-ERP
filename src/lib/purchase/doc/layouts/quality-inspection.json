@@ -1,0 +1,181 @@
+{
+ "doctype": "Quality Inspection",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": true,
+ "autoname": "naming_series:",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": "item_code, report_date, reference_name",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "label": "Series",
+   "fieldtype": "Select",
+   "options": "MAT-QA/24-25/",
+   "reqd": true,
+   "default": "MAT-QA/24-25/"
+  },
+  {
+   "fieldname": "report_date",
+   "label": "Report Date",
+   "fieldtype": "Date",
+   "reqd": true,
+   "inListView": true,
+   "default": "Today"
+  },
+  {
+   "fieldname": "status",
+   "label": "Status",
+   "fieldtype": "Select",
+   "options": "\nAccepted\nRejected",
+   "reqd": true,
+   "default": "Accepted"
+  },
+  {
+   "fieldname": "manual_inspection",
+   "label": "Manual Inspection",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "inspection_type",
+   "label": "Inspection Type",
+   "fieldtype": "Select",
+   "options": "\nIncoming\nOutgoing\nIn Process",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "reference_type",
+   "label": "Reference Type",
+   "fieldtype": "Select",
+   "options": "\nPurchase Receipt\nPurchase Invoice\nDelivery Note\nSales Invoice\nStock Entry\nJob Card",
+   "reqd": true
+  },
+  {
+   "fieldname": "reference_name",
+   "label": "Reference Name",
+   "fieldtype": "Dynamic Link",
+   "options": "reference_type",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "item_serial_no",
+   "label": "Item Serial No",
+   "fieldtype": "Link",
+   "options": "Serial No"
+  },
+  {
+   "fieldname": "batch_no",
+   "label": "Batch No",
+   "fieldtype": "Link",
+   "options": "Batch"
+  },
+  {
+   "fieldname": "sample_size",
+   "label": "Sample Size",
+   "fieldtype": "Float",
+   "reqd": true
+  },
+  {
+   "fieldname": "column_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "fetchFrom": "item_code.item_name"
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Small Text",
+   "fetchFrom": "item_code.description"
+  },
+  {
+   "fieldname": "bom_no",
+   "label": "BOM No",
+   "fieldtype": "Link",
+   "options": "BOM",
+   "readOnly": true
+  },
+  {
+   "fieldname": "specification_details",
+   "fieldtype": "Section Break",
+   "options": "Simple"
+  },
+  {
+   "fieldname": "quality_inspection_template",
+   "label": "Quality Inspection Template",
+   "fieldtype": "Link",
+   "options": "Quality Inspection Template",
+   "hidden": true
+  },
+  {
+   "fieldname": "readings",
+   "label": "Readings",
+   "fieldtype": "Table",
+   "options": "Quality Inspection Reading"
+  },
+  {
+   "fieldname": "section_break_14",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "inspected_by",
+   "label": "Inspected By",
+   "fieldtype": "Link",
+   "options": "User",
+   "reqd": true,
+   "default": "user"
+  },
+  {
+   "fieldname": "verified_by",
+   "label": "Verified By",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remarks",
+   "label": "Remarks",
+   "fieldtype": "Text"
+  },
+  {
+   "fieldname": "amended_from",
+   "label": "Amended From",
+   "fieldtype": "Link",
+   "options": "Quality Inspection",
+   "readOnly": true,
+   "printHide": true
+  }
+ ]
+}

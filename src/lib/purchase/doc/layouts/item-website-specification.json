@@ -1,0 +1,28 @@
+{
+ "doctype": "Item Website Specification",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "label",
+   "label": "Label",
+   "fieldtype": "Data",
+   "inListView": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text Editor",
+   "inListView": true
+  }
+ ]
+}

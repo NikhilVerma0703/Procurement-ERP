@@ -1,0 +1,172 @@
+{
+ "doctype": "Stock Reconciliation Item",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "barcode",
+   "label": "Barcode",
+   "fieldtype": "Data",
+   "printHide": true
+  },
+  {
+   "fieldname": "has_item_scanned",
+   "label": "Has Item Scanned",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "dependsOn": "barcode"
+  },
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "inListView": true,
+   "columns": 3
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "fetchFrom": "item_code.item_name",
+   "printHide": true
+  },
+  {
+   "fieldname": "item_group",
+   "label": "Item Group",
+   "fieldtype": "Link",
+   "options": "Item Group",
+   "fetchFrom": "item_code.item_group"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "warehouse",
+   "label": "Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "reqd": true,
+   "inListView": true,
+   "columns": 3
+  },
+  {
+   "fieldname": "qty",
+   "label": "Quantity",
+   "fieldtype": "Float",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "valuation_rate",
+   "label": "Valuation Rate",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "amount",
+   "label": "Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "allow_zero_valuation_rate",
+   "label": "Allow Zero Valuation Rate",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "dependsOn": "allow_zero_valuation_rate",
+   "printHide": true
+  },
+  {
+   "fieldname": "serial_no_and_batch_section",
+   "label": "Serial No and Batch",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "batch_no",
+   "label": "Batch No",
+   "fieldtype": "Link",
+   "options": "Batch"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "serial_no",
+   "label": "Serial No",
+   "fieldtype": "Long Text"
+  },
+  {
+   "fieldname": "section_break_3",
+   "label": "Before reconciliation",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "current_qty",
+   "label": "Current Qty",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "current_amount",
+   "label": "Current Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_valuation_rate",
+   "label": "Current Valuation Rate",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "current_serial_no",
+   "label": "Current Serial No",
+   "fieldtype": "Long Text",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_14",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "quantity_difference",
+   "label": "Quantity Difference",
+   "fieldtype": "Read Only"
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amount_difference",
+   "label": "Amount Difference",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  }
+ ]
+}

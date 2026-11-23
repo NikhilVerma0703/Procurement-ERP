@@ -89,3 +89,12 @@ body {
 .purchase-root .po-html h2 { font-size: 1.25em; font-weight: 600; }
 .purchase-root .po-html h3, .purchase-root .po-html h4 { font-size: 1.1em; font-weight: 600; }
 .purchase-root .po-html blockquote { border-left: 3px solid #e5e7eb; padding-left: 0.75rem; color: #4b5563; }
+/* The tax / GST break-up tables of a receipt's form (ERPNext's and India Compliance's HTML, Phase II). */
+.purchase-root .po-html .tax-break-up table { width: 100%; border-collapse: collapse; }
+.purchase-root .po-html .tax-break-up th, .purchase-root .po-html .tax-break-up td { border: 1px solid #e5e7eb; padding: 0.35rem 0.5rem; }
+.purchase-root .po-html .tax-break-up th { background: #f9fafb; font-weight: 500; color: #4b5563; }
+.purchase-root .po-html .tax-break-up .text-right { text-align: right; }
+.purchase-root .po-html .tax-break-up .text-left { text-align: left; }
+/* ⋯ › Jump to field: the field it lands on flashes once (form/JumpToField.tsx). */
+.purchase-root .po-jump-highlight { animation: po-jump 1.5s ease-out; border-radius: 0.375rem; }
+@keyframes po-jump { 0%, 40% { background: #fef3c7; box-shadow: 0 0 0 4px #fef3c7; } 100% { background: transparent; box-shadow: 0 0 0 4px transparent; } }

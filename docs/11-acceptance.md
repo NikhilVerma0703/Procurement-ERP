@@ -18,7 +18,7 @@
 
 | # | Do | Expect | ✓ / ✗ |
 |---|---|---|---|
-| B1 | Open Buying › Purchase Order. | 3,217 POs, as of the 19-11-2026 backup (plus any raised since). The columns and status colours are as on the old list. | |
+| B1 | Open Buying › Purchase Order. | 3,227 POs, as of the 21-11-2026 backup (plus any raised since). The columns and status colours are as on the old list. | |
 | B2 | Use each quick filter in turn: ID, Supplier, Supplier Name, Company, Status. | Each one narrows the list; clearing it brings the rows back. | |
 | B3 | Add a filter with the filter builder. Search, sort, then switch between 20 / 100 / 500 and press Load More. | Rows and the "N of M" count follow. The address bar keeps the view, so a bookmark reopens it. | |
 | B4 | Export. | An Excel file of the filtered list downloads. | |
@@ -126,7 +126,7 @@ Defaults apply where a recommendation is given and you say nothing.
 | 15 | **Merge on Rename** (used once). | Leave out. | [09](09-masters.md) |
 | 16 | **Item Group defaults and taxes** for new items (4 group tax rows). | Leave out unless the team relied on them. | [09](09-masters.md) |
 | 17 | **Your separate supplier and item list files.** The plan was to match them against the imported masters (by code, GSTIN and name). It needs those files. | Send them, or confirm they are no longer needed. | plan §4, §8.5 |
-| 18 | **The final backup** from the old site, if POs were raised after 19-11-2026 15:21 (the last backup imported: 3,217 POs). | Take it on the last day, and import it at cut-over. | plan Step 0 |
+| 18 | **The final backup** from the old site, if POs were raised after 21-11-2026 16:44 (the last backup imported: 3,227 POs, and the Stock documents). | Take it on the last day, and import it at cut-over. | plan Step 0 |
 | 19 | **Assign To, Apply Assignment Rule and Add Tags** in the lists' Actions menu. They need assignments and tags (0 POs used them). | Leave out. | [05](05-list-screen.md) §2 |
 | 20 | **Bulk Edit and Print on the master lists** (Frappe's Actions menu had both). | Leave out unless the team used them. | [09](09-masters.md) |
 | 21 | **Letter Head and Page Size** in the bulk Print dialog. The PO layouts draw their own logo on A4, as the print view does. | Leave out. | [05](05-list-screen.md) §2 |

@@ -16,6 +16,7 @@ import {
 } from "../orders/labels";
 import { MODES_OF_TRANSPORT, PURPOSES, SHIPMENT_TYPES } from "../orders/options";
 import type { DumpTable, Row, TableSpec } from "./dump";
+import { buildStock, STOCK_EVENT_DOCTYPES, STOCK_INSERT_ORDER, STOCK_SOURCE_TABLES, type BuiltStock } from "./stock-build";
 import {
   bool,
   dateOnly,
@@ -31,6 +32,8 @@ import {
 } from "./convert";
 
 const PO = "Purchase Order";
+/** The naming series imported with their counters: the PO's, and the stock documents' (Phase II). */
+const STOCK_SERIES = ["PUR-ORD/", "GE-", "PR/", "MAT-MR-", "MAT-STE", "MAT-LCV-", "MAT-RECO-", "MAT-QA", "DN/", "MAT-PAC-"];
 const parentIs = (doctype: string) => (r: Row) => r.parenttype === doctype;
 
 /** The backup tables the import reads (and how they are narrowed while reading). */
@@ -45,9 +48,11 @@ export const SOURCE_TABLES: readonly TableSpec[] = [
   { table: "tabCost Center" },
   { table: "tabWarehouse" },
   { table: "tabLetter Head" },
-  { table: "tabSeries", where: (r) => (r.name ?? "").startsWith("PUR-ORD/") },
+  // The PO series, and (Phase II) the stock documents' series, so their numbering carries on.
+  { table: "tabSeries", where: (r) => STOCK_SERIES.some((p) => (r.name ?? "").startsWith(p)) },
   { table: "tabPurchase Taxes and Charges Template" },
-  { table: "tabPurchase Taxes and Charges", where: (r) => r.parenttype === PO || r.parenttype === "Purchase Taxes and Charges Template" },
+  // PO and template rows (Phase I), receipt rows (Phase II, stock-build.ts); each use filters by parenttype.
+  { table: "tabPurchase Taxes and Charges", where: (r) => r.parenttype === PO || r.parenttype === "Purchase Taxes and Charges Template" || r.parenttype === "Purchase Receipt" },
   { table: "tabItem Tax Template" },
   { table: "tabItem Tax Template Detail" },
   { table: "tabPayment Term" },
@@ -75,27 +80,26 @@ export const SOURCE_TABLES: readonly TableSpec[] = [
   { table: "tabGST HSN Code", columns: ["name", "hsn_code", "description"] },
   { table: "tabPurchase Order" },
   { table: "tabPurchase Order Item", where: parentIs(PO) },
-  { table: "tabServices Items", where: parentIs(PO) },
+  // The PO's (its Cost Overheads, below) and the receipt's (stock-build.ts); each use filters by parenttype.
+  { table: "tabServices Items", where: (r) => r.parenttype === PO || r.parenttype === "Purchase Receipt" },
   { table: "tabPayment Schedule", where: parentIs(PO) },
-  { table: "tabPurchase Receipt", columns: ["name", "posting_date", "docstatus", "status"] },
-  {
-    table: "tabPurchase Receipt Item",
-    where: (r) => !!r.purchase_order,
-    columns: ["name", "parent", "idx", "purchase_order", "purchase_order_item", "item_code", "qty", "received_qty", "rejected_qty", "docstatus"],
-  },
+  // tabPurchase Receipt, its lines and tabMaterial Request are read whole by STOCK_SOURCE_TABLES
+  // (Phase II imports them); the PO's Connections below use the lines that name a PO.
   { table: "tabPurchase Invoice", columns: ["name", "posting_date", "docstatus", "status"] },
   {
     table: "tabPurchase Invoice Item",
     where: (r) => !!r.purchase_order,
     columns: ["name", "parent", "idx", "purchase_order", "po_detail", "item_code", "qty", "amount", "docstatus"],
   },
-  { table: "tabMaterial Request", columns: ["name", "transaction_date", "docstatus", "status", "material_request_type"] },
-  { table: "tabVersion", where: (r) => r.ref_doctype === PO },
-  { table: "tabComment", where: (r) => r.reference_doctype === PO },
-  { table: "tabCommunication", where: (r) => r.reference_doctype === PO },
+  // The PO's timeline, and (Phase II) the stock documents' (docEvents below).
+  { table: "tabVersion", where: (r) => r.ref_doctype === PO || STOCK_EVENT_DOCTYPES.has(r.ref_doctype ?? "") },
+  { table: "tabComment", where: (r) => r.reference_doctype === PO || STOCK_EVENT_DOCTYPES.has(r.reference_doctype ?? "") },
+  { table: "tabCommunication", where: (r) => r.reference_doctype === PO || STOCK_EVENT_DOCTYPES.has(r.reference_doctype ?? "") },
   { table: "tabFile", where: (r) => r.attached_to_doctype === PO },
   { table: "tabUser" },
   { table: "tabHas Role", where: parentIs("User") },
+  // Phase II: the Stock module's documents, read whole (stock-build.ts).
+  ...STOCK_SOURCE_TABLES,
 ];
 
 // ERPNext labels → enum keys -------------------------------------------------
@@ -116,7 +120,7 @@ const COMMENT_KIND = {
 /** Columns of tabUser that hold tokens or tracking data, kept out of `legacy`. */
 const USER_PRIVATE = new Set(["api_key", "reset_password_key", "last_reset_password_key_generated_on", "last_ip", "login_after", "login_before", "restrict_ip"]);
 
-export interface Built {
+export interface Built extends BuiltStock {
   companies: Prisma.PurchaseCompanyCreateManyInput[];
   currencies: Prisma.PurchaseCurrencyCreateManyInput[];
   currencyExchanges: Prisma.PurchaseCurrencyExchangeCreateManyInput[];
@@ -162,6 +166,8 @@ export interface Built {
   orderPaymentSchedules: Prisma.PurchaseOrderPaymentScheduleCreateManyInput[];
   orderLinks: Prisma.PurchaseOrderLinkCreateManyInput[];
   orderEvents: Prisma.PurchaseOrderEventCreateManyInput[];
+  /** Phase II: the stock documents' timelines. */
+  docEvents: Prisma.PurchaseDocEventCreateManyInput[];
   attachments: Prisma.PurchaseAttachmentCreateManyInput[];
   users: Prisma.PurchaseUserCreateManyInput[];
   /** Source row counts, as the reconciliation compares them. */
@@ -178,7 +184,9 @@ export const INSERT_ORDER = [
   "addressLinks", "contactLinks", "itemGroups", "items", "itemUomConversions", "itemDefaults", "itemTaxes",
   "itemAttributes", "itemAttributeValues", "itemVariantAttributes", "hsnCodes",
   "orders", "orderItems", "orderTaxes", "orderCostOverheads", "orderPaymentSchedules", "orderLinks",
-  "orderEvents", "attachments", "users", "likes",
+  "orderEvents", "docEvents", "attachments", "users", "likes",
+  // Phase II: the Stock module's documents (stock-build.ts), after every master they point at.
+  ...STOCK_INSERT_ORDER,
 ] as const satisfies readonly (keyof Built)[];
 
 const legacyOf = (r: Row, drop?: Set<string>): Prisma.InputJsonObject => {
@@ -709,14 +717,15 @@ export function build(tables: Map<string, DumpTable>): Built {
 
   // Timeline: versions, comments (workflow, labels, deletions…), emails --------
   out.orderEvents = [];
-  for (const r of rows("tabVersion")) {
+  out.docEvents = [];
+  for (const r of rows("tabVersion").filter((x) => x.ref_doctype === PO)) {
     out.orderEvents.push({
       id: importId("ev", `Version:${r.name}`), erpnextName: `Version:${r.name}`, source: "Version", orderId: poIds.get(r.docname!) ?? null,
       orderNumber: r.docname ?? "", kind: "VERSION", at: localDateTime(r.creation)!, byEmail: text(r.owner),
       data: (jsonOf(r.data) as Prisma.InputJsonValue | undefined) ?? undefined,
     });
   }
-  for (const r of rows("tabComment")) {
+  for (const r of rows("tabComment").filter((x) => x.reference_doctype === PO)) {
     const where = `Comment ${r.name}`;
     const kind = enumOf(COMMENT_KIND, r.comment_type, where, issues) ?? "INFO";
     const deleted = kind === "DELETED";
@@ -729,10 +738,40 @@ export function build(tables: Map<string, DumpTable>): Built {
       data: deleted ? (content as Prisma.InputJsonValue | undefined) : undefined,
     });
   }
-  for (const r of rows("tabCommunication")) {
+  for (const r of rows("tabCommunication").filter((x) => x.reference_doctype === PO)) {
     out.orderEvents.push({
       id: importId("ev", `Communication:${r.name}`), erpnextName: `Communication:${r.name}`, source: "Communication",
       orderId: poIds.get(r.reference_name!) ?? null, orderNumber: r.reference_name ?? "", kind: "EMAIL",
+      at: localDateTime(r.communication_date) ?? localDateTime(r.creation)!, byEmail: text(r.sender), subject: text(r.subject), content: text(r.content),
+      data: {
+        recipients: r.recipients, cc: r.cc, bcc: r.bcc, sentOrReceived: r.sent_or_received, medium: r.communication_medium, status: r.status,
+      },
+    });
+  }
+
+  // Phase II: the stock documents' history, comments and emails, mapped as the PO's are above.
+  for (const r of rows("tabVersion").filter((x) => STOCK_EVENT_DOCTYPES.has(x.ref_doctype ?? ""))) {
+    out.docEvents.push({
+      id: importId("dev", `Version:${r.name}`), erpnextName: `Version:${r.name}`, source: "Version", doctype: r.ref_doctype!,
+      docName: r.docname ?? "", kind: "VERSION", at: localDateTime(r.creation)!, byEmail: text(r.owner),
+      data: (jsonOf(r.data) as Prisma.InputJsonValue | undefined) ?? undefined,
+    });
+  }
+  for (const r of rows("tabComment").filter((x) => STOCK_EVENT_DOCTYPES.has(x.reference_doctype ?? ""))) {
+    const kind = enumOf(COMMENT_KIND, r.comment_type, `Comment ${r.name}`, issues) ?? "INFO";
+    const deleted = kind === "DELETED";
+    const content = deleted ? (jsonOf(r.content) as Record<string, unknown> | undefined) : undefined;
+    out.docEvents.push({
+      id: importId("dev", `Comment:${r.name}`), erpnextName: `Comment:${r.name}`, source: "Comment", doctype: r.reference_doctype!,
+      docName: text(r.reference_name) ?? (content && typeof content.name === "string" ? content.name : "") ?? "", kind,
+      at: localDateTime(r.creation)!, byEmail: text(r.comment_email) ?? text(r.owner), subject: text(r.subject),
+      content: deleted ? null : text(r.content), data: deleted ? (content as Prisma.InputJsonValue | undefined) : undefined,
+    });
+  }
+  for (const r of rows("tabCommunication").filter((x) => STOCK_EVENT_DOCTYPES.has(x.reference_doctype ?? ""))) {
+    out.docEvents.push({
+      id: importId("dev", `Communication:${r.name}`), erpnextName: `Communication:${r.name}`, source: "Communication",
+      doctype: r.reference_doctype!, docName: r.reference_name ?? "", kind: "EMAIL",
       at: localDateTime(r.communication_date) ?? localDateTime(r.creation)!, byEmail: text(r.sender), subject: text(r.subject), content: text(r.content),
       data: {
         recipients: r.recipients, cc: r.cc, bcc: r.bcc, sentOrReceived: r.sent_or_received, medium: r.communication_medium, status: r.status,
@@ -787,6 +826,20 @@ export function build(tables: Map<string, DumpTable>): Built {
       }
     }
   }
+
+  // Phase II: the Stock module's documents, linked to the masters and POs imported above (their
+  // placeholders included).
+  const { issues: stockIssues, ...stock } = buildStock(tables, {
+    items: new Set(out.items.map((i) => i.code)),
+    warehouses: new Set(out.warehouses.map((w) => w.code)),
+    suppliers: new Set(out.suppliers.map((s) => s.code)),
+    customers: new Set(out.customers.map((c) => c.code)),
+    orders: new Set(out.orders.map((o) => o.number)),
+    orderItems: new Set(out.orderItems.map((i) => i.erpnextName).filter((n): n is string => !!n)),
+    priceLists: new Set(out.priceLists.map((p) => p.code)),
+  });
+  Object.assign(out, stock);
+  issues.push(...stockIssues);
 
   return out;
 }

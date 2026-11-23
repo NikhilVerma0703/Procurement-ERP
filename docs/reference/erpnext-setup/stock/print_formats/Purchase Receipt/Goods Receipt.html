@@ -1,0 +1,280 @@
+<!-- ERPNext Print Format: Goods Receipt | DocType: Purchase Receipt | type: Jinja | standard: No | disabled: 0 | last modified: 2024-05-29 07:42:37.538812 -->
+<style>
+table, th, td {
+  border: 1px solid #000;
+}
+.page-break {
+  page-break-after: always;
+}
+.print-format p {
+    font-size: "xx-small"
+    margin: 3px 0px 3px;
+}
+.print-format td, .print-format th {
+    padding: 1px !important;
+    font-size: XX-small;
+}
+table.col-md-6.new {
+    width: 49%;
+}
+.row-new {
+    display: flex;
+    gap: 2%;
+    margin-left: 0px !important;
+}
+.row{
+    font-size:"xx-small"
+}
+p {
+    font-size:"xx-small"
+}
+.left-info {
+    padding:0px;
+    /*border-top: 1px solid black;*/
+}
+.abc{
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid black;
+    padding-left: 2px;
+}
+
+
+</style>
+
+<style>
+table, th, td {
+  border: 1px solid black;
+  
+}
+.page-break {
+  page-break-after: always;
+}</style>
+
+{% macro header() %}
+<section style="padding-left: 2px; border: 1px solid #000; font-size: xx-small;">
+
+  {% set supplier_address = frappe.get_doc('Address', doc.supplier_address) %}
+  {% set shipping_address = frappe.get_doc('Address', doc.shipping_address) %}
+<div class="row" style="margin-top: 5px !important;">
+        <div class="col-xs-4">
+             <!--<div class="col-xs-12">-->
+                <img src="/assets/pacific_group/images/pacific_logo.png" style="width:250px; margin-left: 10px;">
+             <!--</div>-->
+        </div>
+        <div class="col-xs-8">
+             <div class="col-xs-10" style = 'padding-top:0px;'>
+                 <p class="heading-center><b style="font-size: 20px;"><font size="4">Goods  Receipt Note</font></b></p>
+             </div>
+        </div>
+</div>
+
+
+<div class = "row" style="border:1px solid #000;">
+    <div class = "col-xs-15">
+        
+        <div class = "col-xs-15" style ="padding: 0; border-left: 0.5px solid #000;">
+           <div class="abc">
+           
+              <b>&emsp;&emsp;&emsp;GRN No : {{doc.name}} &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; 
+              GRN Date: {{ doc.posting_date}}
+                &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;</b>
+                Supplier : {{doc.supplier_address}}<br>
+                </div>
+                <b>&emsp;&emsp;&emsp;Invoice No : {{doc.supplier_delivery_note}}</br>
+                  &emsp;&emsp;&emsp;Supplier Invoice No: {{doc.custom_supplier_invoice_no}}
+                  &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;  
+                  Supplier Invoice Date:{{doc.custom_invoice_date}}</br>
+                 &emsp;&emsp;&emsp; P O No.:{{doc.custom_purchase_order_no}}
+                  &emsp;&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; Gate Entry NO: {{doc.gate_entry}}
+                  </b>
+             
+          <!--  <div class="abc">
+           
+              <b>&emsp;&emsp;&emsp;Inv No : {{doc.Supplier_Delivery_Note}} &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Inv Date: {{ doc.posting_date}}
+                &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;</b>
+                PO NO : {{doc.Gate_entry}}
+              
+             </div>-->
+            <div class="abc" style="border-bottom: 1px solid black;">
+         
+         
+            </div>
+          
+            
+                </div>
+            </div>
+                
+</div>    
+
+
+<div class = "row" >
+    <div class = "col-xs-12" style = "border:0px solid black;margin-top: -18px;">
+    
+     <div style="display: flex; flex-direction: column; width: 50%; !important;" >
+         
+     </div>
+     
+    </div>
+</div>
+</section>
+
+{% endmacro %}
+
+
+{% macro tableheader() %}
+<div class = "row">
+<table style="font-size:xx-small;    width: 96%;margin-top: -59px !important;margin-bottom: 0px;margin-left: 15px;">
+        <tr>
+            <th style="width:0.3%;color:black;background-color:#eeeeee;font-weight: bold" rowspan="2">SNO</th>
+            <th style="width:8%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">PRODUCT CODE AND DESCRIPTION</th>
+             <th style="width:3%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">HSN CODE</th>
+            <th style="width:4.5%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">UOM</th>
+            <th style="width:2%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">QTY</th>
+            <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">RATE</th>
+            <th style="width:0.5%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">DIS %</th>
+            <th style="width:2.5%;color:black; background-color:#eeeeee;font-weight: bold"  rowspan="2">TAXABLE VALUES</th>
+            <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" colspan="2">CGST</th>
+            <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" colspan="2">SGST</th>
+            <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" colspan="2">IGST</th>
+            <th style="width:3%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">Total Amount</th>
+        </tr>
+        <tr>
+            <th>%</th>
+            <th>AMT</th>
+                        <th>%</th>
+                        <th>AMT</th>
+                              <th>%</th>
+                        <th>AMT</th>     
+
+        </tr>
+{% endmacro %}
+
+
+
+<!--{% macro tablefooter() %}-->
+</table>
+</div>
+
+<!--{% endmacro %}-->
+
+{{ header()}}
+
+{{ tableheader()}}
+
+{% for row in doc.items %}
+        <tr>
+            <td style=" padding: 2px;max-width:0px;"><b>{{row.idx}}</b></td>
+            <td>{{row.item_code}} </td>
+             <td>{{row.gst_hsn_code}}</td>
+            <td>{{row.uom }}</td>
+            <td align="right">{{row.qty}}</td>
+            <td align="right"> {{row.get_formatted("rate", doc) }}</td>
+            <td align="right">{{row.discount_percentage}}</td>
+            <td align="right">{{row.amount - row.discount_percentage}}</td>
+            <td align="right"{{row.cgst}}</td>
+            <td align="right">{{row.cgst_amount}}</td>
+            <td align="right">{{row.sgst}}</td>
+            <td align="right">{{row.sgst_amount}}</td>
+            <td align="right"{{row.igst}}</td>
+            <td align="right">{{row.igst_amount}}</td>
+            <td align="right">{{ '%0.2f'| format(row.amount + row.cgst_amount + row.sgst_amount + row.igst_amount|float) }}</td>
+        </tr>
+       
+      {% if (row.idx%10 == 0) and (doc.items|length != row.idx) %}
+       
+       <!--{{tablefooter()}}-->
+         <div class="page-break"></div>
+
+       {{header()}}
+        {{tableheader()}}
+        
+        {% elif row.idx == doc.items|length %}
+            
+                    <br>
+                    <br>
+
+        <!--{{tablefooter()}}-->
+            
+      
+       {% endif %}
+       
+      
+           {% endfor %}
+           {% set sum_service_carges=[0.0] %}
+            {% for row in doc.services_items %}
+                {% if row.service_charges is not none and row.service_charges != 0 %}
+                    {% set _ = sum_service_carges.append(row.service_charges | float) %}
+                {% endif %}
+            {% endfor %}
+    
+     
+           <div class="row-new" >
+                            {% if doc.services_items and (sum_service_carges|sum)>0.0 %}
+                     <table style = "padding-top:10px;font-size: 10px;" class="col-md-6 new">
+            <tr style = "padding-top:10px;">
+                <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" >SERVICE ITEMS</th>
+                 <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold">SERVICE CHARGES</th>
+                
+             </tr>
+            {% for row in doc.services_items %}
+                {% if row.service_charges is not none and row.service_charges != 0 %}
+                    <tr>
+                        <td align="right">{{ row.service_item }}</td>
+                        <td align="right">{{ row.service_charges }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+
+                </table>
+                {% endif %}
+        {% set tax_sum=[0.0] %}
+        {% for row in doc.taxes %}
+                {% if row.tax_amount is not none and row.tax_amount != 0 %}
+                {% set _= tax_sum.append(row.tax_amount) %}
+                {%endif%}
+        {%endfor%}        
+        {% if doc.taxes and (tax_sum|sum)>0.0 %}
+       <table class="col-md-6 new" >
+            <tr>
+                 <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold">ACCOUNT HEAD</th>
+                 <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold">Amount</th>
+            </tr>
+            {% for row in doc.taxes %}
+                {% if row.tax_amount is not none and row.tax_amount != 0 %}
+                <tr>
+                    <td align="right">{{ row.account_head }}</td>
+                    <td align="right">{{ row.tax_amount }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+        </table>
+        {%endif%}
+        </div>
+           <div style="font-size: xx-small;padding-top: 2px;;">
+            <div style="display: flex; justify-content: space-between; padding-right: 20px;">
+           
+            <div>
+            <b>Total Amount : </b>{{doc.grand_total}} <br>
+            <b>IN WORDS : </b>{{doc.in_words}}
+            </div>
+            </div>
+              <br>
+           <br>
+           <br>
+           <br>
+           <br>
+            <div style="display: flex; justify-content: space-between; ">
+        
+            <p>Prepared by   &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;   &emsp; &emsp; &emsp; &emsp;   &emsp; &emsp; &emsp; &emsp;  Checked by
+              &emsp; &emsp; &emsp; &emsp;   &emsp; &emsp; &emsp; &emsp;   &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;  Authorized BY</p>
+            </br>
+            </br>
+            </br>
+            </br>
+            </br>
+        </div>
+        </div>
+    
+     
+  

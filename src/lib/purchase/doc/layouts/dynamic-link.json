@@ -1,0 +1,39 @@
+{
+ "doctype": "Dynamic Link",
+ "module": "Core",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "link_doctype",
+   "label": "Link Document Type",
+   "fieldtype": "Link",
+   "options": "DocType",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "link_name",
+   "label": "Link Name",
+   "fieldtype": "Dynamic Link",
+   "options": "link_doctype",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "link_title",
+   "label": "Link Title",
+   "fieldtype": "Read Only",
+   "readOnly": true,
+   "inListView": true
+  }
+ ]
+}

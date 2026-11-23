@@ -16,6 +16,8 @@ npm run typecheck
 npm test           # vitest over tests/purchase/**
 npm run db:migrate # prisma migrate dev (refuses any database not on this machine)
 npm run golden     # engine vs all imported POs (local data)
+npm run golden:stock  # Stock Balance / Stock Ledger vs the old site's own live answers (data/erpnext-live)
+npm run golden:ledger # the FIFO valuation engine replays every entry of the old stock ledger
 npm run import:erpnext  # load the newest backup in data/erpnext-backup (another machine's DB: --target <host>)
 npm run verify:erpnext  # read-only: does the database still equal the backup?
 npm run merge:sql  # rebuild merge/ for the Main ERP after any schema change
@@ -44,7 +46,7 @@ npm run merge:sql  # rebuild merge/ for the Main ERP after any schema change
   ERPNext screens (`docs/reference/`). Do not add features the original lacked. Do not drop ones it had without
   the owner's say-so (scope table: plan §5).
 - **Golden tests** are the definition of correct. The calculation engine must reproduce the totals, taxes and
-  statuses ERPNext stored on the historical POs (3,199 at Step 4; 3,217 in the 19-11-2026 backup). A mismatch is a bug or a documented exception.
+  statuses ERPNext stored on the historical POs (3,199 at Step 4; 3,217 in the 19-11-2026 backup; 3,227 in the 21-11-2026 one). A mismatch is a bug or a documented exception.
 - Comment the *why*, in the style of the Main ERP (business rule, owner decision, date).
 
 ## Data and secrets
@@ -71,4 +73,5 @@ npm run merge:sql  # rebuild merge/ for the Main ERP after any schema change
 | Masters screens (Supplier, Item, Address, Contact, templates): rules, quick entry, variants, rename | `docs/09-masters.md` (code: `src/lib/purchase/masters/`, `src/components/purchase/masters/`) |
 | Merge into the Main ERP: what moves, seams, SQL script, cut-over | `docs/10-merge-guide.md` (files: `merge/`, made by `scripts/make-merge-sql.ts`) |
 | Acceptance checklist, sign-off, every open owner decision | `docs/11-acceptance.md` |
+| Phase II (Buying + Stock, Thiru R): who uses what, the 23 Stock sections, data secured, build order, owner decisions | `docs/12-phase-2-buying-and-stock.md` (setup: `docs/reference/erpnext-setup/stock/`; add-on scripts: `docs/reference/live-capture/stock/`; importer: `src/lib/purchase/migrate/stock-build.ts`; forms drawn from the old site's captured definitions: `src/lib/purchase/doc/`) |
 | Main ERP conventions | `C:\Users\User\Desktop\Pacific-ERP-payment-tracking` (read `origin/main` through git; don't modify that checkout) |

@@ -1,0 +1,130 @@
+{
+ "doctype": "Payment Terms Template Detail",
+ "module": "Accounts",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "payment_term",
+   "label": "Payment Term",
+   "fieldtype": "Link",
+   "options": "Payment Term",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "section_break_13",
+   "label": "Description",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Small Text",
+   "inListView": true,
+   "columns": 2,
+   "fetchFrom": "payment_term.description"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "invoice_portion",
+   "label": "Invoice Portion (%)",
+   "fieldtype": "Float",
+   "reqd": true,
+   "inListView": true,
+   "columns": 2,
+   "fetchFrom": "payment_term.invoice_portion"
+  },
+  {
+   "fieldname": "mode_of_payment",
+   "label": "Mode of Payment",
+   "fieldtype": "Link",
+   "options": "Mode of Payment",
+   "fetchFrom": "payment_term.mode_of_payment"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "due_date_based_on",
+   "label": "Due Date Based On",
+   "fieldtype": "Select",
+   "options": "Day(s) after invoice date\nDay(s) after the end of the invoice month\nMonth(s) after the end of the invoice month",
+   "reqd": true,
+   "inListView": true,
+   "columns": 2,
+   "fetchFrom": "payment_term.due_date_based_on"
+  },
+  {
+   "fieldname": "credit_days",
+   "label": "Credit Days",
+   "fieldtype": "Int",
+   "dependsOn": "eval:in_list(['Day(s) after invoice date', 'Day(s) after the end of the invoice month'], doc.due_date_based_on)",
+   "inListView": true,
+   "columns": 2,
+   "fetchFrom": "payment_term.credit_days",
+   "nonNegative": true
+  },
+  {
+   "fieldname": "credit_months",
+   "label": "Credit Months",
+   "fieldtype": "Int",
+   "dependsOn": "eval:doc.due_date_based_on=='Month(s) after the end of the invoice month'",
+   "fetchFrom": "payment_term.credit_months",
+   "nonNegative": true
+  },
+  {
+   "fieldname": "section_break_8",
+   "label": "Discount Settings",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "discount_type",
+   "label": "Discount Type",
+   "fieldtype": "Select",
+   "options": "Percentage\nAmount",
+   "default": "Percentage",
+   "fetchFrom": "payment_term.discount_type"
+  },
+  {
+   "fieldname": "discount",
+   "label": "Discount",
+   "fieldtype": "Float",
+   "fetchFrom": "payment_term.discount"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discount_validity_based_on",
+   "label": "Discount Validity Based On",
+   "fieldtype": "Select",
+   "options": "Day(s) after invoice date\nDay(s) after the end of the invoice month\nMonth(s) after the end of the invoice month",
+   "dependsOn": "discount",
+   "default": "Day(s) after invoice date",
+   "fetchFrom": "payment_term.discount_validity_based_on"
+  },
+  {
+   "fieldname": "discount_validity",
+   "label": "Discount Validity",
+   "fieldtype": "Int",
+   "dependsOn": "discount",
+   "mandatoryDependsOn": "discount",
+   "fetchFrom": "payment_term.discount_validity"
+  }
+ ]
+}

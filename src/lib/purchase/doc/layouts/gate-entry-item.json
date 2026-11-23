@@ -1,0 +1,76 @@
+{
+ "doctype": "Gate Entry Item",
+ "module": "Pacific Group",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "po_no",
+   "label": "Po No",
+   "fieldtype": "Link",
+   "options": "Purchase Order",
+   "reqd": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "po_date",
+   "label": "Po Date",
+   "fieldtype": "Date",
+   "fetchFrom": "po_no.transaction_date"
+  },
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "item_description",
+   "label": "Item Description",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "po_qty",
+   "label": "Po Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "item_qty",
+   "label": "Item Qty",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "bal_qty",
+   "label": "Bal Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "po_item_name",
+   "label": "Po Item Name",
+   "fieldtype": "Data",
+   "readOnly": true
+  }
+ ]
+}

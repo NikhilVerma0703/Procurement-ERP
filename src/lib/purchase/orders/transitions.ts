@@ -71,7 +71,7 @@ interface Step {
 const VERB: Record<PoAction, string> = {
   save: "saved", approve: "approved", reject: "rejected", delete: "deleted", duplicate: "duplicated",
   cancel: "cancelled", amend: "amended", close: "closed", hold: "put on hold", resume: "resumed",
-  reopen: "re-opened", update: "updated", updateItems: "updated",
+  reopen: "re-opened", update: "updated", updateItems: "updated", makeReceipt: "received",
 };
 
 /** Runs one action on a locked PO: who may, in which state, unchanged since opened. */

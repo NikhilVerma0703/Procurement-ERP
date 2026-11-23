@@ -1,0 +1,320 @@
+<!-- ERPNext Print Format: Test Packing Slip | DocType: Packing Slip | type: Jinja | standard: No | disabled: 0 | last modified: 2024-12-23 18:38:46.262918 -->
+<style>
+    .header {
+        display: flex;
+        justify-content: center;
+        font-size: xx-small
+    }
+    .header div {
+        border: 1px solid black;
+        padding: 2px;
+    }
+    .header-left, .header-right {
+        flex: 1;
+    }
+    .gross-msr {
+        border: 1px solid black;
+        text-align: center;
+        font-size: xx-small;
+    }
+    tr {
+       border: 1px solid black; 
+    }
+    td {
+       border: 1px solid black; 
+    }
+    th {
+       border: 1px solid black; 
+    }
+    .print-format td, .print-format th {
+    padding: 2px !important;
+        font-size: xx-small;
+}
+.print-format th {
+    color: #201d1d;
+    font-weight: normal;
+    border-bottom-width: 1px !important;
+}
+</style>
+{% set delivery_note = frappe.get_doc("Delivery Note", doc.delivery_note) %}
+{% set sales_order = delivery_note.items[0].against_sales_order if delivery_note.items else None %}
+
+{% if sales_order %}
+    {% set sales_order_data = frappe.db.get_value(
+        "Sales Order",
+        sales_order,
+        ["discharge_port", "final_destination", "customer_address"],
+        as_dict=True
+    ) %}
+    {% if sales_order_data %}
+        {% set discharge_port = sales_order_data.get("discharge_port", "") %}
+        {% set final_destination = sales_order_data.get("final_destination", "") %}
+        {% set customer_address = sales_order_data.get("customer_address", "") %}
+        {% set address = frappe.db.get_value("Address", customer_address, "country") if customer_address else "" %}
+    {% else %}
+        {% set discharge_port, final_destination, address = "", "", "" %}
+    {% endif %}
+{% else %}
+    {% set discharge_port, final_destination, address = "", "", "" %}
+{% endif %}
+
+{% set fiscal_year = frappe.db.get_list(
+    "Fiscal Year",
+    filters={"year_start_date": ["<=", delivery_note.posting_date], "year_end_date": [">=", delivery_note.posting_date], "disabled": 0},
+    fields=["name"]
+) %}
+
+{% set sales_invoice_list = frappe.db.get_all(
+    "Sales Invoice Item",
+    filters={"delivery_note": delivery_note.name, "parenttype": "Sales Invoice"},
+    fields=["parent"]
+) %}
+
+{% set invoice = "" %}
+{% set sales_invoice_date = "" %}
+{% if sales_invoice_list %}
+    {% set invoice_data = frappe.db.get_value("Sales Invoice", sales_invoice_list[0].parent, ["posting_date"], as_dict=True) %}
+    {% if invoice_data %}
+        {% if invoice_data.get("posting_date") %}
+            {% set sales_invoice_date = invoice_data.get("posting_date").strftime('%d-%b-%y') %}
+        {% else %}
+            {% set sales_invoice_date = "" %}
+        {% endif %}
+        {% set invoice = sales_invoice_list[0].parent %}
+    {% endif %}
+{% endif %}
+
+<body>
+    <div style="text-align:center;font-size: x-small">
+    <b> Detailed Measurement List</b>
+    </div>
+    <div class="header">
+        <div class="header-left">
+            <b>FY: {{fiscal_year[0].name}}   {{delivery_note.customer}}<br>
+            PO Ref: {{delivery_note.po_no}} &nbsp;&nbsp; DT: {{delivery_note.po_date}} <br>
+            INV Ref: {{invoice}}&nbsp;&nbsp; {{sales_invoice_date}}</b>
+        </div>
+        <div class="header-right">
+            <b>POD: {{discharge_port}} <br>
+            Final Destn: {{final_destination}}<br>
+            Country: {{address}}</b>
+        </div>
+    </div>
+    <div class="gross-msr">
+        Gross Measurements
+    </div>
+    {% macro tablehead() %}
+    <table width="100%" style="border: 1px solid;font-size: xx-small;">
+        <tr>
+            <th>SL No.</th>
+            <th>Colour</th>
+            <th>Item Name</th>
+            <th>Batch No.</th>
+            <th>Slab Nos</th>
+            <th>Thick in CM</th>
+            <th>Lg Inches/Cms</th>
+            <th>Ht Inches/Cms</th>
+            <th>Area SQMT</th>
+            <th>Crate</th>
+        </tr>
+    {% endmacro %}
+    {{ tablehead() }}
+
+    {% set crate_data = {} %}
+    {% set area_sqr = {} %}
+    {% for item in doc.items %}
+        {% set crate = item.crate %}
+        {% if crate not in crate_data %}
+            {% set _ = crate_data.update({crate: []}) %}
+            {% set _ = area_sqr.update({crate: 0.0}) %}
+        {% endif %}
+        {% set _ = crate_data[crate].append(item) %}
+        {% set _ = area_sqr.update({crate: area_sqr.get(crate, 0.0) + item.quantity}) %}
+    {% endfor %}
+    {% for crate, items in crate_data.items() %}
+        {% for item in items %}
+        {% set colour="" %}
+        {% set variant,item_name= frappe.db.get_value("Item",item.item_code,["variant_of","item_name"]) %}
+        {% if variant %}
+        {% set colour=variant %}
+        {% else %}
+        {% set colour=item.item_code %}
+        {% endif %}
+            <tr>
+                <td>{{ item.idx }}</td>
+                <td>{{ colour }}</td>
+                <td>{{ item.custom_item_description_ }}</td>
+               <!--<td>{{ item_name }}</td>-->
+               <!-- <td>{{ Description }}</td>-->
+                <td>{{ item.batch_no }}</td>
+                <td>{{ item.custom_serial_no }}</td>
+                <td>{{item.custom_thickness}}</td>
+                <td>{{item.custom_lenght}}</td>
+                <td>{{ item.custom_width }}</td>
+                <td>{{ (item.quantity / item.qty) | round(3) }}</td>
+                <td>{{ item.crate }}</td>
+            </tr>
+            {% if item.idx % 43 ==0 %}
+            {{ tablehead() }}
+                <div class="page-break"></div>
+                {% endif%}
+        {% endfor %}
+        <tr>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ><b>{{'%.3f' % (area_sqr[crate])}}</b></td>
+            <td style="border: 1px solid;"></td>
+        </tr>
+    {% endfor %}
+            <tr>
+            </tr>
+            <tr>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ></td>
+            <td style="border: 1px solid;" ><b>Total</b></td>
+            <td style="border: 1px solid;" ><b>{{ '%.3f' % (doc.custom_net_area_sqmt) }}</b></td>
+            <td style="border: 1px solid;"></td>
+        </tr>
+    </table>
+    {% set list_smaple_sqft=[] %}
+    {% set list_smaple_sqmt=[] %}
+    {% set list_smaple_weight=[] %}
+    {% set list_smaple_crate=[] %}
+    {% set summary_lenght=[] %}
+    {% set list_items=frappe.get_all("Delivery Note Item",{"parent":doc.delivery_note},["item_code","qty","batch_no","uom_factor","quantity","idx"]) %}
+    {% macro summaryhead() %}
+        <table width="100%" style="border: 1px solid;font-size: xx-small;">
+        <tr>
+            <th>Summary</th>
+            <th>Colours</th>
+            <th>Thick</th>
+            <th>Slabs.Pcs</th>
+            <th>Batch No.</th>
+            <th>SQFT</th>
+            <th>Net Weight</th>
+            <th>SQMT</th>
+            <th>Crate(S)</th>
+        </tr>
+        {% endmacro %}
+        {{summaryhead()}}
+        {% for data in list_items %}
+            {% set crate=frappe.get_all("Packing Slip Item",{"parent":doc.name,"item_code":data.item_code,"batch_no":data.batch_no},["crate","custom_thickness","net_weight","custom_item_description_"]) %}
+            {% set net_weight_sum = [] %}
+            {% set crates = set() %}
+            {% for c in crate %}
+                {% if c.crate %}
+                    {% set _ = crates.add(c.crate) %}
+                {% endif %}
+                {% if c.net_weight %}
+                {% set _ = net_weight_sum.append(c.net_weight) %}
+                {% endif %}
+            {% endfor %}
+        <tr>
+            <td>{{data.idx}}</td>
+            <td>{{ crate[0]["custom_item_description_"] if crate else "" }}</td>
+            <td>{{crate[0]["custom_thickness"]}}</td>
+            <td>{{data.qty}}</td>
+            <td>{{data.batch_no}}</td>
+            {% if data.uom_factor=="Square Foot" %}
+            {% set _=list_smaple_sqft.append(data.quantity) %}
+            <td>{{ data.quantity}}</td>
+            {% elif data.uom_factor=="Square Meter" %}
+            {% set _=list_smaple_sqft.append(data.quantity * 10.764) %}
+            <td>{{ '%.3f' % (data.quantity * 10.764) }}</td>
+            {% else %}
+            <td></td>
+            {% endif %}
+            <td>{{'%.3f' % (net_weight_sum | sum)}}</td>
+            {% if data.uom_factor=="Square Foot" %}
+            {% set _=list_smaple_sqmt.append(data.quantity / 10.764) %}
+            <td>{{ '%.3f' % (data.quantity / 10.764) }}</td>
+            {% elif data.uom_factor=="Square Meter" %}
+            {% set _=list_smaple_sqmt.append(data.quantity) %}
+            <td>{{ data.quantity }}</td>
+            {% else %}
+            <td></td>
+            {% endif %}
+            
+            <td>{{crates | length}}</td>
+        </tr>
+        {% set _=list_smaple_weight.append(net_weight_sum | sum) %}
+        {% set _=list_smaple_crate.append(crates | length) %}
+         {% set _=summary_lenght.append(1) %}
+        {% if  (data.idx %3 ==0) and ((doc.items | length)>43) %}
+           {{summaryhead()}}
+                <div class="page-break"></div>
+                {% endif%}
+        {%endfor%}
+        {% if doc.custom_sample_items %}
+        <tr>
+            <td> Samples </td>
+        </tr>
+        {%endif %}
+        {% for data in doc.custom_sample_items %}
+        {% set _=list_smaple_sqft.append(data.sqft) %}
+        {% set _=list_smaple_sqmt.append(data.sqmt) %}
+        {% set _=list_smaple_crate.append(1) %}
+        {% set _=list_smaple_weight.append(data.net_weight) %}
+        {% set _=summary_lenght.append(1) %}
+        <tr>
+            <td>{{data.idx}}</td>
+                <td>{{data.item_code}}</td>
+                <td>{{data.thick}}</td>
+                <td>{{data.qty}}</td>
+                <td></td>
+                <td>{{data.sqft}}</td>
+                <td>{{data.net_weight}}</td>
+                <td>{{data.sqmt}}</td>
+                <td>{{data.crate}}</td>
+        </tr>
+
+        {% endfor %}
+                    <tr>
+            </tr>
+        <!--    <tr>-->
+        <!--    <td style="border: 1px solid;" ></td>-->
+        <!--    <td style="border: 1px solid;" ></td>-->
+        <!--    <td style="border: 1px solid;" ><b>TOTAL</b></td>-->
+        <!--    <td style="border: 1px solid;" ><b>{{(doc.items | length) + (doc.custom_sample_items | length)}}</b></td>-->
+        <!--    <td style="border: 1px solid;" ></td>-->
+        <!--    <td style="border: 1px solid;" ><b>{{'%.3f' % list_smaple_sqft | sum}}</b></td>-->
+        <!--    <td style="border: 1px solid;" ><b>{{'%.3f' % list_smaple_weight | sum}}</b></td>-->
+        <!--    <td style="border: 1px solid;" ><b>{{'%.3f' % list_smaple_sqmt | sum}}</b></td>-->
+        <!--    <td style="border: 1px solid;"><b>{{list_smaple_crate | sum}}</b></td>-->
+        <!--</tr>-->
+    <tr>
+     <td style="border: 1px solid;" ></td>
+     <td style="border: 1px solid;" ><b>TOTAL</b></td>
+     <td style="border: 1px solid;" ></td>
+     <td style="border: 1px solid;" ><b>{{ doc.items | sum(attribute='qty') + doc.custom_sample_items | sum(attribute='qty') }}</b></td>
+     <td style="border: 1px solid;" ></td>
+     <td style="border: 1px solid;" ><b>{{'%.3f' % list_smaple_sqft | sum}}</b></td>
+     <td style="border: 1px solid;" ><b>{{'%.3f' % list_smaple_weight | sum}}</b></td>
+     <td style="border: 1px solid;" ><b>{{'%.3f' % list_smaple_sqmt | sum}}</b></td>
+     <td style="border: 1px solid;"><b>{{list_smaple_crate | sum}}</b></td>
+   </tr>
+        </table>
+        {% set container="" %}
+        {% set vehicle="" %}
+        {% if delivery_note.lr_no %}
+        {% set container=delivery_note.lr_no %}
+        {%endif%}
+        {% if delivery_note.vehicle_no %}
+        {% set vehicle=delivery_note.vehicle_no %}
+        {%endif%}
+        <div class="container" style="font-size: x-small;text-align:start;padding: 2px;">
+            <b>Container No.&nbsp;&nbsp; {{container}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Vehicle No.&nbsp;&nbsp; {{vehicle}}</b>
+        </div>
+</body>

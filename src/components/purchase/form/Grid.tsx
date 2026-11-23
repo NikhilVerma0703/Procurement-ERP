@@ -36,7 +36,8 @@ export function Grid<T>({ label, rows, columns, editable, onAdd, onDelete, onEdi
   useEffect(() => setSelected(new Set()), [rows.length]);
   const all = rows.length > 0 && selected.size === rows.length;
   return (
-    <div>
+    // A table is a field of the form too (Items, Purchase Taxes and Charges…): Jump to field lists it.
+    <div data-po-field={typeof label === "string" ? label : undefined}>
       {label && <div className="mb-1.5 text-xs text-gray-600">{label}</div>}
       <div className="overflow-x-auto rounded-md border border-gray-200">
         <table className="w-full min-w-[640px] border-collapse text-[13px]">

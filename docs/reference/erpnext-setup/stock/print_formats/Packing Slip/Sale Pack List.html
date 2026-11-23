@@ -1,0 +1,362 @@
+<!-- ERPNext Print Format: Sale Pack List | DocType: Packing Slip | type: Jinja | standard: Yes | disabled: 0 | last modified: 2023-10-18 15:10:34.139012 -->
+<style>
+.right-section {
+    /*float: right;*/
+    /*width: 40%; */
+    border-top: 1px solid black; 
+    border-left: 1px solid black; 
+    /*padding: 20px;*/
+    /*text-align: right;*/
+    /*margin-left: 60%;*/
+}
+
+/*.tr{*/
+/*    font-size: 10.5px;*/
+/*}      */
+        
+ .table-container {
+    display: flex;
+    flex-wrap: wrap;
+
+}
+
+.table-col {
+    flex: 1;
+    padding: 5px;
+    margin-right: 11px;
+    width 33% !important;
+    /*box-sizing: border-box;*/
+}
+
+table {
+    /*width: 70%;*/
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #000;
+    padding: 5px;
+}
+
+.width-table td{
+    /*max-width:68.5px;*/
+    font-size: 10px;
+}
+
+/*.width-table tr{*/
+   /*border-left:1px solid #000;*/
+    /*border-right:1px solid #000;*/
+/*}*/
+
+.width-table{
+    display: flex;
+    margin: auto;
+    justify-content: center;
+    border: none;
+}
+
+#last_slip {
+  /*width:5px  */
+  /*margin-right:20px;*/
+}
+
+</style>
+<body>
+    {% set img = frappe.get_doc('Letter Head', doc.letter_head) %}
+    {% set global_default = frappe.get_doc('Global Defaults') %}
+    {% set company =frappe.get_doc("Company",global_default.default_company)%}
+    {% set delivery_note = frappe.get_doc('Delivery Note', doc.delivery_note) %}
+    {% if delivery_note %}
+    {% set sales_order = frappe.get_doc('Sales Order', delivery_note.sales_order) %}
+    {% set sales_invoice = frappe.get_doc('Sales Invoice', delivery_note.sales_invoice) %}
+    {% endif %}
+    
+    <section style="border: 1px solid #000 !important; padding: 0px; width:99% !important">
+        <section style="padding-left: 5px; border: 1px solid #000;">
+            <div class="row">
+                {% macro header() %}
+                <div class="col-xs-4">
+                     <div class="col-xs-12">
+                        <img src="{{img.image}}" alt="pacific-logo" style="width: 60%;">
+                     </div>
+                </div>
+                {% endmacro %}
+                {{ header() }}
+                <div class="col-xs-8">
+                     <div class="col-xs-12" style = ' padding : 2px !important-top:0px;'>
+                         <p class="heading-right" style=" margin-left: -70px; "><b style="font-size: 14px;">PACKING LIST (Container No. : {{ doc.name }})</b></p>
+                     </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <table style="width: 100% !important;">
+                <tr>
+                    <th rowspan="3" style="color:black;"><b>{{ global_default.default_company }}</b><br>
+                        {% set company_add = frappe.db.get_value("Address", [["Dynamic Link","link_doctype","=","Company"],["Dynamic Link","link_name","=",global_default.default_company]],
+                        ['address_line1','address_line2','state','country','county','pincode','city'],as_dict=1) %}
+                        {{ company_add.address_line1 or "" }} <br> {{ company_add.address_line2 or "" }}<br>
+                        {{ company_add.city or "" }} <br> {{ company_add.country or "" }}<br>
+                        {{ company_add.county or "" }} {{ company_add.pincode or "" }}
+                    </th>
+                    <td><b>Invoice No.</b> : {% if sales_invoice %} {{ sales_invoice.name }}  <br><b>Date</b> : {{ sales_invoice.posting_date.strftime('%d-%b-%y') }} {% else %} None {% endif %}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <b> Buyer's Order No.</b>{% if sales_order %} {{ sales_order.name }} <br>
+                        <b> Date </b>: {{ sales_order.transaction_date.strftime('%d-%b-%y') }} {% else %} None {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Other Reference(s)</b>: IEC No. {{ delivery_note.name }} Dated - {{ delivery_note.posting_date }}</td>
+                </tr>
+                <tr style="height:auto;">
+                    <th  style="color:black;"><b>Consignee </b><br>
+                        {{ delivery_note.customer_name or "" }}<br>
+                        {% set customer_add = frappe.db.get_value("Address", [["Dynamic Link", "link_doctype", "=", "Customer"], ["Dynamic Link", "link_name", "=", delivery_note.customer]], ['address_line1', 'address_line2', 'state', 'country', 'county', 'pincode', 'city'], as_dict=1) %}
+                        {{ customer_add.address_line1 or "" }} {{ customer_add.address_line2 or "" }}<br>
+                        {{ customer_add.city or "" }} {{ customer_add.country or "" }}<br>
+                        {{ customer_add.county or "" }} {{ customer_add.pincode or "" }}
+                    </th>
+                    <td rowspan="4"><b>Buyer(If other than consignee) :</b> {{ delivery_note.customer }} </td>
+                </tr>
+            </table>
+            <p>EFFECTIVE DIMENSIONS OF THE QUARTZ SURFACE SLAB REGULAR - 4.27 SQM OR 45.962 SFT, JUMBO - 5.45 SQM OR 58.61 SFT, SUPER JUMBO -
+                6.974 SQM OR 75.075 SFT
+            </p>
+            <table style="margin-top: 8px; width:100% !important; font-size: 9px;" class= "item-tab">
+                <tr height="8">
+                    <td width="10%" style="color: black;background-color:#eeeeee; padding : 2px !important" height="5"><b>S.No</b></td>
+                    <td width="10%" style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>Crate</b></td>
+                    <td width="10%" style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>Crate Dimension (MM)</b></td>
+                    <td width="10%" style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>Color</b></td>
+                    <td style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>Description</b></td>
+                    <td width="10%" style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>Type</b></td>
+                    <td width="10%" style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>Finish</b></td>
+                    <td width="10%" style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>THK (MM)</b></td>
+                    <td width="10%" style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>Qty</b></td>
+                    <td width="10%" style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>Area (SFT/SQM)</b></td>
+                    <td style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>Net Weight</b></td>
+                    <td width="10%" style="color:black;background-color:#eeeeee; padding : 2px !important" height="5"><b>Gross Weight</b></td>
+                </tr>
+        
+                {% set qty_total = namespace(value = 0) %}
+                {% set area = namespace(value = 0) %}
+                {% set item_code_list = namespace(value = None) %}
+
+                {% set data = frappe.db.sql("""select COUNT(crate) as qty, item_code as name, crate, sum(quantity) as area_qty, crate_dimension as dimens, sum(net_weight) as net_w from `tabPacking Slip Item` where parent ='{}' GROUP BY crate """.format(doc.name),as_dict=1) %}
+                {% for item in data %}
+                {% set color = frappe.get_doc('Item', item.name) %}
+                    {% set item_code_list.value = item.name.split('-') %}
+                    {% set qty_total.value = qty_total.value + item.qty %}
+                    {% set area.value = area.value + item.area_qty %}
+                    <tr>
+                        <td>{{ loop.index }}</td> 
+                        <td>CRATE-M{{ item.crate }}</td>
+                        <td>{{ item.dimens }}</td>
+                        <td>{{ color.custom_item_color }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item_code_list.value[2] }}</td>
+                        <td>{{ item_code_list.value[1] }}</td>
+                        <td>{{ item_code_list.value[3] }}</td>
+                        <td>{{ item.qty }}</td>
+                        <td>{{ item.area_qty }}</td>
+                        <td>{{ item.net_w }}</td>
+                        <td>{{ item.net_w + 40 }}</td>
+                    </tr>
+                {% endfor %}
+                
+                <tr>
+                    <td colspan="8" style="text-align: center;"><b>Total Slabs/CTS : </b></td>
+                    <td><b>{{ qty_total.value }}</b></td>
+                    <td><b>{{ '%0.2f'| format(area.value|float) }}</b></td>
+                    <td><b>{{ doc.net_weight_pkg }}</b></td>
+                    <td><b>{{ doc.gross_weight_pkg }}</b></td>
+                </tr>
+            </table>
+            <div style="border: 1px solid #000; display: flex; justify-content: space-between; margin-top:-2px;">
+            <div style="padding-left: 5%;">
+            <h6><b>Total Net Weight : {{ doc.net_weight_pkg }} KGS</b></h6>
+            <h6><b>Total Gross Weight : {{ doc.gross_weight_pkg }} KGS</b></h6>
+            <h6><b>No. Of Packages: {{ doc.to_case_no - doc.from_case_no + 1 }}</b></h6>
+            </div>
+            <div class="right-section" style="margin-top: 10%; padding:8px;">
+                <p>{{ company.name }}</p><br><br>
+                <p>Authorised Signatory</p>
+            </div>
+            </div>
+        </section>
+    </section>
+    <div class = "page-break"></div>
+    <!--{{ header() }} <br><br><br><br>-->
+    <section><br><br>
+        <div class="table-container">
+            {% set item_code_list = namespace(value = None) %}
+
+            {% set data = frappe.db.sql("""select COUNT(crate) as qty, item_code as name, crate, sum(quantity) as area_qty, crate_dimension as dimens, sum(net_weight) as net_w from `tabPacking Slip Item` where parent ='{}' GROUP BY crate """.format(doc.name),as_dict=1) %}
+            {% if data|length <=2 %}
+            {% for row in data %}
+                {% set color = frappe.get_doc('Item', row.name) %}
+                {% set item_code_list.value = row.name.split('-') %}
+                <div class="table-col" style="height: 90% !important;">
+                    <h6>
+                        PACIFIC ENGINEERED SURFACE PVT LIMITED,
+                        SY.NO.73/2B, NALLAGANAKOTAPALLI VILLAGE, NH
+                            44, Hosur, Tamil Nadu 635109
+                    </h6>
+                    <table >
+                        <tr>
+                            <th style="color:black;" colspan="2"><center><b>CRATE-M{{ row.crate }}</b></center></th>
+                        </tr>
+                        <tr>
+                            <td style="color:black;">PART.NO.</td>
+                            <td rowspan="1">ES200397 <br>{{ color.custom_item_color }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:black;">Description</td>
+                            <td>{{ row.name }}</td>
+                        </tr>
+                    
+                        <tr>
+                            <td style="color:black;">Qty</td>
+                            <td>{{ row.qty }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:black;">THICKNESS</td>
+                            <td>{{ item_code_list.value[3] }} MM</td>
+                        </tr>
+                        <tr>
+                            <td style="color:black;">FINISH</td>
+                            <td>{{ item_code_list.value[1] }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:black;">P.O.No. :</td>
+                            <td>{{ sales_order.name }}/<br>{{ sales_order.transaction_date.strftime('%d-%b-%y')}}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:black;">SIZE</td>
+                            <td>{{ item_code_list.value[2] }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:black;">NET AREA</td>
+                            <td>{{ row.area_qty }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:black;">PACKAGE DIMN.(mm)</td>
+                            <td>{{ row.dimens }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color:black;">PACKAGE WT.(kgs)</td>
+                            <td>Net Weight - {{ row.net_w }} kgs <br>Gross Weight - {{ row.net_w + 40 }} kgs</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <b>TO : <br>
+                                    {{ delivery_note.customer_name or "" }}<br>
+                                    {{ customer_add.address_line1 or "" }} {{ customer_add.address_line2 or "" }}<br>
+                                    {{ customer_add.city or "" }} {{ customer_add.country or "" }}<br>
+                                    {{ customer_add.county or "" }} {{ customer_add.pincode or "" }}
+                                </b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                            <b>From : PACIFIC ENGINEERED SURFACE PVT LTD</b><br>
+                                SY.NO.73/2B, NALLAGANAKOTAPALLI VILLAGE,
+                                NH 44, Hosur, Tamil Nadu 635109
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            {% endfor %}
+            {% for row in range(3-data|length) %}
+            <div class="table-col">
+                <div></div>
+            </div>
+            {% endfor %}
+            {% else %}
+                {% for row in data %}
+                {% set color = frappe.get_doc('Item', row.name) %}
+                    {% set item_code_list.value = row.name.split('-') %}
+                    <div class="table-col">
+                        <h6>
+                            PACIFIC ENGINEERED SURFACE PVT LIMITED,
+                            SY.NO.73/2B, NALLAGANAKOTAPALLI VILLAGE, NH
+                                44, Hosur, Tamil Nadu 635109
+                        </h6>
+                        <table>
+                            <tr>
+                                <th style="color:black;" colspan="2"><center><b>CRATE-M{{ row.crate }}</b></center></th>
+                            </tr>
+                            <tr>
+                                <td style="color:black;">PART.NO.</td>
+                                <td rowspan="1">ES200397 <br>{{ color.custom_item_color }}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:black;">Description</td>
+                                <td>{{ row.name }}</td>
+                            </tr>
+                        
+                            <tr>
+                                <td style="color:black;">Qty</td>
+                                <td>{{ row.qty }}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:black;">THICKNESS</td>
+                                <td>{{ item_code_list.value[3] }} MM</td>
+                            </tr>
+                            <tr>
+                                <td style="color:black;">FINISH</td>
+                                <td>{{ item_code_list.value[1] }}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:black;">P.O.No. :</td>
+                                <td>{{ sales_order.name }}/<br>{{ sales_order.transaction_date.strftime('%d-%b-%y')}}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:black;">SIZE</td>
+                                <td>{{ item_code_list.value[2] }}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:black;">NET AREA</td>
+                                <td>{{ row.area_qty }}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:black;">PACKAGE DIMN.(mm)</td>
+                                <td>{{ row.dimens }}</td>
+                            </tr>
+                            <tr>
+                                <td style="color:black;">PACKAGE WT.(kgs)</td>
+                                <td>Net Weight - {{ row.net_w }} kgs <br>Gross Weight - {{ row.net_w + 40 }} kgs</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <b>TO : <br>
+                                        {{ delivery_note.customer_name or "" }}<br>
+                                        {{ customer_add.address_line1 or "" }} {{ customer_add.address_line2 or "" }}<br>
+                                        {{ customer_add.city or "" }} {{ customer_add.country or "" }}<br>
+                                        {{ customer_add.county or "" }} {{ customer_add.pincode or "" }}
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                <b>From : PACIFIC ENGINEERED SURFACE PVT LTD</b><br>
+                                    SY.NO.73/2B, NALLAGANAKOTAPALLI VILLAGE,
+                                    NH 44, Hosur, Tamil Nadu 635109
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    {% if loop.index % 3 == 0 and not loop.last %}
+                        <div class="page-break"></div><br><br><br><div class="table-container"></div>
+                        
+                    {% elif loop.index % 3 != 0 and loop.last %}
+                        <div class="table-container" id="last_slip"></div>
+                        
+                    {% endif %}
+                    {% endfor %}
+            {% endif %}
+        </div>
+    </section>
+</body>

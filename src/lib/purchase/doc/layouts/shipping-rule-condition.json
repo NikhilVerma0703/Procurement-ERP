@@ -1,0 +1,37 @@
+{
+ "doctype": "Shipping Rule Condition",
+ "module": "Accounts",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "from_value",
+   "label": "From Value",
+   "fieldtype": "Float",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "to_value",
+   "label": "To Value",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "shipping_amount",
+   "label": "Shipping Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "reqd": true,
+   "inListView": true
+  }
+ ]
+}

@@ -1,0 +1,181 @@
+{
+ "doctype": "Payment Schedule",
+ "module": "Accounts",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "payment_term",
+   "label": "Payment Term",
+   "fieldtype": "Link",
+   "options": "Payment Term",
+   "inListView": true,
+   "columns": 2,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_15",
+   "label": "Description",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Small Text",
+   "inListView": true,
+   "columns": 2,
+   "fetchFrom": "payment_term.description"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "due_date",
+   "label": "Due Date",
+   "fieldtype": "Date",
+   "reqd": true,
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "invoice_portion",
+   "label": "Invoice Portion",
+   "fieldtype": "Percent",
+   "inListView": true,
+   "columns": 2,
+   "printHide": true
+  },
+  {
+   "fieldname": "mode_of_payment",
+   "label": "Mode of Payment",
+   "fieldtype": "Link",
+   "options": "Mode of Payment"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "due_date_based_on",
+   "label": "Due Date Based On",
+   "fieldtype": "Select",
+   "options": "\nDay(s) after invoice date\nDay(s) after the end of the invoice month\nMonth(s) after the end of the invoice month",
+   "readOnly": true
+  },
+  {
+   "fieldname": "credit_days",
+   "label": "Credit Days",
+   "fieldtype": "Int",
+   "readOnly": true,
+   "dependsOn": "eval:in_list(['Day(s) after invoice date', 'Day(s) after the end of the invoice month'], doc.due_date_based_on)",
+   "nonNegative": true
+  },
+  {
+   "fieldname": "credit_months",
+   "label": "Credit Months",
+   "fieldtype": "Int",
+   "readOnly": true,
+   "dependsOn": "eval:doc.due_date_based_on=='Month(s) after the end of the invoice month'",
+   "nonNegative": true
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "discount_date",
+   "label": "Discount Date",
+   "fieldtype": "Date",
+   "dependsOn": "discount",
+   "mandatoryDependsOn": "discount"
+  },
+  {
+   "fieldname": "discount",
+   "label": "Discount",
+   "fieldtype": "Float",
+   "fetchFrom": "payment_term.discount"
+  },
+  {
+   "fieldname": "discount_type",
+   "label": "Discount Type",
+   "fieldtype": "Select",
+   "options": "Percentage\nAmount",
+   "default": "Percentage",
+   "fetchFrom": "payment_term.discount_type"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discount_validity_based_on",
+   "label": "Discount Validity Based On",
+   "fieldtype": "Select",
+   "options": "\nDay(s) after invoice date\nDay(s) after the end of the invoice month\nMonth(s) after the end of the invoice month",
+   "readOnly": true,
+   "dependsOn": "discount"
+  },
+  {
+   "fieldname": "discount_validity",
+   "label": "Discount Validity",
+   "fieldtype": "Int",
+   "readOnly": true,
+   "dependsOn": "discount_validity_based_on"
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "payment_amount",
+   "label": "Payment Amount",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "reqd": true,
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "outstanding",
+   "label": "Outstanding",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "fetchFrom": "payment_amount"
+  },
+  {
+   "fieldname": "paid_amount",
+   "label": "Paid Amount",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "dependsOn": "paid_amount"
+  },
+  {
+   "fieldname": "discounted_amount",
+   "label": "Discounted Amount",
+   "fieldtype": "Currency",
+   "readOnly": true,
+   "dependsOn": "discounted_amount"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "base_payment_amount",
+   "label": "Payment Amount (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency"
+  }
+ ]
+}

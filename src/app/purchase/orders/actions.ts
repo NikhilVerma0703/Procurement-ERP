@@ -9,8 +9,11 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import type { PurchaseAction } from "@/lib/purchase/access";
 import { notifyOrder } from "@/lib/purchase/notify/outbox";
-import { bulkDeleteOrders, bulkWorkflowOrders, type BulkOutcome } from "@/lib/purchase/orders/bulk";
+import { bulkCloseOrders, bulkDeleteOrders, bulkWorkflowOrders, type BulkOutcome } from "@/lib/purchase/orders/bulk";
 import type { ActionResult } from "@/lib/purchase/orders/form-schema";
+import { lastPurchaseRates, type LastPurchaseRates } from "@/lib/purchase/orders/last-purchase";
+import { parseListQuery } from "@/lib/purchase/orders/list";
+import { adjacentOrderId } from "@/lib/purchase/orders/queries";
 import { saveOrder, type SaveRequest } from "@/lib/purchase/orders/save";
 import {
   cancelOrder, closeOrder, deleteOrder, holdOrder, reopenOrder, resumeOrder, submitOrder, updateOrderItems, updateSubmittedOrder,
@@ -140,4 +143,43 @@ export async function bulkWorkflowAction(ids: unknown, decision: "approve" | "re
     }
   }
   return r;
+}
+
+/** The list's ⋯ › Close / Reopen over the ticked POs (lib/purchase/orders/bulk.ts), for those who may close a PO. */
+export async function bulkCloseAction(ids: unknown, to: "Closed" | "Submitted"): Promise<ActionResult<BulkOutcome>> {
+  if (to !== "Closed" && to !== "Submitted") return { ok: false, error: "Not permitted" };
+  const list = parseSelectedIds(ids);
+  const r = await gated("manage", (u) => bulkCloseOrders(u, list, to));
+  if (r.ok) for (const d of r.value.done) refresh(d.id);
+  return r;
+}
+
+// Reads for the form's own buttons: the module gate only (they write nothing).
+
+async function viewer(): Promise<{ ok: true } | { ok: false; error: string }> {
+  const g = await purchaseGate("view");
+  return g.ok ? { ok: true } : { ok: false, error: purchaseRefusal(g) };
+}
+
+/** ‹ › on a PO: the next or previous PO in the list as it was last left (`listSearch`, its address-bar state). */
+export async function adjacentOrderAction(id: string, prev: boolean, listSearch: string): Promise<ActionResult<{ id: string }>> {
+  const g = await viewer();
+  if (!g.ok) return g;
+  const next = await adjacentOrderId(String(id).slice(0, 64), Boolean(prev), parseListQuery(new URLSearchParams(String(listSearch ?? "").slice(0, 4000))));
+  return next ? { ok: true, value: { id: next } } : { ok: false, error: "No further records" };
+}
+
+/** Tools › Update Rate as per Last Purchase: each row's rates from the item's last purchase (orders/last-purchase.ts). */
+export async function lastPurchaseRatesAction(
+  rows: { itemCode: string | null; conversionFactor: number }[],
+  orderNumber: string | null,
+  conversionRate: number,
+): Promise<ActionResult<(LastPurchaseRates | null)[]>> {
+  const g = await viewer();
+  if (!g.ok) return g;
+  const list = (Array.isArray(rows) ? rows : []).slice(0, 500).map((r) => ({
+    itemCode: typeof r?.itemCode === "string" ? r.itemCode.slice(0, 140) : null,
+    conversionFactor: Number(r?.conversionFactor) || 1,
+  }));
+  return { ok: true, value: await lastPurchaseRates(list, typeof orderNumber === "string" ? orderNumber : null, Number(conversionRate) || 1) };
 }

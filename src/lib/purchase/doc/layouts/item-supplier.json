@@ -1,0 +1,30 @@
+{
+ "doctype": "Item Supplier",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "supplier",
+   "label": "Supplier",
+   "fieldtype": "Link",
+   "options": "Supplier",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "supplier_part_no",
+   "label": "Supplier Part Number",
+   "fieldtype": "Data",
+   "inListView": true
+  }
+ ]
+}

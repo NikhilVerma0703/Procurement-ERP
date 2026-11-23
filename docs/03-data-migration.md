@@ -71,6 +71,47 @@ test POs): 40 s, every check matches (`data/reports/import-20261119-095918.md`).
 - **Files:** both file archives are byte for byte the 16-11 ones; no attachment was added or removed.
 - **Issues:** the same 26, word for word.
 
+### Re-run on the 20-11-2026 backup: 3,219 POs
+
+The owner, 20-11: "there are 3218 POs already … show them", and "check locally … and fill it asap". The newest backup
+on the old site was still ours of 19-11, so the Backups page took another (⋯ › Download Files Backup, 20-11-2026
+14:54:30), and its three files went into `data/erpnext-backup`. Nothing had been saved locally since the last import,
+so `npm run import:erpnext` ran without `--force`: 42 s, every check matches (`data/reports/import-20261120-092837.md`),
+and `npm run verify:erpnext` ✓.
+
+- **Rows:** POs **3,219**, lines **8,767**, tax rows **4,739**, cost overheads **377**, payment rows **3,239**,
+  timeline entries **16,787**; suppliers, items, addresses, contacts and the other masters as on 19-11. Each equal to
+  the backup.
+- **Since 19-11 15:21:** 2 new POs, PUR-ORD/25-26/02548 and 02549 (drafts, raised on 20-11), and 4 older ones saved
+  again (02373, 02467, 02489, 02535).
+- **Files:** both file archives are byte for byte the 19-11 ones.
+- **Issues:** the same 26, word for word.
+
+### Re-run on the 21-11-2026 backup: 3,227 POs, and the Stock module's documents (Phase II)
+
+The owner, 21-11 17:07: "total number of POs in the website is 3227 … add/import all these". The backup taken that
+afternoon for Phase II (`20261121_164427`, docs/12 §5) holds exactly 3,227. The importer now also brings the Stock
+module's documents (`src/lib/purchase/migrate/stock-build.ts`, 27 new tables): 109 s, **125 checks, all equal**
+(`data/reports/import-20261121-114723.md`), `verify:erpnext` ✓, golden 3,227 POs with 0 unexplained.
+
+- **Rows (each equal to the backup):** POs **3,227**, lines **8,798**; Gate Entries **4,682** (+13,919 rows);
+  Purchase Receipts **5,593** (+11,378 lines, 7,871 tax rows); Landed Cost Vouchers **378** (+378 receipts, 732
+  items, 390 charges); Material Requests **4,145** (+7,494); Stock Entries **4,496** (+11,227); Stock
+  Reconciliations **305** (+1,384); Delivery Notes **77** (+117, 6 tax rows); Packing Slips **78** (+3,913); Stock
+  Ledger Entries **26,041**; Bins **4,689**; Item Prices **5,220**; Serial Nos **24,803**; Batches **3,021**; Quality
+  Inspections **2,375** (+32,786 readings); Stock Entry Types **8**.
+- **Exact sums:** Σ ledger quantity 6,441,993.4371 and Σ ledger value change 2,457,539,938.307000004 (cancelled
+  entries left out, as the reports do); bins Σ quantity 6,440,032.6971 and Σ value 2,457,539,938.307; receipts Σ
+  grand total 3,920,642,213.734; receipt lines Σ received 13,342,011.18; landed costs Σ applicable 1,521,947.847.
+  (The bins' quantity is the old site's own and differs from its ledger by 1,960.74; the Stock Balance check against
+  the live report settles which the reports used.)
+- **Read whole:** Phase I read Purchase Receipt, its lines and Material Request narrowed (for the PO's
+  Connections); they are now read whole, once (a test holds it: the reader keeps one spec per table).
+- **Issues:** the 26 before, and 1 new: a Gate Entry row names a PO line the old site no longer has (kept as text).
+- **Every child table checked** (21-11): each child table's rows under a stock document were counted in the dump;
+  three were missing and are now imported — the add-on's Services Items on receipts (566; Phase I read only the
+  PO's 377), Sample Item on packing slips (73) and Sales Team on delivery notes (6).
+
 ### The 26 issues noted, none of which loses data
 
 - **4 orphan rows:** two Poland VAT templates were renamed in ERPNext and left these rows behind. They belonged to no

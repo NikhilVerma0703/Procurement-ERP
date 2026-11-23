@@ -223,6 +223,9 @@ model PurchasePriceList {
   orders      PurchaseOrder[]
   suppliers   PurchaseSupplier[]
 
+  // Phase II.
+  itemPrices PurchaseItemPrice[]
+
   @@map("purchase_price_lists")
 }
 
@@ -300,6 +303,17 @@ model PurchaseWarehouse {
   ordersTarget PurchaseOrder[]
   orderItems   PurchaseOrderItem[]
   itemDefaults PurchaseItemDefault[]
+
+  // Phase II: the stock documents that point at a warehouse.
+  receiptItems             PurchaseReceiptItem[]
+  materialRequestItems     PurchaseMaterialRequestItem[]
+  stockEntrySources        PurchaseStockEntryDetail[]        @relation("StockEntrySource")
+  stockEntryTargets        PurchaseStockEntryDetail[]        @relation("StockEntryTarget")
+  stockReconciliationItems PurchaseStockReconciliationItem[]
+  deliveryNoteItems        PurchaseDeliveryNoteItem[]
+  stockLedgerEntries       PurchaseStockLedgerEntry[]
+  bins                     PurchaseBin[]
+  serialNos                PurchaseSerialNo[]
 
   @@map("purchase_warehouses")
 }
@@ -568,6 +582,12 @@ model PurchaseSupplier {
   addressLinks         PurchaseAddressLink[]
   contactLinks         PurchaseContactLink[]
 
+  // Phase II.
+  gateEntries       PurchaseGateEntry[]
+  receipts          PurchaseReceipt[]
+  stockEntryDetails PurchaseStockEntryDetail[]
+  itemPrices        PurchaseItemPrice[]
+
   @@index([supplierName])
   @@map("purchase_suppliers")
 }
@@ -587,6 +607,9 @@ model PurchaseCustomer {
   orders       PurchaseOrder[]
   addressLinks PurchaseAddressLink[]
   contactLinks PurchaseContactLink[]
+
+  // Phase II.
+  deliveryNotes PurchaseDeliveryNote[]
 
   @@map("purchase_customers")
 }
@@ -805,6 +828,22 @@ model PurchaseItem {
   attributes     PurchaseItemVariantAttribute[]
   orderItems     PurchaseOrderItem[]
   costOverheads  PurchaseOrderCostOverhead[]
+
+  // Phase II: the stock documents that point at an item.
+  gateEntryItems           PurchaseGateEntryItem[]
+  receiptItems             PurchaseReceiptItem[]
+  landedCostItems          PurchaseLandedCostItem[]
+  materialRequestItems     PurchaseMaterialRequestItem[]
+  stockEntryDetails        PurchaseStockEntryDetail[]
+  stockReconciliationItems PurchaseStockReconciliationItem[]
+  deliveryNoteItems        PurchaseDeliveryNoteItem[]
+  packingSlipItems         PurchasePackingSlipItem[]
+  stockLedgerEntries       PurchaseStockLedgerEntry[]
+  bins                     PurchaseBin[]
+  itemPrices               PurchaseItemPrice[]
+  serialNos                PurchaseSerialNo[]
+  batches                  PurchaseBatch[]
+  qualityInspections       PurchaseQualityInspection[]
 
   @@index([itemName])
   @@map("purchase_items")
@@ -1104,6 +1143,11 @@ model PurchaseOrder {
   events                PurchaseOrderEvent[]
   attachments           PurchaseAttachment[]
 
+  // Phase II: the gate entries and receipts made against this PO.
+  gateEntries    PurchaseGateEntry[]
+  gateEntryItems PurchaseGateEntryItem[]
+  receiptItems   PurchaseReceiptItem[]
+
   @@index([supplierId])
   @@index([transactionDate])
   @@index([status])
@@ -1231,6 +1275,10 @@ model PurchaseOrderItem {
   warehouse       PurchaseWarehouse?       @relation(fields: [warehouseId], references: [id])
   expenseAccount  PurchaseAccount?         @relation(fields: [expenseAccountId], references: [id])
   costCenter      PurchaseCostCenter?      @relation(fields: [costCenterId], references: [id])
+
+  // Phase II.
+  gateEntryItems PurchaseGateEntryItem[]
+  receiptItems   PurchaseReceiptItem[]
 
   @@index([orderId])
   @@index([itemId])
@@ -1460,6 +1508,1231 @@ model PurchaseImportRun {
 }
 
 // ---------------------------------------------------------------------------
+// ============================================================================
+// PHASE II — THE STOCK MODULE'S DOCUMENTS (owner, 21-11-2026; docs/12)
+//
+// Thiru R's records on the old site: Gate Entry → Purchase Receipt (→ Landed Cost Voucher), the
+// Stock Transactions (Material Request, Stock Entry, Delivery Note, Packing Slip), the stock books
+// (Stock Ledger Entry, Bin, Stock Reconciliation), Item Price, Serial No, Batch and Quality
+// Inspection. The rules of Phase I (docs/02): the ERPNext name is kept (`number`, `code`,
+// `erpnextName`), money and quantities are numeric(21,9), the whole source row is in `legacy`, and
+// a column exists for what the screens and reports use. Links to the masters (item, warehouse,
+// supplier, customer, PO, PO line, price list) are foreign keys BESIDE the ERPNext name, which is
+// always kept: a link the backup cannot resolve stays readable and is reported, never guessed.
+// Links to records this module has no screen for (accounts, cost centres, templates, addresses,
+// letter heads) are the ERPNext names, as the old form showed them.
+/// The add-on's "Services Items" on a receipt (services and charges), as the PO has them (its Cost
+/// Overheads, Phase I). 566 rows on the old site's receipts.
+model PurchaseReceiptServiceItem {
+  id             String  @id @default(cuid())
+  erpnextName    String  @unique @map("erpnext_name")
+  receiptId      String  @map("receipt_id")
+  idx            Int
+  serviceItem    String? @map("service_item")
+  /// A Data field on the old form: text, kept as recorded.
+  serviceCharges String? @map("service_charges")
+  accountHead    String? @map("account_head")
+  chargeType     String? @map("charge_type")
+  legacy         Json?
+
+  receipt PurchaseReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@index([receiptId])
+  @@map("purchase_receipt_service_items")
+}
+
+/// The add-on's "Sample Item" rows on a packing slip (slab samples).
+model PurchasePackingSlipSampleItem {
+  id            String  @id @default(cuid())
+  erpnextName   String  @unique @map("erpnext_name")
+  packingSlipId String  @map("packing_slip_id")
+  idx           Int
+  itemCode      String? @map("item_code")
+  itemName      String? @map("item_name")
+  qty           Decimal @default(0) @db.Decimal(21, 9)
+  colour        String?
+  thick         String?
+  sqft          Decimal @default(0) @db.Decimal(21, 9)
+  sqmt          Decimal @default(0) @db.Decimal(21, 9)
+  crate         String?
+  netWeight     Decimal @default(0) @map("net_weight") @db.Decimal(21, 9)
+  length        String?
+  width         String?
+  legacy        Json?
+
+  packingSlip PurchasePackingSlip @relation(fields: [packingSlipId], references: [id], onDelete: Cascade)
+
+  @@index([packingSlipId])
+  @@map("purchase_packing_slip_sample_items")
+}
+
+/// A delivery note's Sales Team rows.
+model PurchaseDeliveryNoteSalesTeam {
+  id                  String  @id @default(cuid())
+  erpnextName         String  @unique @map("erpnext_name")
+  deliveryNoteId      String  @map("delivery_note_id")
+  idx                 Int
+  salesPerson         String? @map("sales_person")
+  contactNo           String? @map("contact_no")
+  allocatedPercentage Decimal @default(0) @map("allocated_percentage") @db.Decimal(21, 9)
+  allocatedAmount     Decimal @default(0) @map("allocated_amount") @db.Decimal(21, 9)
+  commissionRate      String? @map("commission_rate")
+  incentives          Decimal @default(0) @db.Decimal(21, 9)
+  legacy              Json?
+
+  deliveryNote PurchaseDeliveryNote @relation(fields: [deliveryNoteId], references: [id], onDelete: Cascade)
+
+  @@index([deliveryNoteId])
+  @@map("purchase_delivery_note_sales_team")
+}
+
+/// A stock document's timeline (Phase II): the old site's history, comments and emails of receipts,
+/// gate entries, requests, stock entries… (its Version, Comment and Communication rows), as the PO's are
+/// in PurchaseOrderEvent. Keyed by the document's DocType and ERPNext name.
+model PurchaseDocEvent {
+  id          String                 @id @default(cuid())
+  erpnextName String?                @unique @map("erpnext_name")
+  source      String
+  doctype     String
+  docName     String                 @map("doc_name")
+  kind        PurchaseOrderEventKind
+  at          DateTime
+  byEmail     String?                @map("by_email")
+  subject     String?                @db.Text
+  content     String?                @db.Text
+  data        Json?
+
+  @@index([doctype, docName, at])
+  @@map("purchase_doc_events")
+}
+
+// ============================================================================
+
+model PurchaseStockEntryType {
+  id      String @id @default(cuid())
+  code    String @unique
+  purpose String
+  legacy  Json?
+
+  entries PurchaseStockEntry[]
+
+  @@map("purchase_stock_entry_types")
+}
+
+/// The add-on's Gate Entry: a vehicle at the gate against one PO (docs/12 §4). Imported as recorded;
+/// its screen waits for the owner's description of the workflow.
+model PurchaseGateEntry {
+  id            String            @id @default(cuid())
+  /// ERPNext name, e.g. "GE-25-26-03510".
+  number        String            @unique
+  namingSeries  String            @map("naming_series")
+  docStatus     PurchaseDocStatus @default(DRAFT) @map("doc_status")
+  amendedFromId String?           @map("amended_from_id")
+  location      String?
+  orderNumber   String            @map("order_number")
+  orderId       String?           @map("order_id")
+  orderDate     DateTime?         @map("order_date") @db.Date
+  supplierCode  String            @map("supplier_code")
+  supplierId    String?           @map("supplier_id")
+  invoiceNo     String?           @map("invoice_no")
+  invoiceDate   DateTime?         @map("invoice_date") @db.Date
+  gateEntryDate DateTime?         @map("gate_entry_date") @db.Date
+  /// "Inward No": the Purchase Receipt raised from this gate entry.
+  receiptNumber String?           @map("receipt_number")
+  inwardDate    DateTime?         @map("inward_date") @db.Date
+  financialYear String?           @map("financial_year")
+  vehicleNo     String?           @map("vehicle_no")
+  legacy        Json?
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+  createdBy     String?           @map("created_by")
+  updatedBy     String?           @map("updated_by")
+
+  amendedFrom PurchaseGateEntry?      @relation("GateEntryAmendments", fields: [amendedFromId], references: [id])
+  amendments  PurchaseGateEntry[]     @relation("GateEntryAmendments")
+  order       PurchaseOrder?          @relation(fields: [orderId], references: [id])
+  supplier    PurchaseSupplier?       @relation(fields: [supplierId], references: [id])
+  items       PurchaseGateEntryItem[]
+  receipts    PurchaseReceipt[]
+
+  @@index([orderId])
+  @@index([supplierId])
+  @@index([gateEntryDate])
+  @@map("purchase_gate_entries")
+}
+
+model PurchaseGateEntryItem {
+  id              String    @id @default(cuid())
+  erpnextName     String    @unique @map("erpnext_name")
+  gateEntryId     String    @map("gate_entry_id")
+  idx             Int
+  orderNumber     String?   @map("order_number")
+  orderId         String?   @map("order_id")
+  orderDate       DateTime? @map("order_date") @db.Date
+  itemCode        String    @map("item_code")
+  itemId          String?   @map("item_id")
+  itemDescription String?   @map("item_description")
+  uom             String?
+  poQty           Decimal   @default(0) @map("po_qty") @db.Decimal(21, 9)
+  itemQty         Decimal   @default(0) @map("item_qty") @db.Decimal(21, 9)
+  balQty          Decimal   @default(0) @map("bal_qty") @db.Decimal(21, 9)
+  /// The PO line it receives against (its ERPNext name).
+  orderItemName   String?   @map("order_item_name")
+  orderItemId     String?   @map("order_item_id")
+  legacy          Json?
+
+  gateEntry PurchaseGateEntry  @relation(fields: [gateEntryId], references: [id], onDelete: Cascade)
+  order     PurchaseOrder?     @relation(fields: [orderId], references: [id])
+  item      PurchaseItem?      @relation(fields: [itemId], references: [id])
+  orderItem PurchaseOrderItem? @relation(fields: [orderItemId], references: [id])
+
+  @@index([gateEntryId])
+  @@index([orderItemId])
+  @@map("purchase_gate_entry_items")
+}
+
+/// Purchase Receipt (the GRN): receives a PO's items into stock.
+model PurchaseReceipt {
+  id                               String            @id @default(cuid())
+  /// ERPNext name, e.g. "PR/25-26/MM-03446".
+  number                           String            @unique
+  title                            String?
+  namingSeries                     String            @map("naming_series")
+  docStatus                        PurchaseDocStatus @default(DRAFT) @map("doc_status")
+  /// As ERPNext showed it: Draft, To Bill, Completed, Return Issued, Cancelled, Closed.
+  status                           String
+  amendedFromId                    String?           @map("amended_from_id")
+  supplierCode                     String            @map("supplier_code")
+  supplierId                       String?           @map("supplier_id")
+  supplierName                     String?           @map("supplier_name")
+  supplierDeliveryNote             String?           @map("supplier_delivery_note")
+  billNo                           String?           @map("bill_no")
+  billDate                         DateTime?         @map("bill_date") @db.Date
+  postingDate                      DateTime          @map("posting_date") @db.Date
+  /// As ERPNext stored it, "HH:MM:SS[.ffffff]".
+  postingTime                      String            @map("posting_time")
+  setPostingTime                   Boolean           @default(false) @map("set_posting_time")
+  companyCode                      String            @map("company_code")
+  currency                         String
+  conversionRate                   Decimal           @default(1) @map("conversion_rate") @db.Decimal(21, 9)
+  buyingPriceList                  String?           @map("buying_price_list")
+  priceListCurrency                String?           @map("price_list_currency")
+  plcConversionRate                Decimal           @default(1) @map("plc_conversion_rate") @db.Decimal(21, 9)
+  setWarehouse                     String?           @map("set_warehouse")
+  totalQty                         Decimal           @default(0) @map("total_qty") @db.Decimal(21, 9)
+  baseTotal                        Decimal           @default(0) @map("base_total") @db.Decimal(21, 9)
+  baseNetTotal                     Decimal           @default(0) @map("base_net_total") @db.Decimal(21, 9)
+  total                            Decimal           @default(0) @db.Decimal(21, 9)
+  netTotal                         Decimal           @default(0) @map("net_total") @db.Decimal(21, 9)
+  taxCategory                      String?           @map("tax_category")
+  taxesAndCharges                  String?           @map("taxes_and_charges")
+  baseTaxesAndChargesAdded         Decimal           @default(0) @map("base_taxes_and_charges_added") @db.Decimal(21, 9)
+  baseTotalTaxesAndCharges         Decimal           @default(0) @map("base_total_taxes_and_charges") @db.Decimal(21, 9)
+  taxesAndChargesAdded             Decimal           @default(0) @map("taxes_and_charges_added") @db.Decimal(21, 9)
+  totalTaxesAndCharges             Decimal           @default(0) @map("total_taxes_and_charges") @db.Decimal(21, 9)
+  applyDiscountOn                  String?           @map("apply_discount_on")
+  additionalDiscountPercentage     Decimal           @default(0) @map("additional_discount_percentage") @db.Decimal(21, 9)
+  baseDiscountAmount               Decimal           @default(0) @map("base_discount_amount") @db.Decimal(21, 9)
+  discountAmount                   Decimal           @default(0) @map("discount_amount") @db.Decimal(21, 9)
+  baseGrandTotal                   Decimal           @default(0) @map("base_grand_total") @db.Decimal(21, 9)
+  baseRoundingAdjustment           Decimal           @default(0) @map("base_rounding_adjustment") @db.Decimal(21, 9)
+  baseRoundedTotal                 Decimal           @default(0) @map("base_rounded_total") @db.Decimal(21, 9)
+  baseInWords                      String?           @map("base_in_words")
+  grandTotal                       Decimal           @default(0) @map("grand_total") @db.Decimal(21, 9)
+  roundingAdjustment               Decimal           @default(0) @map("rounding_adjustment") @db.Decimal(21, 9)
+  roundedTotal                     Decimal           @default(0) @map("rounded_total") @db.Decimal(21, 9)
+  inWords                          String?           @map("in_words")
+  otherChargesCalculation          String?           @map("other_charges_calculation")
+  supplierAddress                  String?           @map("supplier_address")
+  addressDisplay                   String?           @map("address_display")
+  contactPerson                    String?           @map("contact_person")
+  contactDisplay                   String?           @map("contact_display")
+  contactMobile                    String?           @map("contact_mobile")
+  contactEmail                     String?           @map("contact_email")
+  shippingAddress                  String?           @map("shipping_address")
+  shippingAddressDisplay           String?           @map("shipping_address_display")
+  billingAddress                   String?           @map("billing_address")
+  billingAddressDisplay            String?           @map("billing_address_display")
+  tcName                           String?           @map("tc_name")
+  terms                            String?
+  letterHead                       String?           @map("letter_head")
+  language                         String?
+  lrDate                           DateTime?         @map("lr_date") @db.Date
+  vehicleNo                        String?           @map("vehicle_no")
+  modeOfTransport                  String?           @map("mode_of_transport")
+  gstVehicleType                   String?           @map("gst_vehicle_type")
+  supplierGstin                    String?           @map("supplier_gstin")
+  gstCategory                      String?           @map("gst_category")
+  companyGstin                     String?           @map("company_gstin")
+  placeOfSupply                    String?           @map("place_of_supply")
+  /// The add-on's fields: the gate entry it was raised from, the mode of transport, inspection.
+  gateEntryCode                    String?           @map("gate_entry_code")
+  gateEntryId                      String?           @map("gate_entry_id")
+  customModeOfTransport            String?           @map("custom_mode_of_transport")
+  inspectionRequiredBeforePurchase Boolean           @default(false) @map("inspection_required_before_purchase")
+  legacy                           Json?
+  createdAt                        DateTime          @default(now()) @map("created_at")
+  updatedAt                        DateTime          @updatedAt @map("updated_at")
+  createdBy                        String?           @map("created_by")
+  updatedBy                        String?           @map("updated_by")
+
+  amendedFrom PurchaseReceipt?            @relation("ReceiptAmendments", fields: [amendedFromId], references: [id])
+  amendments  PurchaseReceipt[]           @relation("ReceiptAmendments")
+  supplier    PurchaseSupplier?           @relation(fields: [supplierId], references: [id])
+  gateEntry   PurchaseGateEntry?          @relation(fields: [gateEntryId], references: [id])
+  items       PurchaseReceiptItem[]
+  taxes       PurchaseReceiptTax[]
+  landedCosts PurchaseLandedCostReceipt[]
+
+  serviceItems PurchaseReceiptServiceItem[]
+
+  @@index([supplierId])
+  @@index([postingDate])
+  @@index([status])
+  @@index([gateEntryId])
+  @@map("purchase_receipts")
+}
+
+model PurchaseReceiptItem {
+  id                      String    @id @default(cuid())
+  erpnextName             String    @unique @map("erpnext_name")
+  receiptId               String    @map("receipt_id")
+  idx                     Int
+  itemCode                String    @map("item_code")
+  itemId                  String?   @map("item_id")
+  itemName                String?   @map("item_name")
+  description             String?
+  itemGroup               String?   @map("item_group")
+  receivedQty             Decimal   @default(0) @map("received_qty") @db.Decimal(21, 9)
+  /// Accepted quantity.
+  qty                     Decimal   @default(0) @db.Decimal(21, 9)
+  rejectedQty             Decimal   @default(0) @map("rejected_qty") @db.Decimal(21, 9)
+  uom                     String
+  stockUom                String    @map("stock_uom")
+  conversionFactor        Decimal   @default(1) @map("conversion_factor") @db.Decimal(21, 9)
+  receivedStockQty        Decimal   @default(0) @map("received_stock_qty") @db.Decimal(21, 9)
+  stockQty                Decimal   @default(0) @map("stock_qty") @db.Decimal(21, 9)
+  priceListRate           Decimal   @default(0) @map("price_list_rate") @db.Decimal(21, 9)
+  basePriceListRate       Decimal   @default(0) @map("base_price_list_rate") @db.Decimal(21, 9)
+  marginType              String?   @map("margin_type")
+  marginRateOrAmount      Decimal   @default(0) @map("margin_rate_or_amount") @db.Decimal(21, 9)
+  discountPercentage      Decimal   @default(0) @map("discount_percentage") @db.Decimal(21, 9)
+  discountAmount          Decimal   @default(0) @map("discount_amount") @db.Decimal(21, 9)
+  rate                    Decimal   @default(0) @db.Decimal(21, 9)
+  amount                  Decimal   @default(0) @db.Decimal(21, 9)
+  baseRate                Decimal   @default(0) @map("base_rate") @db.Decimal(21, 9)
+  baseAmount              Decimal   @default(0) @map("base_amount") @db.Decimal(21, 9)
+  stockUomRate            Decimal   @default(0) @map("stock_uom_rate") @db.Decimal(21, 9)
+  netRate                 Decimal   @default(0) @map("net_rate") @db.Decimal(21, 9)
+  netAmount               Decimal   @default(0) @map("net_amount") @db.Decimal(21, 9)
+  baseNetRate             Decimal   @default(0) @map("base_net_rate") @db.Decimal(21, 9)
+  baseNetAmount           Decimal   @default(0) @map("base_net_amount") @db.Decimal(21, 9)
+  itemTaxTemplate         String?   @map("item_tax_template")
+  itemTaxRate             String?   @map("item_tax_rate")
+  valuationRate           Decimal   @default(0) @map("valuation_rate") @db.Decimal(21, 9)
+  landedCostVoucherAmount Decimal   @default(0) @map("landed_cost_voucher_amount") @db.Decimal(21, 9)
+  warehouseCode           String?   @map("warehouse_code")
+  warehouseId             String?   @map("warehouse_id")
+  rejectedWarehouse       String?   @map("rejected_warehouse")
+  materialRequest         String?   @map("material_request")
+  materialRequestItem     String?   @map("material_request_item")
+  orderNumber             String?   @map("order_number")
+  orderId                 String?   @map("order_id")
+  orderItemName           String?   @map("order_item_name")
+  orderItemId             String?   @map("order_item_id")
+  scheduleDate            DateTime? @map("schedule_date") @db.Date
+  qualityInspection       String?   @map("quality_inspection")
+  batchNo                 String?   @map("batch_no")
+  serialNo                String?   @map("serial_no")
+  expenseAccount          String?   @map("expense_account")
+  costCenter              String?   @map("cost_center")
+  gstHsnCode              String?   @map("gst_hsn_code")
+  gstTreatment            String?   @map("gst_treatment")
+  isIneligibleForItc      Boolean   @default(false) @map("is_ineligible_for_itc")
+  taxableValue            Decimal   @default(0) @map("taxable_value") @db.Decimal(21, 9)
+  igstRate                Decimal   @default(0) @map("igst_rate") @db.Decimal(21, 9)
+  cgstRate                Decimal   @default(0) @map("cgst_rate") @db.Decimal(21, 9)
+  sgstRate                Decimal   @default(0) @map("sgst_rate") @db.Decimal(21, 9)
+  igstAmount              Decimal   @default(0) @map("igst_amount") @db.Decimal(21, 9)
+  cgstAmount              Decimal   @default(0) @map("cgst_amount") @db.Decimal(21, 9)
+  sgstAmount              Decimal   @default(0) @map("sgst_amount") @db.Decimal(21, 9)
+  /// The add-on's columns: bags, and its own GST rate/amount pairs (as on the PO, docs/04).
+  bagsQty                 Decimal   @default(0) @map("bags_qty") @db.Decimal(21, 9)
+  acceptedBagsNo          String?   @map("accepted_bags_no")
+  addonIgst               Decimal   @default(0) @map("addon_igst") @db.Decimal(21, 9)
+  addonIgstAmt            Decimal   @default(0) @map("addon_igst_amt") @db.Decimal(21, 9)
+  addonCgst               Decimal   @default(0) @map("addon_cgst") @db.Decimal(21, 9)
+  addonCgstAmt            Decimal   @default(0) @map("addon_cgst_amt") @db.Decimal(21, 9)
+  addonSgst               Decimal   @default(0) @map("addon_sgst") @db.Decimal(21, 9)
+  addonSgstAmt            Decimal   @default(0) @map("addon_sgst_amt") @db.Decimal(21, 9)
+  legacy                  Json?
+
+  receipt   PurchaseReceipt    @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  item      PurchaseItem?      @relation(fields: [itemId], references: [id])
+  warehouse PurchaseWarehouse? @relation(fields: [warehouseId], references: [id])
+  order     PurchaseOrder?     @relation(fields: [orderId], references: [id])
+  orderItem PurchaseOrderItem? @relation(fields: [orderItemId], references: [id])
+
+  @@index([receiptId])
+  @@index([itemId])
+  @@index([orderId])
+  @@index([orderItemId])
+  @@map("purchase_receipt_items")
+}
+
+model PurchaseReceiptTax {
+  id                               String  @id @default(cuid())
+  erpnextName                      String  @unique @map("erpnext_name")
+  receiptId                        String  @map("receipt_id")
+  idx                              Int
+  category                         String?
+  addDeductTax                     String? @map("add_deduct_tax")
+  chargeType                       String? @map("charge_type")
+  rowId                            String? @map("row_id")
+  includedInPrintRate              Boolean @default(false) @map("included_in_print_rate")
+  accountHead                      String  @map("account_head")
+  description                      String?
+  rate                             Decimal @default(0) @db.Decimal(21, 9)
+  costCenter                       String? @map("cost_center")
+  accountCurrency                  String? @map("account_currency")
+  taxAmount                        Decimal @default(0) @map("tax_amount") @db.Decimal(21, 9)
+  taxAmountAfterDiscountAmount     Decimal @default(0) @map("tax_amount_after_discount_amount") @db.Decimal(21, 9)
+  total                            Decimal @default(0) @db.Decimal(21, 9)
+  baseTaxAmount                    Decimal @default(0) @map("base_tax_amount") @db.Decimal(21, 9)
+  baseTotal                        Decimal @default(0) @map("base_total") @db.Decimal(21, 9)
+  baseTaxAmountAfterDiscountAmount Decimal @default(0) @map("base_tax_amount_after_discount_amount") @db.Decimal(21, 9)
+  itemWiseTaxDetail                String? @map("item_wise_tax_detail")
+  servicePrice                     Decimal @default(0) @map("service_price") @db.Decimal(21, 9)
+  gstTaxType                       String? @map("gst_tax_type")
+  legacy                           Json?
+
+  receipt PurchaseReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@index([receiptId])
+  @@map("purchase_receipt_taxes")
+}
+
+/// Landed Cost Voucher: spreads freight and other charges over receipts' items (Thiru R, weekly).
+model PurchaseLandedCostVoucher {
+  id                       String            @id @default(cuid())
+  number                   String            @unique
+  namingSeries             String            @map("naming_series")
+  docStatus                PurchaseDocStatus @default(DRAFT) @map("doc_status")
+  companyCode              String            @map("company_code")
+  postingDate              DateTime          @map("posting_date") @db.Date
+  totalTaxesAndCharges     Decimal           @default(0) @map("total_taxes_and_charges") @db.Decimal(21, 9)
+  distributeChargesBasedOn String?           @map("distribute_charges_based_on")
+  legacy                   Json?
+  createdAt                DateTime          @default(now()) @map("created_at")
+  updatedAt                DateTime          @updatedAt @map("updated_at")
+  createdBy                String?           @map("created_by")
+  updatedBy                String?           @map("updated_by")
+
+  receipts PurchaseLandedCostReceipt[]
+  items    PurchaseLandedCostItem[]
+  taxes    PurchaseLandedCostTax[]
+
+  @@index([postingDate])
+  @@map("purchase_landed_cost_vouchers")
+}
+
+model PurchaseLandedCostReceipt {
+  id                  String  @id @default(cuid())
+  erpnextName         String  @unique @map("erpnext_name")
+  voucherId           String  @map("voucher_id")
+  idx                 Int
+  receiptDocumentType String  @map("receipt_document_type")
+  receiptDocument     String  @map("receipt_document")
+  receiptId           String? @map("receipt_id")
+  supplierCode        String? @map("supplier_code")
+  grandTotal          Decimal @default(0) @map("grand_total") @db.Decimal(21, 9)
+  legacy              Json?
+
+  voucher PurchaseLandedCostVoucher @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+  receipt PurchaseReceipt?          @relation(fields: [receiptId], references: [id])
+
+  @@index([voucherId])
+  @@index([receiptId])
+  @@map("purchase_landed_cost_receipts")
+}
+
+model PurchaseLandedCostItem {
+  id                  String  @id @default(cuid())
+  erpnextName         String  @unique @map("erpnext_name")
+  voucherId           String  @map("voucher_id")
+  idx                 Int
+  itemCode            String  @map("item_code")
+  itemId              String? @map("item_id")
+  description         String?
+  receiptDocumentType String  @map("receipt_document_type")
+  receiptDocument     String  @map("receipt_document")
+  qty                 Decimal @default(0) @db.Decimal(21, 9)
+  rate                Decimal @default(0) @db.Decimal(21, 9)
+  amount              Decimal @default(0) @db.Decimal(21, 9)
+  applicableCharges   Decimal @default(0) @map("applicable_charges") @db.Decimal(21, 9)
+  /// The receipt line it loads (its ERPNext name).
+  receiptItemName     String? @map("receipt_item_name")
+  costCenter          String? @map("cost_center")
+  legacy              Json?
+
+  voucher PurchaseLandedCostVoucher @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+  item    PurchaseItem?             @relation(fields: [itemId], references: [id])
+
+  @@index([voucherId])
+  @@map("purchase_landed_cost_items")
+}
+
+model PurchaseLandedCostTax {
+  id              String  @id @default(cuid())
+  erpnextName     String  @unique @map("erpnext_name")
+  voucherId       String  @map("voucher_id")
+  idx             Int
+  expenseAccount  String? @map("expense_account")
+  accountCurrency String? @map("account_currency")
+  exchangeRate    Decimal @default(1) @map("exchange_rate") @db.Decimal(21, 9)
+  description     String?
+  amount          Decimal @default(0) @db.Decimal(21, 9)
+  baseAmount      Decimal @default(0) @map("base_amount") @db.Decimal(21, 9)
+  legacy          Json?
+
+  voucher PurchaseLandedCostVoucher @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+
+  @@index([voucherId])
+  @@map("purchase_landed_cost_taxes")
+}
+
+/// Material Request ("Indent" on the old site's notifications).
+model PurchaseMaterialRequest {
+  id                  String            @id @default(cuid())
+  number              String            @unique
+  title               String?
+  namingSeries        String            @map("naming_series")
+  docStatus           PurchaseDocStatus @default(DRAFT) @map("doc_status")
+  /// As ERPNext showed it: Draft, Pending, Partially Ordered, Ordered, Issued, Transferred, Received, Stopped, Cancelled.
+  status              String
+  materialRequestType String            @map("material_request_type")
+  companyCode         String            @map("company_code")
+  transactionDate     DateTime          @map("transaction_date") @db.Date
+  scheduleDate        DateTime?         @map("schedule_date") @db.Date
+  amendedFromId       String?           @map("amended_from_id")
+  setWarehouse        String?           @map("set_warehouse")
+  tcName              String?           @map("tc_name")
+  terms               String?
+  perOrdered          Decimal           @default(0) @map("per_ordered") @db.Decimal(21, 9)
+  perReceived         Decimal           @default(0) @map("per_received") @db.Decimal(21, 9)
+  letterHead          String?           @map("letter_head")
+  legacy              Json?
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+  createdBy           String?           @map("created_by")
+  updatedBy           String?           @map("updated_by")
+
+  amendedFrom PurchaseMaterialRequest?      @relation("MaterialRequestAmendments", fields: [amendedFromId], references: [id])
+  amendments  PurchaseMaterialRequest[]     @relation("MaterialRequestAmendments")
+  items       PurchaseMaterialRequestItem[]
+
+  @@index([transactionDate])
+  @@index([status])
+  @@map("purchase_material_requests")
+}
+
+model PurchaseMaterialRequestItem {
+  id               String    @id @default(cuid())
+  erpnextName      String    @unique @map("erpnext_name")
+  requestId        String    @map("request_id")
+  idx              Int
+  itemCode         String    @map("item_code")
+  itemId           String?   @map("item_id")
+  itemName         String?   @map("item_name")
+  description      String?
+  itemGroup        String?   @map("item_group")
+  scheduleDate     DateTime? @map("schedule_date") @db.Date
+  qty              Decimal   @default(0) @db.Decimal(21, 9)
+  uom              String
+  stockUom         String    @map("stock_uom")
+  conversionFactor Decimal   @default(1) @map("conversion_factor") @db.Decimal(21, 9)
+  stockQty         Decimal   @default(0) @map("stock_qty") @db.Decimal(21, 9)
+  fromWarehouse    String?   @map("from_warehouse")
+  warehouseCode    String?   @map("warehouse_code")
+  warehouseId      String?   @map("warehouse_id")
+  projectedQty     Decimal   @default(0) @map("projected_qty") @db.Decimal(21, 9)
+  actualQty        Decimal   @default(0) @map("actual_qty") @db.Decimal(21, 9)
+  orderedQty       Decimal   @default(0) @map("ordered_qty") @db.Decimal(21, 9)
+  receivedQty      Decimal   @default(0) @map("received_qty") @db.Decimal(21, 9)
+  rate             Decimal   @default(0) @db.Decimal(21, 9)
+  priceListRate    Decimal   @default(0) @map("price_list_rate") @db.Decimal(21, 9)
+  amount           Decimal   @default(0) @db.Decimal(21, 9)
+  expenseAccount   String?   @map("expense_account")
+  costCenter       String?   @map("cost_center")
+  gstHsnCode       String?   @map("gst_hsn_code")
+  legacy           Json?
+
+  request   PurchaseMaterialRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  item      PurchaseItem?           @relation(fields: [itemId], references: [id])
+  warehouse PurchaseWarehouse?      @relation(fields: [warehouseId], references: [id])
+
+  @@index([requestId])
+  @@index([itemId])
+  @@map("purchase_material_request_items")
+}
+
+model PurchaseStockEntry {
+  id                 String            @id @default(cuid())
+  number             String            @unique
+  namingSeries       String            @map("naming_series")
+  docStatus          PurchaseDocStatus @default(DRAFT) @map("doc_status")
+  stockEntryTypeCode String            @map("stock_entry_type_code")
+  stockEntryTypeId   String?           @map("stock_entry_type_id")
+  purpose            String
+  workOrder          String?           @map("work_order")
+  companyCode        String            @map("company_code")
+  postingDate        DateTime          @map("posting_date") @db.Date
+  postingTime        String            @map("posting_time")
+  setPostingTime     Boolean           @default(false) @map("set_posting_time")
+  fromBom            Boolean           @default(false) @map("from_bom")
+  useMultiLevelBom   Boolean           @default(false) @map("use_multi_level_bom")
+  bomNo              String?           @map("bom_no")
+  fgCompletedQty     Decimal           @default(0) @map("fg_completed_qty") @db.Decimal(21, 9)
+  fromWarehouse      String?           @map("from_warehouse")
+  toWarehouse        String?           @map("to_warehouse")
+  totalOutgoingValue Decimal           @default(0) @map("total_outgoing_value") @db.Decimal(21, 9)
+  totalIncomingValue Decimal           @default(0) @map("total_incoming_value") @db.Decimal(21, 9)
+  valueDifference    Decimal           @default(0) @map("value_difference") @db.Decimal(21, 9)
+  totalAmount        Decimal           @default(0) @map("total_amount") @db.Decimal(21, 9)
+  letterHead         String?           @map("letter_head")
+  isOpening          String?           @map("is_opening")
+  amendedFromId      String?           @map("amended_from_id")
+  /// The add-on's "Material Transfer": the transfer entry this one returns or consumes from.
+  materialTransfer   String?           @map("material_transfer")
+  legacy             Json?
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+  createdBy          String?           @map("created_by")
+  updatedBy          String?           @map("updated_by")
+
+  stockEntryType PurchaseStockEntryType?    @relation(fields: [stockEntryTypeId], references: [id])
+  amendedFrom    PurchaseStockEntry?        @relation("StockEntryAmendments", fields: [amendedFromId], references: [id])
+  amendments     PurchaseStockEntry[]       @relation("StockEntryAmendments")
+  details        PurchaseStockEntryDetail[]
+
+  @@index([postingDate])
+  @@index([purpose])
+  @@map("purchase_stock_entries")
+}
+
+model PurchaseStockEntryDetail {
+  id                  String  @id @default(cuid())
+  erpnextName         String  @unique @map("erpnext_name")
+  entryId             String  @map("entry_id")
+  idx                 Int
+  barcode             String?
+  sourceWarehouseCode String? @map("source_warehouse_code")
+  sourceWarehouseId   String? @map("source_warehouse_id")
+  targetWarehouseCode String? @map("target_warehouse_code")
+  targetWarehouseId   String? @map("target_warehouse_id")
+  itemCode            String  @map("item_code")
+  itemId              String? @map("item_id")
+  itemName            String? @map("item_name")
+  description         String?
+  itemGroup           String? @map("item_group")
+  isFinishedItem      Boolean @default(false) @map("is_finished_item")
+  qty                 Decimal @default(0) @db.Decimal(21, 9)
+  transferQty         Decimal @default(0) @map("transfer_qty") @db.Decimal(21, 9)
+  uom                 String
+  stockUom            String  @map("stock_uom")
+  conversionFactor    Decimal @default(1) @map("conversion_factor") @db.Decimal(21, 9)
+  basicRate           Decimal @default(0) @map("basic_rate") @db.Decimal(21, 9)
+  valuationRate       Decimal @default(0) @map("valuation_rate") @db.Decimal(21, 9)
+  basicAmount         Decimal @default(0) @map("basic_amount") @db.Decimal(21, 9)
+  amount              Decimal @default(0) @db.Decimal(21, 9)
+  serialNo            String? @map("serial_no")
+  batchNo             String? @map("batch_no")
+  expenseAccount      String? @map("expense_account")
+  costCenter          String? @map("cost_center")
+  actualQty           Decimal @default(0) @map("actual_qty") @db.Decimal(21, 9)
+  bomNo               String? @map("bom_no")
+  materialRequest     String? @map("material_request")
+  materialRequestItem String? @map("material_request_item")
+  /// The add-on's columns: the supplier a row's material came from, and the work-order quantity.
+  supplierCode        String? @map("supplier_code")
+  supplierId          String? @map("supplier_id")
+  woQty               Decimal @default(0) @map("wo_qty") @db.Decimal(21, 9)
+  legacy              Json?
+
+  entry           PurchaseStockEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  item            PurchaseItem?      @relation(fields: [itemId], references: [id])
+  sourceWarehouse PurchaseWarehouse? @relation("StockEntrySource", fields: [sourceWarehouseId], references: [id])
+  targetWarehouse PurchaseWarehouse? @relation("StockEntryTarget", fields: [targetWarehouseId], references: [id])
+  supplier        PurchaseSupplier?  @relation(fields: [supplierId], references: [id])
+
+  @@index([entryId])
+  @@index([itemId])
+  @@map("purchase_stock_entry_details")
+}
+
+model PurchaseStockReconciliation {
+  id               String            @id @default(cuid())
+  number           String            @unique
+  namingSeries     String            @map("naming_series")
+  docStatus        PurchaseDocStatus @default(DRAFT) @map("doc_status")
+  companyCode      String            @map("company_code")
+  purpose          String
+  postingDate      DateTime          @map("posting_date") @db.Date
+  postingTime      String            @map("posting_time")
+  setPostingTime   Boolean           @default(false) @map("set_posting_time")
+  setWarehouse     String?           @map("set_warehouse")
+  expenseAccount   String?           @map("expense_account")
+  differenceAmount Decimal           @default(0) @map("difference_amount") @db.Decimal(21, 9)
+  costCenter       String?           @map("cost_center")
+  amendedFromId    String?           @map("amended_from_id")
+  /// The add-on's supplier and description.
+  supplierCode     String?           @map("supplier_code")
+  description      String?
+  legacy           Json?
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  createdBy        String?           @map("created_by")
+  updatedBy        String?           @map("updated_by")
+
+  amendedFrom PurchaseStockReconciliation?      @relation("StockReconciliationAmendments", fields: [amendedFromId], references: [id])
+  amendments  PurchaseStockReconciliation[]     @relation("StockReconciliationAmendments")
+  items       PurchaseStockReconciliationItem[]
+
+  @@index([postingDate])
+  @@map("purchase_stock_reconciliations")
+}
+
+model PurchaseStockReconciliationItem {
+  id                   String  @id @default(cuid())
+  erpnextName          String  @unique @map("erpnext_name")
+  reconciliationId     String  @map("reconciliation_id")
+  idx                  Int
+  barcode              String?
+  itemCode             String  @map("item_code")
+  itemId               String? @map("item_id")
+  itemName             String? @map("item_name")
+  itemGroup            String? @map("item_group")
+  warehouseCode        String  @map("warehouse_code")
+  warehouseId          String? @map("warehouse_id")
+  qty                  Decimal @default(0) @db.Decimal(21, 9)
+  valuationRate        Decimal @default(0) @map("valuation_rate") @db.Decimal(21, 9)
+  amount               Decimal @default(0) @db.Decimal(21, 9)
+  batchNo              String? @map("batch_no")
+  serialNo             String? @map("serial_no")
+  currentQty           Decimal @default(0) @map("current_qty") @db.Decimal(21, 9)
+  currentAmount        Decimal @default(0) @map("current_amount") @db.Decimal(21, 9)
+  currentValuationRate Decimal @default(0) @map("current_valuation_rate") @db.Decimal(21, 9)
+  currentSerialNo      String? @map("current_serial_no")
+  /// A Data field on the old site (text, e.g. "-5"), kept as recorded.
+  quantityDifference   String? @map("quantity_difference")
+  amountDifference     Decimal @default(0) @map("amount_difference") @db.Decimal(21, 9)
+  legacy               Json?
+
+  reconciliation PurchaseStockReconciliation @relation(fields: [reconciliationId], references: [id], onDelete: Cascade)
+  item           PurchaseItem?               @relation(fields: [itemId], references: [id])
+  warehouse      PurchaseWarehouse?          @relation(fields: [warehouseId], references: [id])
+
+  @@index([reconciliationId])
+  @@map("purchase_stock_reconciliation_items")
+}
+
+model PurchaseDeliveryNote {
+  id                       String            @id @default(cuid())
+  number                   String            @unique
+  title                    String?
+  namingSeries             String            @map("naming_series")
+  docStatus                PurchaseDocStatus @default(DRAFT) @map("doc_status")
+  status                   String
+  amendedFromId            String?           @map("amended_from_id")
+  customerCode             String            @map("customer_code")
+  customerId               String?           @map("customer_id")
+  customerName             String?           @map("customer_name")
+  postingDate              DateTime          @map("posting_date") @db.Date
+  postingTime              String            @map("posting_time")
+  setPostingTime           Boolean           @default(false) @map("set_posting_time")
+  companyCode              String            @map("company_code")
+  currency                 String
+  conversionRate           Decimal           @default(1) @map("conversion_rate") @db.Decimal(21, 9)
+  sellingPriceList         String?           @map("selling_price_list")
+  priceListCurrency        String?           @map("price_list_currency")
+  plcConversionRate        Decimal           @default(1) @map("plc_conversion_rate") @db.Decimal(21, 9)
+  totalQty                 Decimal           @default(0) @map("total_qty") @db.Decimal(21, 9)
+  baseTotal                Decimal           @default(0) @map("base_total") @db.Decimal(21, 9)
+  baseNetTotal             Decimal           @default(0) @map("base_net_total") @db.Decimal(21, 9)
+  total                    Decimal           @default(0) @db.Decimal(21, 9)
+  netTotal                 Decimal           @default(0) @map("net_total") @db.Decimal(21, 9)
+  taxCategory              String?           @map("tax_category")
+  taxesAndCharges          String?           @map("taxes_and_charges")
+  baseTotalTaxesAndCharges Decimal           @default(0) @map("base_total_taxes_and_charges") @db.Decimal(21, 9)
+  totalTaxesAndCharges     Decimal           @default(0) @map("total_taxes_and_charges") @db.Decimal(21, 9)
+  applyDiscountOn          String?           @map("apply_discount_on")
+  baseDiscountAmount       Decimal           @default(0) @map("base_discount_amount") @db.Decimal(21, 9)
+  discountAmount           Decimal           @default(0) @map("discount_amount") @db.Decimal(21, 9)
+  baseGrandTotal           Decimal           @default(0) @map("base_grand_total") @db.Decimal(21, 9)
+  baseRoundingAdjustment   Decimal           @default(0) @map("base_rounding_adjustment") @db.Decimal(21, 9)
+  baseRoundedTotal         Decimal           @default(0) @map("base_rounded_total") @db.Decimal(21, 9)
+  baseInWords              String?           @map("base_in_words")
+  grandTotal               Decimal           @default(0) @map("grand_total") @db.Decimal(21, 9)
+  roundingAdjustment       Decimal           @default(0) @map("rounding_adjustment") @db.Decimal(21, 9)
+  roundedTotal             Decimal           @default(0) @map("rounded_total") @db.Decimal(21, 9)
+  inWords                  String?           @map("in_words")
+  otherChargesCalculation  String?           @map("other_charges_calculation")
+  customerAddress          String?           @map("customer_address")
+  addressDisplay           String?           @map("address_display")
+  contactPerson            String?           @map("contact_person")
+  contactDisplay           String?           @map("contact_display")
+  contactMobile            String?           @map("contact_mobile")
+  contactEmail             String?           @map("contact_email")
+  shippingAddressName      String?           @map("shipping_address_name")
+  shippingAddress          String?           @map("shipping_address")
+  dispatchAddressName      String?           @map("dispatch_address_name")
+  dispatchAddress          String?           @map("dispatch_address")
+  companyAddress           String?           @map("company_address")
+  companyAddressDisplay    String?           @map("company_address_display")
+  tcName                   String?           @map("tc_name")
+  terms                    String?
+  perBilled                Decimal           @default(0) @map("per_billed") @db.Decimal(21, 9)
+  installationStatus       String?           @map("installation_status")
+  lrNo                     String?           @map("lr_no")
+  lrDate                   DateTime?         @map("lr_date") @db.Date
+  vehicleNo                String?           @map("vehicle_no")
+  poNo                     String?           @map("po_no")
+  poDate                   DateTime?         @map("po_date") @db.Date
+  letterHead               String?           @map("letter_head")
+  language                 String?
+  customerGroup            String?           @map("customer_group")
+  territory                String?
+  isExportWithGst          Boolean           @default(false) @map("is_export_with_gst")
+  billingAddressGstin      String?           @map("billing_address_gstin")
+  gstCategory              String?           @map("gst_category")
+  placeOfSupply            String?           @map("place_of_supply")
+  companyGstin             String?           @map("company_gstin")
+  modeOfTransport          String?           @map("mode_of_transport")
+  gstVehicleType           String?           @map("gst_vehicle_type")
+  legacy                   Json?
+  createdAt                DateTime          @default(now()) @map("created_at")
+  updatedAt                DateTime          @updatedAt @map("updated_at")
+  createdBy                String?           @map("created_by")
+  updatedBy                String?           @map("updated_by")
+
+  amendedFrom  PurchaseDeliveryNote?      @relation("DeliveryNoteAmendments", fields: [amendedFromId], references: [id])
+  amendments   PurchaseDeliveryNote[]     @relation("DeliveryNoteAmendments")
+  customer     PurchaseCustomer?          @relation(fields: [customerId], references: [id])
+  items        PurchaseDeliveryNoteItem[]
+  taxes        PurchaseDeliveryNoteTax[]
+  packingSlips PurchasePackingSlip[]
+
+  salesTeam PurchaseDeliveryNoteSalesTeam[]
+
+  @@index([postingDate])
+  @@map("purchase_delivery_notes")
+}
+
+model PurchaseDeliveryNoteItem {
+  id                 String  @id @default(cuid())
+  erpnextName        String  @unique @map("erpnext_name")
+  deliveryNoteId     String  @map("delivery_note_id")
+  idx                Int
+  itemCode           String  @map("item_code")
+  itemId             String? @map("item_id")
+  itemName           String? @map("item_name")
+  description        String?
+  itemGroup          String? @map("item_group")
+  qty                Decimal @default(0) @db.Decimal(21, 9)
+  stockUom           String  @map("stock_uom")
+  uom                String
+  conversionFactor   Decimal @default(1) @map("conversion_factor") @db.Decimal(21, 9)
+  stockQty           Decimal @default(0) @map("stock_qty") @db.Decimal(21, 9)
+  priceListRate      Decimal @default(0) @map("price_list_rate") @db.Decimal(21, 9)
+  basePriceListRate  Decimal @default(0) @map("base_price_list_rate") @db.Decimal(21, 9)
+  marginType         String? @map("margin_type")
+  marginRateOrAmount Decimal @default(0) @map("margin_rate_or_amount") @db.Decimal(21, 9)
+  discountAmount     Decimal @default(0) @map("discount_amount") @db.Decimal(21, 9)
+  rate               Decimal @default(0) @db.Decimal(21, 9)
+  amount             Decimal @default(0) @db.Decimal(21, 9)
+  baseRate           Decimal @default(0) @map("base_rate") @db.Decimal(21, 9)
+  baseAmount         Decimal @default(0) @map("base_amount") @db.Decimal(21, 9)
+  stockUomRate       Decimal @default(0) @map("stock_uom_rate") @db.Decimal(21, 9)
+  netRate            Decimal @default(0) @map("net_rate") @db.Decimal(21, 9)
+  netAmount          Decimal @default(0) @map("net_amount") @db.Decimal(21, 9)
+  itemTaxTemplate    String? @map("item_tax_template")
+  baseNetRate        Decimal @default(0) @map("base_net_rate") @db.Decimal(21, 9)
+  baseNetAmount      Decimal @default(0) @map("base_net_amount") @db.Decimal(21, 9)
+  billedAmt          Decimal @default(0) @map("billed_amt") @db.Decimal(21, 9)
+  incomingRate       Decimal @default(0) @map("incoming_rate") @db.Decimal(21, 9)
+  warehouseCode      String? @map("warehouse_code")
+  warehouseId        String? @map("warehouse_id")
+  againstSalesOrder  String? @map("against_sales_order")
+  soDetail           String? @map("so_detail")
+  batchNo            String? @map("batch_no")
+  serialNo           String? @map("serial_no")
+  actualBatchQty     Decimal @default(0) @map("actual_batch_qty") @db.Decimal(21, 9)
+  actualQty          Decimal @default(0) @map("actual_qty") @db.Decimal(21, 9)
+  itemTaxRate        String? @map("item_tax_rate")
+  packedQty          Decimal @default(0) @map("packed_qty") @db.Decimal(21, 9)
+  expenseAccount     String? @map("expense_account")
+  costCenter         String? @map("cost_center")
+  gstHsnCode         String? @map("gst_hsn_code")
+  gstTreatment       String? @map("gst_treatment")
+  taxableValue       Decimal @default(0) @map("taxable_value") @db.Decimal(21, 9)
+  igstRate           Decimal @default(0) @map("igst_rate") @db.Decimal(21, 9)
+  igstAmount         Decimal @default(0) @map("igst_amount") @db.Decimal(21, 9)
+  /// The add-on's columns (slabs sold by area).
+  uomFactor          String? @map("uom_factor")
+  quantity           Decimal @default(0) @db.Decimal(21, 9)
+  areaRate           Decimal @default(0) @map("area_rate") @db.Decimal(21, 9)
+  rateInUsd          String? @map("rate_in_usd")
+  legacy             Json?
+
+  deliveryNote PurchaseDeliveryNote @relation(fields: [deliveryNoteId], references: [id], onDelete: Cascade)
+  item         PurchaseItem?        @relation(fields: [itemId], references: [id])
+  warehouse    PurchaseWarehouse?   @relation(fields: [warehouseId], references: [id])
+
+  @@index([deliveryNoteId])
+  @@map("purchase_delivery_note_items")
+}
+
+/// A Delivery Note's tax rows (ERPNext's Sales Taxes and Charges).
+model PurchaseDeliveryNoteTax {
+  id                               String  @id @default(cuid())
+  erpnextName                      String  @unique @map("erpnext_name")
+  deliveryNoteId                   String  @map("delivery_note_id")
+  idx                              Int
+  chargeType                       String? @map("charge_type")
+  rowId                            String? @map("row_id")
+  includedInPrintRate              Boolean @default(false) @map("included_in_print_rate")
+  accountHead                      String  @map("account_head")
+  description                      String?
+  rate                             Decimal @default(0) @db.Decimal(21, 9)
+  costCenter                       String? @map("cost_center")
+  accountCurrency                  String? @map("account_currency")
+  taxAmount                        Decimal @default(0) @map("tax_amount") @db.Decimal(21, 9)
+  taxAmountAfterDiscountAmount     Decimal @default(0) @map("tax_amount_after_discount_amount") @db.Decimal(21, 9)
+  total                            Decimal @default(0) @db.Decimal(21, 9)
+  baseTaxAmount                    Decimal @default(0) @map("base_tax_amount") @db.Decimal(21, 9)
+  baseTotal                        Decimal @default(0) @map("base_total") @db.Decimal(21, 9)
+  baseTaxAmountAfterDiscountAmount Decimal @default(0) @map("base_tax_amount_after_discount_amount") @db.Decimal(21, 9)
+  itemWiseTaxDetail                String? @map("item_wise_tax_detail")
+  gstTaxType                       String? @map("gst_tax_type")
+  legacy                           Json?
+
+  deliveryNote PurchaseDeliveryNote @relation(fields: [deliveryNoteId], references: [id], onDelete: Cascade)
+
+  @@index([deliveryNoteId])
+  @@map("purchase_delivery_note_taxes")
+}
+
+model PurchasePackingSlip {
+  id               String            @id @default(cuid())
+  number           String            @unique
+  namingSeries     String            @map("naming_series")
+  docStatus        PurchaseDocStatus @default(DRAFT) @map("doc_status")
+  deliveryNoteCode String            @map("delivery_note_code")
+  deliveryNoteId   String?           @map("delivery_note_id")
+  fromCaseNo       Int               @default(0) @map("from_case_no")
+  toCaseNo         Int               @default(0) @map("to_case_no")
+  netWeightPkg     Decimal           @default(0) @map("net_weight_pkg") @db.Decimal(21, 9)
+  grossWeightPkg   Decimal           @default(0) @map("gross_weight_pkg") @db.Decimal(21, 9)
+  letterHead       String?           @map("letter_head")
+  amendedFromId    String?           @map("amended_from_id")
+  /// The add-on's slab count and net area (m²).
+  noOfSlabs        Int               @default(0) @map("no_of_slabs")
+  netAreaSqmt      Decimal           @default(0) @map("net_area_sqmt") @db.Decimal(21, 9)
+  legacy           Json?
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  createdBy        String?           @map("created_by")
+  updatedBy        String?           @map("updated_by")
+
+  deliveryNote PurchaseDeliveryNote?     @relation(fields: [deliveryNoteId], references: [id])
+  amendedFrom  PurchasePackingSlip?      @relation("PackingSlipAmendments", fields: [amendedFromId], references: [id])
+  amendments   PurchasePackingSlip[]     @relation("PackingSlipAmendments")
+  items        PurchasePackingSlipItem[]
+
+  sampleItems PurchasePackingSlipSampleItem[]
+
+  @@map("purchase_packing_slips")
+}
+
+model PurchasePackingSlipItem {
+  id              String  @id @default(cuid())
+  erpnextName     String  @unique @map("erpnext_name")
+  packingSlipId   String  @map("packing_slip_id")
+  idx             Int
+  itemCode        String  @map("item_code")
+  itemId          String? @map("item_id")
+  itemName        String? @map("item_name")
+  batchNo         String? @map("batch_no")
+  description     String?
+  qty             Decimal @default(0) @db.Decimal(21, 9)
+  netWeight       Decimal @default(0) @map("net_weight") @db.Decimal(21, 9)
+  stockUom        String? @map("stock_uom")
+  dnDetail        String? @map("dn_detail")
+  /// The add-on's slab columns.
+  serialNo        String? @map("serial_no")
+  grade           String?
+  quantity        Decimal @default(0) @db.Decimal(21, 9)
+  crate           String?
+  crateDimension  String? @map("crate_dimension")
+  length          String?
+  width           String?
+  thickness       String?
+  crateWeight     Decimal @default(0) @map("crate_weight") @db.Decimal(21, 9)
+  itemDescription String? @map("item_description")
+  legacy          Json?
+
+  packingSlip PurchasePackingSlip @relation(fields: [packingSlipId], references: [id], onDelete: Cascade)
+  item        PurchaseItem?       @relation(fields: [itemId], references: [id])
+
+  @@index([packingSlipId])
+  @@map("purchase_packing_slip_items")
+}
+
+/// The stock ledger: one row per item per warehouse per stock movement, as ERPNext wrote it (FIFO).
+model PurchaseStockLedgerEntry {
+  id                          String            @id @default(cuid())
+  erpnextName                 String            @unique @map("erpnext_name")
+  itemCode                    String            @map("item_code")
+  itemId                      String?           @map("item_id")
+  warehouseCode               String            @map("warehouse_code")
+  warehouseId                 String?           @map("warehouse_id")
+  postingDate                 DateTime          @map("posting_date") @db.Date
+  postingTime                 String            @map("posting_time")
+  /// The posting date and time as one instant (the old site's wall clock, Asia/Kolkata, in UTC).
+  postingDateTime             DateTime          @map("posting_date_time")
+  voucherType                 String            @map("voucher_type")
+  voucherNo                   String            @map("voucher_no")
+  voucherDetailNo             String?           @map("voucher_detail_no")
+  dependantSleVoucherDetailNo String?           @map("dependant_sle_voucher_detail_no")
+  recalculateRate             Boolean           @default(false) @map("recalculate_rate")
+  actualQty                   Decimal           @default(0) @map("actual_qty") @db.Decimal(21, 9)
+  qtyAfterTransaction         Decimal           @default(0) @map("qty_after_transaction") @db.Decimal(21, 9)
+  incomingRate                Decimal           @default(0) @map("incoming_rate") @db.Decimal(21, 9)
+  outgoingRate                Decimal           @default(0) @map("outgoing_rate") @db.Decimal(21, 9)
+  valuationRate               Decimal           @default(0) @map("valuation_rate") @db.Decimal(21, 9)
+  stockValue                  Decimal           @default(0) @map("stock_value") @db.Decimal(21, 9)
+  stockValueDifference        Decimal           @default(0) @map("stock_value_difference") @db.Decimal(21, 9)
+  /// The FIFO queue after this entry, [[qty, rate], …], as ERPNext stored it (JSON text).
+  stockQueue                  String?           @map("stock_queue")
+  companyCode                 String            @map("company_code")
+  stockUom                    String?           @map("stock_uom")
+  batchNo                     String?           @map("batch_no")
+  serialNo                    String?           @map("serial_no")
+  fiscalYear                  String?           @map("fiscal_year")
+  isCancelled                 Boolean           @default(false) @map("is_cancelled")
+  /// ERPNext's docstatus. Submitted on all but one: a 2024 entry of a cancelled reconciliation
+  /// (MAT-RECO-2024-00247) kept docstatus 2 without is_cancelled. The reports skip both (docstatus < 2).
+  docStatus                   PurchaseDocStatus @default(SUBMITTED) @map("doc_status")
+  legacy                      Json?
+  /// ERPNext's creation time: the last tie-break of the ledger's order.
+  createdAt                   DateTime          @default(now()) @map("created_at")
+  updatedAt                   DateTime          @updatedAt @map("updated_at")
+  createdBy                   String?           @map("created_by")
+
+  item      PurchaseItem?      @relation(fields: [itemId], references: [id])
+  warehouse PurchaseWarehouse? @relation(fields: [warehouseId], references: [id])
+
+  @@index([itemCode, warehouseCode, postingDateTime])
+  @@index([postingDate])
+  @@index([voucherType, voucherNo])
+  @@map("purchase_stock_ledger_entries")
+}
+
+/// Bin: an item's quantities in one warehouse (actual, ordered, requested, reserved, projected).
+model PurchaseBin {
+  id                           String  @id @default(cuid())
+  erpnextName                  String  @unique @map("erpnext_name")
+  itemCode                     String  @map("item_code")
+  itemId                       String? @map("item_id")
+  warehouseCode                String  @map("warehouse_code")
+  warehouseId                  String? @map("warehouse_id")
+  actualQty                    Decimal @default(0) @map("actual_qty") @db.Decimal(21, 9)
+  plannedQty                   Decimal @default(0) @map("planned_qty") @db.Decimal(21, 9)
+  indentedQty                  Decimal @default(0) @map("indented_qty") @db.Decimal(21, 9)
+  orderedQty                   Decimal @default(0) @map("ordered_qty") @db.Decimal(21, 9)
+  reservedQty                  Decimal @default(0) @map("reserved_qty") @db.Decimal(21, 9)
+  reservedQtyForProduction     Decimal @default(0) @map("reserved_qty_for_production") @db.Decimal(21, 9)
+  reservedQtyForProductionPlan Decimal @default(0) @map("reserved_qty_for_production_plan") @db.Decimal(21, 9)
+  reservedQtyForSubContract    Decimal @default(0) @map("reserved_qty_for_sub_contract") @db.Decimal(21, 9)
+  projectedQty                 Decimal @default(0) @map("projected_qty") @db.Decimal(21, 9)
+  stockUom                     String? @map("stock_uom")
+  valuationRate                Decimal @default(0) @map("valuation_rate") @db.Decimal(21, 9)
+  stockValue                   Decimal @default(0) @map("stock_value") @db.Decimal(21, 9)
+  legacy                       Json?
+
+  item      PurchaseItem?      @relation(fields: [itemId], references: [id])
+  warehouse PurchaseWarehouse? @relation(fields: [warehouseId], references: [id])
+
+  @@unique([itemCode, warehouseCode])
+  @@map("purchase_bins")
+}
+
+/// Item Price: a rate in a price list (most made automatically when a PO or receipt was saved).
+model PurchaseItemPrice {
+  id              String    @id @default(cuid())
+  erpnextName     String    @unique @map("erpnext_name")
+  itemCode        String    @map("item_code")
+  itemId          String?   @map("item_id")
+  uom             String?
+  itemName        String?   @map("item_name")
+  itemDescription String?   @map("item_description")
+  priceListCode   String    @map("price_list_code")
+  priceListId     String?   @map("price_list_id")
+  customerCode    String?   @map("customer_code")
+  supplierCode    String?   @map("supplier_code")
+  supplierId      String?   @map("supplier_id")
+  buying          Boolean   @default(false)
+  selling         Boolean   @default(false)
+  currency        String?
+  priceListRate   Decimal   @default(0) @map("price_list_rate") @db.Decimal(21, 9)
+  validFrom       DateTime? @map("valid_from") @db.Date
+  validUpto       DateTime? @map("valid_upto") @db.Date
+  reference       String?
+  /// The add-on's "UOM Factor" (a UOM link, as the old form had it).
+  uomFactor       String?   @map("uom_factor")
+  legacy          Json?
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  createdBy       String?   @map("created_by")
+  updatedBy       String?   @map("updated_by")
+
+  item      PurchaseItem?      @relation(fields: [itemId], references: [id])
+  priceList PurchasePriceList? @relation(fields: [priceListId], references: [id])
+  supplier  PurchaseSupplier?  @relation(fields: [supplierId], references: [id])
+
+  @@index([itemId])
+  @@index([priceListId])
+  @@map("purchase_item_prices")
+}
+
+/// Serial No: one slab or piece, with the add-on's dimensions.
+model PurchaseSerialNo {
+  id                   String    @id @default(cuid())
+  /// The serial number itself (= its ERPNext name).
+  code                 String    @unique
+  itemCode             String    @map("item_code")
+  itemId               String?   @map("item_id")
+  warehouseCode        String?   @map("warehouse_code")
+  warehouseId          String?   @map("warehouse_id")
+  batchNo              String?   @map("batch_no")
+  itemName             String?   @map("item_name")
+  description          String?
+  itemGroup            String?   @map("item_group")
+  purchaseDocumentType String?   @map("purchase_document_type")
+  purchaseDocumentNo   String?   @map("purchase_document_no")
+  purchaseDate         DateTime? @map("purchase_date") @db.Date
+  purchaseTime         String?   @map("purchase_time")
+  purchaseRate         Decimal   @default(0) @map("purchase_rate") @db.Decimal(21, 9)
+  deliveryDocumentType String?   @map("delivery_document_type")
+  deliveryDocumentNo   String?   @map("delivery_document_no")
+  deliveryDate         DateTime? @map("delivery_date") @db.Date
+  deliveryTime         String?   @map("delivery_time")
+  customerCode         String?   @map("customer_code")
+  customerName         String?   @map("customer_name")
+  salesInvoice         String?   @map("sales_invoice")
+  companyCode          String    @map("company_code")
+  status               String
+  isScrap              Boolean   @default(false) @map("is_scrap")
+  length               String?
+  width                String?
+  weight               String?
+  defects              String?
+  colorCode            String?   @map("color_code")
+  thickness            String?
+  grade                String?
+  remarks              String?
+  legacy               Json?
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+  createdBy            String?   @map("created_by")
+  updatedBy            String?   @map("updated_by")
+
+  item      PurchaseItem?      @relation(fields: [itemId], references: [id])
+  warehouse PurchaseWarehouse? @relation(fields: [warehouseId], references: [id])
+
+  @@index([itemId])
+  @@index([batchNo])
+  @@map("purchase_serial_nos")
+}
+
+model PurchaseBatch {
+  id                    String    @id @default(cuid())
+  /// The batch ID (= its ERPNext name).
+  code                  String    @unique
+  itemCode              String    @map("item_code")
+  itemId                String?   @map("item_id")
+  itemName              String?   @map("item_name")
+  manufacturingDate     DateTime? @map("manufacturing_date") @db.Date
+  batchQty              Decimal   @default(0) @map("batch_qty") @db.Decimal(21, 9)
+  stockUom              String?   @map("stock_uom")
+  useBatchwiseValuation Boolean   @default(false) @map("use_batchwise_valuation")
+  legacy                Json?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdBy             String?   @map("created_by")
+  updatedBy             String?   @map("updated_by")
+
+  item PurchaseItem? @relation(fields: [itemId], references: [id])
+
+  @@index([itemId])
+  @@map("purchase_batches")
+}
+
+model PurchaseQualityInspection {
+  id               String            @id @default(cuid())
+  number           String            @unique
+  namingSeries     String            @map("naming_series")
+  docStatus        PurchaseDocStatus @default(DRAFT) @map("doc_status")
+  reportDate       DateTime          @map("report_date") @db.Date
+  status           String
+  manualInspection Boolean           @default(false) @map("manual_inspection")
+  inspectionType   String            @map("inspection_type")
+  referenceType    String            @map("reference_type")
+  referenceName    String            @map("reference_name")
+  itemCode         String            @map("item_code")
+  itemId           String?           @map("item_id")
+  itemSerialNo     String?           @map("item_serial_no")
+  batchNo          String?           @map("batch_no")
+  sampleSize       Decimal           @default(0) @map("sample_size") @db.Decimal(21, 9)
+  itemName         String?           @map("item_name")
+  description      String?
+  inspectedBy      String?           @map("inspected_by")
+  verifiedBy       String?           @map("verified_by")
+  amendedFromId    String?           @map("amended_from_id")
+  legacy           Json?
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  createdBy        String?           @map("created_by")
+  updatedBy        String?           @map("updated_by")
+
+  item        PurchaseItem?                      @relation(fields: [itemId], references: [id])
+  amendedFrom PurchaseQualityInspection?         @relation("QualityInspectionAmendments", fields: [amendedFromId], references: [id])
+  amendments  PurchaseQualityInspection[]        @relation("QualityInspectionAmendments")
+  readings    PurchaseQualityInspectionReading[]
+
+  @@index([referenceType, referenceName])
+  @@map("purchase_quality_inspections")
+}
+
+model PurchaseQualityInspectionReading {
+  id            String  @id @default(cuid())
+  erpnextName   String  @unique @map("erpnext_name")
+  inspectionId  String  @map("inspection_id")
+  idx           Int
+  specification String
+  status        String?
+  numeric       Boolean @default(false)
+  /// The add-on's columns.
+  bagWeight     Decimal @default(0) @map("bag_weight") @db.Decimal(21, 9)
+  itemStatus    String? @map("item_status")
+  legacy        Json?
+
+  inspection PurchaseQualityInspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@index([inspectionId])
+  @@map("purchase_quality_inspection_readings")
+}
+
 // STANDALONE ONLY: sign-in accounts of the standalone app (plan §3 "Logins in
 // standalone"). At the merge the Main ERP's users and roles take over and this
 // table is not carried across (docs/05-list-screen.md). The import never
@@ -1473,6 +2746,8 @@ enum PurchaseLoginRole {
   PURCHASE
   APPROVER
   ADMIN
+  /// The storekeeper (Thiru R): Buying, and the Stock module (owner, 21-11-2026; docs/12 §6).
+  STORE
 
   @@map("purchase_login_role")
 }

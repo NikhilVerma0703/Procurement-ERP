@@ -1,0 +1,966 @@
+{
+ "doctype": "Purchase Receipt Item",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "hash",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "barcode",
+   "label": "Barcode",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "has_item_scanned",
+   "label": "Has Item Scanned",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "dependsOn": "barcode"
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "bold": true,
+   "inListView": true,
+   "columns": 3
+  },
+  {
+   "fieldname": "product_bundle",
+   "label": "Product Bundle",
+   "fieldtype": "Link",
+   "options": "Product Bundle",
+   "readOnly": true
+  },
+  {
+   "fieldname": "supplier_part_no",
+   "label": "Supplier Part Number",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "reqd": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_4",
+   "label": "Description",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text Editor",
+   "reqd": true
+  },
+  {
+   "fieldname": "gst_hsn_code",
+   "label": "HSN/SAC",
+   "fieldtype": "Data",
+   "allowOnSubmit": true,
+   "fetchFrom": "item_code.gst_hsn_code",
+   "printHide": true
+  },
+  {
+   "fieldname": "is_ineligible_for_itc",
+   "label": "Is Ineligible for Input Tax Credit",
+   "fieldtype": "Check",
+   "fetchFrom": "item_code.is_ineligible_for_itc",
+   "printHide": true
+  },
+  {
+   "fieldname": "brand",
+   "label": "Brand",
+   "fieldtype": "Link",
+   "options": "Brand",
+   "hidden": true,
+   "readOnly": true,
+   "fetchFrom": "item_code.brand",
+   "printHide": true
+  },
+  {
+   "fieldname": "image_column",
+   "fieldtype": "Column Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "item_group",
+   "label": "Item Group",
+   "fieldtype": "Link",
+   "options": "Item Group",
+   "readOnly": true,
+   "fetchFrom": "item_code.item_group",
+   "printHide": true
+  },
+  {
+   "fieldname": "image",
+   "label": "Image",
+   "fieldtype": "Attach",
+   "hidden": true,
+   "fetchFrom": "item_code.image"
+  },
+  {
+   "fieldname": "image_view",
+   "label": "Image View",
+   "fieldtype": "Image",
+   "options": "image",
+   "printHide": true
+  },
+  {
+   "fieldname": "received_and_accepted",
+   "label": "Received and Accepted",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "received_qty",
+   "label": "Received Quantity",
+   "fieldtype": "Float",
+   "reqd": true,
+   "readOnly": true,
+   "bold": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "qty",
+   "label": "Accepted Quantity",
+   "fieldtype": "Float",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "rejected_qty",
+   "label": "Rejected Quantity",
+   "fieldtype": "Float",
+   "inListView": true,
+   "columns": 1,
+   "printHide": true
+  },
+  {
+   "fieldname": "bags_qty",
+   "label": "Bags Qty",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "accepted_bags_no",
+   "label": "Accepted Bags No",
+   "fieldtype": "Small Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "col_break2",
+   "fieldtype": "Column Break",
+   "printHide": true
+  },
+  {
+   "fieldname": "uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "reqd": true
+  },
+  {
+   "fieldname": "stock_uom",
+   "label": "Stock UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "reqd": true,
+   "readOnly": true,
+   "dependsOn": "eval:doc.uom != doc.stock_uom",
+   "printHide": true
+  },
+  {
+   "fieldname": "conversion_factor",
+   "label": "Conversion Factor",
+   "fieldtype": "Float",
+   "reqd": true,
+   "dependsOn": "eval:doc.uom != doc.stock_uom",
+   "printHide": true
+  },
+  {
+   "fieldname": "retain_sample",
+   "label": "Retain Sample",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "fetchFrom": "item_code.retain_sample"
+  },
+  {
+   "fieldname": "sample_quantity",
+   "label": "Sample Quantity",
+   "fieldtype": "Int",
+   "dependsOn": "retain_sample",
+   "fetchFrom": "item_code.sample_quantity"
+  },
+  {
+   "fieldname": "tracking_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "received_stock_qty",
+   "label": "Received Qty in Stock UOM",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "dependsOn": "eval:doc.uom != doc.stock_uom",
+   "printHide": true
+  },
+  {
+   "fieldname": "stock_qty",
+   "label": "Accepted Qty in Stock UOM",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "dependsOn": "eval:doc.uom != doc.stock_uom",
+   "printHide": true
+  },
+  {
+   "fieldname": "col_break_tracking_section",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "returned_qty",
+   "label": "Returned Qty in Stock UOM",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "dependsOn": "doc.returned_qty",
+   "printHide": true
+  },
+  {
+   "fieldname": "rate_and_amount",
+   "label": "Rate and Amount",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "price_list_rate",
+   "label": "Price List Rate",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "printHide": true
+  },
+  {
+   "fieldname": "col_break3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "base_price_list_rate",
+   "label": "Price List Rate (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "discount_and_margin_section",
+   "label": "Discount and Margin",
+   "fieldtype": "Section Break",
+   "collapsible": true,
+   "collapsibleDependsOn": "eval: doc.margin_type || doc.discount_amount"
+  },
+  {
+   "fieldname": "margin_type",
+   "label": "Margin Type",
+   "fieldtype": "Select",
+   "options": "\nPercentage\nAmount",
+   "dependsOn": "price_list_rate",
+   "printHide": true
+  },
+  {
+   "fieldname": "margin_rate_or_amount",
+   "label": "Margin Rate or Amount",
+   "fieldtype": "Float",
+   "dependsOn": "eval:doc.margin_type && doc.price_list_rate",
+   "printHide": true
+  },
+  {
+   "fieldname": "rate_with_margin",
+   "label": "Rate With Margin",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "dependsOn": "eval:doc.margin_type && doc.price_list_rate && doc.margin_rate_or_amount",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_37",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discount_percentage",
+   "label": "Discount on Price List Rate (%)",
+   "fieldtype": "Percent",
+   "dependsOn": "price_list_rate",
+   "printHide": true
+  },
+  {
+   "fieldname": "discount_amount",
+   "label": "Discount Amount",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "dependsOn": "price_list_rate"
+  },
+  {
+   "fieldname": "base_rate_with_margin",
+   "label": "Rate With Margin (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "dependsOn": "eval:doc.margin_type && doc.price_list_rate && doc.margin_rate_or_amount"
+  },
+  {
+   "fieldname": "sec_break1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "rate",
+   "label": "Rate",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "bold": true,
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "amount",
+   "label": "Amount",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "col_break4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "base_rate",
+   "label": "Rate (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "reqd": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "base_amount",
+   "label": "Amount (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "pricing_rules",
+   "label": "Pricing Rules",
+   "fieldtype": "Small Text",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "stock_uom_rate",
+   "label": "Rate of Stock UOM",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "dependsOn": "eval: doc.uom != doc.stock_uom"
+  },
+  {
+   "fieldname": "is_free_item",
+   "label": "Is Free Item",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_29",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "net_rate",
+   "label": "Net Rate",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "net_amount",
+   "label": "Net Amount",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "inListView": true,
+   "columns": 2,
+   "printHide": true
+  },
+  {
+   "fieldname": "item_tax_template",
+   "label": "Item Tax Template",
+   "fieldtype": "Link",
+   "options": "Item Tax Template",
+   "printHide": true
+  },
+  {
+   "fieldname": "gst_treatment",
+   "label": "GST Treatment",
+   "fieldtype": "Autocomplete",
+   "options": "Taxable\nZero-Rated\nNil-Rated\nExempted\nNon-GST",
+   "readOnly": true,
+   "fetchFrom": "item_tax_template.gst_treatment",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_32",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "base_net_rate",
+   "label": "Net Rate (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "base_net_amount",
+   "label": "Net Amount (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "taxable_value",
+   "label": "Taxable Value",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "gst_details_section",
+   "label": "GST Details",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "igst_rate",
+   "label": "IGST Rate",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "cgst_rate",
+   "label": "CGST Rate",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "sgst_rate",
+   "label": "SGST Rate",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "cess_rate",
+   "label": "CESS Rate",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "cess_non_advol_rate",
+   "label": "CESS Non Advol Rate",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "cb_gst_details",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "igst_amount",
+   "label": "IGST Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "cgst_amount",
+   "label": "CGST Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "sgst_amount",
+   "label": "SGST Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "cess_amount",
+   "label": "CESS Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "cess_non_advol_amount",
+   "label": "CESS Non Advol Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "valuation_rate",
+   "label": "Valuation Rate",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "hidden": true,
+   "readOnly": true,
+   "precision": "6",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "item_tax_amount",
+   "label": "Item Tax Amount Included in Value",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "rm_supp_cost",
+   "label": "Raw Materials Supplied Cost",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "landed_cost_voucher_amount",
+   "label": "Landed Cost Voucher Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "rate_difference_with_purchase_invoice",
+   "label": "Rate Difference with Purchase Invoice",
+   "fieldtype": "Currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "billed_amt",
+   "label": "Billed Amt",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "tax_and_charges",
+   "label": "Tax And Charges",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sgst",
+   "label": "SGST %",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "sgst_amt",
+   "label": "SGST Amt",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "column_break_uiyor",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cgst",
+   "label": "CGST %",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "cgst_amt",
+   "label": "CGST Amt",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "column_break_o1yii",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "igst",
+   "label": "IGST %",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "igst_amt",
+   "label": "IGST Amt",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "warehouse_and_reference",
+   "label": "Warehouse and Reference",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "warehouse",
+   "label": "Accepted Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "bold": true,
+   "inListView": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "rejected_warehouse",
+   "label": "Rejected Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "printHide": true
+  },
+  {
+   "fieldname": "from_warehouse",
+   "label": "From Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "hidden": true,
+   "dependsOn": "eval:parent.is_internal_supplier"
+  },
+  {
+   "fieldname": "material_request",
+   "label": "Material Request",
+   "fieldtype": "Link",
+   "options": "Material Request",
+   "readOnly": true
+  },
+  {
+   "fieldname": "purchase_order",
+   "label": "Purchase Order",
+   "fieldtype": "Link",
+   "options": "Purchase Order",
+   "readOnly": true
+  },
+  {
+   "fieldname": "purchase_invoice",
+   "label": "Purchase Invoice",
+   "fieldtype": "Link",
+   "options": "Purchase Invoice",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_40",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "is_fixed_asset",
+   "label": "Is Fixed Asset",
+   "fieldtype": "Check",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "asset_location",
+   "label": "Asset Location",
+   "fieldtype": "Link",
+   "options": "Location",
+   "dependsOn": "is_fixed_asset"
+  },
+  {
+   "fieldname": "asset_category",
+   "label": "Asset Category",
+   "fieldtype": "Link",
+   "options": "Asset Category",
+   "readOnly": true,
+   "dependsOn": "is_fixed_asset",
+   "fetchFrom": "item_code.asset_category"
+  },
+  {
+   "fieldname": "schedule_date",
+   "label": "Required By",
+   "fieldtype": "Date",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "quality_inspection",
+   "label": "Quality Inspection",
+   "fieldtype": "Link",
+   "options": "Quality Inspection",
+   "dependsOn": "eval:!doc.__islocal",
+   "printHide": true
+  },
+  {
+   "fieldname": "material_request_item",
+   "label": "Material Request Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "purchase_order_item",
+   "label": "Purchase Order Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "purchase_invoice_item",
+   "label": "Purchase Invoice Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "purchase_receipt_item",
+   "label": "Purchase Receipt Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "delivery_note_item",
+   "label": "Delivery Note Item",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "putaway_rule",
+   "label": "Putaway Rule",
+   "fieldtype": "Link",
+   "options": "Putaway Rule",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_45",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "allow_zero_valuation_rate",
+   "label": "Allow Zero Valuation Rate",
+   "fieldtype": "Check",
+   "printHide": true
+  },
+  {
+   "fieldname": "bom",
+   "label": "BOM",
+   "fieldtype": "Link",
+   "options": "BOM",
+   "readOnly": true,
+   "dependsOn": "eval:parent.is_old_subcontracting_flow",
+   "readOnlyDependsOn": "eval:!parent.is_old_subcontracting_flow",
+   "printHide": true
+  },
+  {
+   "fieldname": "serial_no",
+   "label": "Serial No",
+   "fieldtype": "Small Text",
+   "dependsOn": "eval:!doc.is_fixed_asset",
+   "inListView": true
+  },
+  {
+   "fieldname": "col_break5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "include_exploded_items",
+   "label": "Include Exploded Items",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "dependsOn": "eval:parent.is_subcontracted",
+   "printHide": true
+  },
+  {
+   "fieldname": "batch_no",
+   "label": "Batch No",
+   "fieldtype": "Link",
+   "options": "Batch",
+   "dependsOn": "eval:!doc.is_fixed_asset",
+   "inListView": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "rejected_serial_no",
+   "label": "Rejected Serial No",
+   "fieldtype": "Small Text",
+   "dependsOn": "eval:!doc.is_fixed_asset",
+   "printHide": true
+  },
+  {
+   "fieldname": "item_tax_rate",
+   "label": "Item Tax Rate",
+   "fieldtype": "Code",
+   "hidden": true,
+   "readOnly": true,
+   "description": "Tax detail table fetched from item master as a string and stored in this field.\nUsed for Taxes and Charges",
+   "printHide": true
+  },
+  {
+   "fieldname": "item_weight_details",
+   "label": "Item Weight Details",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "weight_per_unit",
+   "label": "Weight Per Unit",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "total_weight",
+   "label": "Total Weight",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_41",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "weight_uom",
+   "label": "Weight UOM",
+   "fieldtype": "Link",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "manufacture_details",
+   "label": "Manufacture",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "manufacturer",
+   "label": "Manufacturer",
+   "fieldtype": "Link",
+   "options": "Manufacturer"
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "manufacturer_part_no",
+   "label": "Manufacturer Part Number",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "accounting_details_section",
+   "label": "Accounting Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "expense_account",
+   "label": "Expense Account",
+   "fieldtype": "Link",
+   "options": "Account"
+  },
+  {
+   "fieldname": "wip_composite_asset",
+   "label": "WIP Composite Asset",
+   "fieldtype": "Link",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "column_break_102",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "provisional_expense_account",
+   "label": "Provisional Expense Account",
+   "fieldtype": "Link",
+   "options": "Account"
+  },
+  {
+   "fieldname": "accounting_dimensions_section",
+   "label": "Accounting Dimensions",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "project",
+   "label": "Project",
+   "fieldtype": "Link",
+   "options": "Project",
+   "printHide": true
+  },
+  {
+   "fieldname": "dimension_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "label": "Cost Center",
+   "fieldtype": "Link",
+   "options": "Cost Center",
+   "dependsOn": "eval:cint(erpnext.is_perpetual_inventory_enabled(parent.company))",
+   "default": ":Company",
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_80",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "page_break",
+   "label": "Page Break",
+   "fieldtype": "Check",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "sales_order",
+   "label": "Sales Order",
+   "fieldtype": "Link",
+   "options": "Sales Order",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "sales_order_item",
+   "label": "Sales Order Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  }
+ ]
+}

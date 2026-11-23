@@ -1,0 +1,29 @@
+<!-- ERPNext Print Format: QR Codes | DocType: Purchase Receipt | type: Jinja | standard: Yes | disabled: 0 | last modified: 2023-08-22 15:38:19.027063 -->
+<div style="display: flex;
+    flex-wrap: wrap;">
+{% for row in doc.items %}
+
+{% if row.accepted_bags_no %}
+{% for i in row.accepted_bags_no.split(',') %}
+<div style="width: 40%; margin: auto;">
+<p style="font-size:12px;">{{ row.purchase_order }} {{ doc.supplier }} {{ row.item_code }} {{ row.batch_no }}{{ i }}</p>
+<img src="https://api.qrserver.com/v1/create-qr-code/?data={{row.purchase_order}}-{{frappe.db.get_value('Purchase Order',row.purchase_order,'order_confirmation_no')}}
+-{{doc.supplier}}-{{row.item_code}}-{{row.batch_no}}-{{i}}"/>
+</div>
+{% endfor %}      
+{% endif %}
+
+{% endfor %}
+</div>
+<script>
+    $(document).ready(function() {
+      $('.print-preview').css()
+    })
+ </script>
+<style>
+    .print-format img {
+    margin: 20px;
+    height: 70%;
+    width: 85%;
+    }
+</style>

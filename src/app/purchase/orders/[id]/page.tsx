@@ -51,6 +51,7 @@ export default async function PurchaseOrderPage({ params }: { params: Promise<{ 
       masters={masters}
       allowed={allowed}
       userEmail={user.email}
+      userId={user.id}
       canEmail={canEmail}
       sidebar={
         activity && (

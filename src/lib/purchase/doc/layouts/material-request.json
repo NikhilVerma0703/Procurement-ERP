@@ -1,0 +1,265 @@
+{
+ "doctype": "Material Request",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": true,
+ "autoname": "naming_series:",
+ "showTitleFieldInLink": false,
+ "titleField": "title",
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": "status,transaction_date",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "type_section",
+   "fieldtype": "Section Break",
+   "options": "fa fa-pushpin"
+  },
+  {
+   "fieldname": "naming_series",
+   "label": "Series",
+   "fieldtype": "Select",
+   "options": "MAT-MR-.YYYY.-",
+   "reqd": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "title",
+   "label": "Title",
+   "fieldtype": "Data",
+   "hidden": true,
+   "allowOnSubmit": true,
+   "default": "{material_request_type}",
+   "printHide": true
+  },
+  {
+   "fieldname": "material_request_type",
+   "label": "Purpose",
+   "fieldtype": "Select",
+   "options": "Purchase\nMaterial Transfer\nMaterial Issue\nManufacture\nCustomer Provided",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "customer",
+   "label": "Customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "dependsOn": "eval:doc.material_request_type==\"Customer Provided\"",
+   "printHide": true
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "reqd": true,
+   "inStandardFilter": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transaction_date",
+   "label": "Transaction Date",
+   "fieldtype": "Date",
+   "reqd": true,
+   "default": "Today"
+  },
+  {
+   "fieldname": "schedule_date",
+   "label": "Required By",
+   "fieldtype": "Date",
+   "inListView": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "amended_from",
+   "label": "Amended From",
+   "fieldtype": "Link",
+   "options": "Material Request",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "warehouse_section",
+   "label": "Items",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "label": "Scan Barcode",
+   "fieldtype": "Data",
+   "options": "Barcode"
+  },
+  {
+   "fieldname": "column_break_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "set_from_warehouse",
+   "label": "Set Source Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "dependsOn": "eval:doc.material_request_type == 'Material Transfer'"
+  },
+  {
+   "fieldname": "column_break5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "set_warehouse",
+   "label": "Set Target Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "inListView": true
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "options": "fa fa-shopping-cart"
+  },
+  {
+   "fieldname": "items",
+   "label": "Items",
+   "fieldtype": "Table",
+   "options": "Material Request Item",
+   "reqd": true
+  },
+  {
+   "fieldname": "terms_tab",
+   "label": "Terms",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "terms_section_break",
+   "fieldtype": "Section Break",
+   "options": "fa fa-legal",
+   "collapsible": true,
+   "collapsibleDependsOn": "terms"
+  },
+  {
+   "fieldname": "tc_name",
+   "label": "Terms",
+   "fieldtype": "Link",
+   "options": "Terms and Conditions",
+   "printHide": true
+  },
+  {
+   "fieldname": "terms",
+   "label": "Terms and Conditions Content",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "more_info_tab",
+   "label": "More Info",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "status_section",
+   "label": "Status",
+   "fieldtype": "Section Break",
+   "options": "fa fa-file-text",
+   "collapsible": true
+  },
+  {
+   "fieldname": "status",
+   "label": "Status",
+   "fieldtype": "Select",
+   "options": "\nDraft\nSubmitted\nStopped\nCancelled\nPending\nPartially Ordered\nPartially Received\nOrdered\nIssued\nTransferred\nReceived",
+   "readOnly": true,
+   "inStandardFilter": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "per_ordered",
+   "label": "% Ordered",
+   "fieldtype": "Percent",
+   "readOnly": true,
+   "dependsOn": "eval:doc.per_ordered > 0",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transfer_status",
+   "label": "Transfer Status",
+   "fieldtype": "Select",
+   "options": "\nNot Started\nIn Transit\nCompleted",
+   "readOnly": true,
+   "dependsOn": "eval:doc.add_to_transit == 1",
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "per_received",
+   "label": "% Received",
+   "fieldtype": "Percent",
+   "readOnly": true,
+   "dependsOn": "eval:doc.per_received > 0",
+   "printHide": true
+  },
+  {
+   "fieldname": "printing_details",
+   "label": "Printing Details",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "letter_head",
+   "label": "Letter Head",
+   "fieldtype": "Link",
+   "options": "Letter Head",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_31",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "select_print_heading",
+   "label": "Print Heading",
+   "fieldtype": "Link",
+   "options": "Print Heading",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "reference",
+   "label": "Reference",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "job_card",
+   "label": "Job Card",
+   "fieldtype": "Link",
+   "options": "Job Card",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_35",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "work_order",
+   "label": "Work Order",
+   "fieldtype": "Link",
+   "options": "Work Order",
+   "readOnly": true
+  },
+  {
+   "fieldname": "connections_tab",
+   "label": "Connections",
+   "fieldtype": "Tab Break"
+  }
+ ]
+}

@@ -1,0 +1,57 @@
+{
+ "doctype": "Landed Cost Purchase Receipt",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "receipt_document_type",
+   "label": "Receipt Document Type",
+   "fieldtype": "Select",
+   "options": "\nPurchase Invoice\nPurchase Receipt",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "receipt_document",
+   "label": "Receipt Document",
+   "fieldtype": "Dynamic Link",
+   "options": "receipt_document_type",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "supplier",
+   "label": "Supplier",
+   "fieldtype": "Link",
+   "options": "Supplier",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "col_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "label": "Posting Date",
+   "fieldtype": "Date",
+   "readOnly": true
+  },
+  {
+   "fieldname": "grand_total",
+   "label": "Grand Total",
+   "fieldtype": "Currency",
+   "readOnly": true,
+   "inListView": true
+  }
+ ]
+}

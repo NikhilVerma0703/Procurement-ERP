@@ -1,0 +1,124 @@
+{
+ "doctype": "Landed Cost Voucher",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": true,
+ "autoname": "naming_series:",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "label": "Series",
+   "fieldtype": "Select",
+   "options": "MAT-LCV-.YYYY.-",
+   "reqd": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "label": "Posting Date",
+   "fieldtype": "Date",
+   "reqd": true,
+   "default": "Today"
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "purchase_receipts",
+   "label": "Purchase Receipts",
+   "fieldtype": "Table",
+   "options": "Landed Cost Purchase Receipt",
+   "reqd": true
+  },
+  {
+   "fieldname": "purchase_receipt_items",
+   "label": "Purchase Receipt Items",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "get_items_from_purchase_receipts",
+   "label": "Get Items From Purchase Receipts",
+   "fieldtype": "Button"
+  },
+  {
+   "fieldname": "items",
+   "label": "Purchase Receipt Items",
+   "fieldtype": "Table",
+   "options": "Landed Cost Item",
+   "reqd": true
+  },
+  {
+   "fieldname": "sec_break1",
+   "label": "Applicable Charges",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "taxes",
+   "label": "Taxes and Charges",
+   "fieldtype": "Table",
+   "options": "Landed Cost Taxes and Charges",
+   "reqd": true
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_taxes_and_charges",
+   "label": "Total Taxes and Charges (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "reqd": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "col_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "distribute_charges_based_on",
+   "label": "Distribute Charges Based On",
+   "fieldtype": "Select",
+   "options": "Qty\nAmount\nDistribute Manually",
+   "reqd": true
+  },
+  {
+   "fieldname": "amended_from",
+   "label": "Amended From",
+   "fieldtype": "Link",
+   "options": "Landed Cost Voucher",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "sec_break2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "landed_cost_help",
+   "label": "Landed Cost Help",
+   "fieldtype": "HTML"
+  }
+ ]
+}

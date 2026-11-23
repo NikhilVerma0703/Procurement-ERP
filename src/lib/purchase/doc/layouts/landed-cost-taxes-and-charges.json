@@ -1,0 +1,64 @@
+{
+ "doctype": "Landed Cost Taxes and Charges",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "expense_account",
+   "label": "Expense Account",
+   "fieldtype": "Link",
+   "options": "Account",
+   "dependsOn": "eval:cint(erpnext.is_perpetual_inventory_enabled(parent.company))",
+   "mandatoryDependsOn": "eval:cint(erpnext.is_perpetual_inventory_enabled(parent.company))",
+   "inListView": true
+  },
+  {
+   "fieldname": "account_currency",
+   "label": "Account Currency",
+   "fieldtype": "Link",
+   "options": "Currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "exchange_rate",
+   "label": "Exchange Rate",
+   "fieldtype": "Float",
+   "precision": "9"
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Small Text",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "col_break3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amount",
+   "label": "Amount",
+   "fieldtype": "Currency",
+   "options": "account_currency",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "base_amount",
+   "label": "Amount (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  }
+ ]
+}

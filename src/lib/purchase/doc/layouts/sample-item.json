@@ -1,0 +1,86 @@
+{
+ "doctype": "Sample Item",
+ "module": "Pacific Group",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "fetchFrom": "item_code.item_name"
+  },
+  {
+   "fieldname": "qty",
+   "label": "QTY",
+   "fieldtype": "Float",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "colour",
+   "label": "Colour",
+   "fieldtype": "Data",
+   "inListView": true
+  },
+  {
+   "fieldname": "column_break_1b64x",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "thick",
+   "label": "Thick",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "sqft",
+   "label": "SQFT",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "sqmt",
+   "label": "SQMT",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "crate",
+   "label": "Crate",
+   "fieldtype": "Data",
+   "inListView": true
+  },
+  {
+   "fieldname": "net_weight",
+   "label": "Net Weight",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "length",
+   "label": "Length",
+   "fieldtype": "Data",
+   "inListView": true
+  },
+  {
+   "fieldname": "width",
+   "label": "Width",
+   "fieldtype": "Data",
+   "inListView": true
+  }
+ ]
+}

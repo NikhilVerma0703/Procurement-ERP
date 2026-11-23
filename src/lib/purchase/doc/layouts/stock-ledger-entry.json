@@ -1,0 +1,216 @@
+{
+ "doctype": "Stock Ledger Entry",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "MAT-SLE-.YYYY.-.#####",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "readOnly": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "warehouse",
+   "label": "Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "readOnly": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "posting_date",
+   "label": "Posting Date",
+   "fieldtype": "Date",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "posting_time",
+   "label": "Posting Time",
+   "fieldtype": "Time",
+   "readOnly": true
+  },
+  {
+   "fieldname": "posting_datetime",
+   "label": "Posting Datetime",
+   "fieldtype": "Datetime"
+  },
+  {
+   "fieldname": "is_adjustment_entry",
+   "label": "Is Adjustment Entry",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "voucher_type",
+   "label": "Voucher Type",
+   "fieldtype": "Link",
+   "options": "DocType",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "voucher_no",
+   "label": "Voucher No",
+   "fieldtype": "Dynamic Link",
+   "options": "voucher_type",
+   "readOnly": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "voucher_detail_no",
+   "label": "Voucher Detail No",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "dependant_sle_voucher_detail_no",
+   "label": "Dependant SLE Voucher Detail No",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "recalculate_rate",
+   "label": "Recalculate Incoming/Outgoing Rate",
+   "fieldtype": "Check",
+   "readOnly": true
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "actual_qty",
+   "label": "Qty Change",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "qty_after_transaction",
+   "label": "Qty After Transaction",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "incoming_rate",
+   "label": "Incoming Rate",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "outgoing_rate",
+   "label": "Outgoing Rate",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "valuation_rate",
+   "label": "Valuation Rate",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "stock_value",
+   "label": "Balance Stock Value",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "stock_value_difference",
+   "label": "Change in Stock Value",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "stock_queue",
+   "label": "FIFO Stock Queue (qty, rate)",
+   "fieldtype": "Long Text",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_21",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "readOnly": true
+  },
+  {
+   "fieldname": "stock_uom",
+   "label": "Stock UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "readOnly": true
+  },
+  {
+   "fieldname": "project",
+   "label": "Project",
+   "fieldtype": "Link",
+   "options": "Project"
+  },
+  {
+   "fieldname": "batch_no",
+   "label": "Batch No",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_26",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "fiscal_year",
+   "label": "Fiscal Year",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "serial_no",
+   "label": "Serial No",
+   "fieldtype": "Long Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "is_cancelled",
+   "label": "Is Cancelled",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "to_rename",
+   "label": "To Rename",
+   "fieldtype": "Check",
+   "hidden": true,
+   "default": "1"
+  }
+ ]
+}

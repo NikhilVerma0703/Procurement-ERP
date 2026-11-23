@@ -1,0 +1,167 @@
+{
+ "doctype": "Stock Reconciliation",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": true,
+ "autoname": "naming_series:",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": "posting_date",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "label": "Series",
+   "fieldtype": "Select",
+   "options": "MAT-RECO-.YYYY.-",
+   "reqd": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "reqd": true
+  },
+  {
+   "fieldname": "purpose",
+   "label": "Purpose",
+   "fieldtype": "Select",
+   "options": "\nOpening Stock\nStock Reconciliation",
+   "reqd": true
+  },
+  {
+   "fieldname": "custom_supplier",
+   "label": "Supplier",
+   "fieldtype": "Link",
+   "options": "Supplier",
+   "reqd": true
+  },
+  {
+   "fieldname": "col1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "label": "Posting Date",
+   "fieldtype": "Date",
+   "reqd": true,
+   "inListView": true,
+   "default": "Today"
+  },
+  {
+   "fieldname": "posting_time",
+   "label": "Posting Time",
+   "fieldtype": "Time",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "set_posting_time",
+   "label": "Edit Posting Date and Time",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "set_warehouse",
+   "label": "Default Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "section_break_22",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:!doc.docstatus"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "label": "Scan Barcode",
+   "fieldtype": "Data",
+   "options": "Barcode"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scan_mode",
+   "label": "Scan Mode",
+   "fieldtype": "Check",
+   "description": "Disables auto-fetching of existing quantity"
+  },
+  {
+   "fieldname": "sb9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "items",
+   "label": "Items",
+   "fieldtype": "Table",
+   "options": "Stock Reconciliation Item",
+   "reqd": true
+  },
+  {
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "expense_account",
+   "label": "Difference Account",
+   "fieldtype": "Link",
+   "options": "Account",
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "column_break_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "difference_amount",
+   "label": "Difference Amount",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "amended_from",
+   "label": "Amended From",
+   "fieldtype": "Link",
+   "options": "Stock Reconciliation",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "accounting_dimensions_section",
+   "label": "Accounting Dimensions",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "label": "Cost Center",
+   "fieldtype": "Link",
+   "options": "Cost Center",
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "dimension_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "custom_section_break_bek6c",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "custom_description",
+   "label": "Description",
+   "fieldtype": "Small Text",
+   "options": "Description"
+  }
+ ]
+}

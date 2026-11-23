@@ -54,10 +54,12 @@ describe("version lines (version_timeline_content_builder.js)", () => {
     expect(lines({ row_changed: [["taxes", 0, "t1", [["item_wise_tax_detail", "{}", "{\"x\":1}"]]]] })).toEqual([]);
   });
 
-  it("shows a value as text, cut at 40 characters, and an empty one as \"\"", () => {
+  it("shows a value as text, cut at 40 characters, an empty one as \"\" and a missing one as null", () => {
     expect(timelineValue("<div><b>HSN/SAC</b>Taxable</div>")).toEqual({ text: "HSN/SACTaxable", bold: true });
     expect(timelineValue("x".repeat(45)).text).toBe(`${"x".repeat(40)}...`);
-    expect(timelineValue(null).text).toBe('""');
+    // Frappe 14.101's html2text (DOMParser.parseFromString) reads null as "null": the old site's
+    // receipts show "Serial No from null to \"\"" (PR/25-26/MM-03433, seen 21-11-2026).
+    expect(timelineValue(null).text).toBe("null");
     expect(timelineValue("").text).toBe('""');
     expect(timelineValue(0).text).toBe("0");
   });

@@ -1,0 +1,61 @@
+{
+ "doctype": "Terms and Conditions",
+ "module": "Setup",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:title",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "title",
+   "label": "Title",
+   "fieldtype": "Data",
+   "reqd": true
+  },
+  {
+   "fieldname": "disabled",
+   "label": "Disabled",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "applicable_modules_section",
+   "label": "Applicable Modules",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "selling",
+   "label": "Selling",
+   "fieldtype": "Check",
+   "inListView": true,
+   "default": "1"
+  },
+  {
+   "fieldname": "buying",
+   "label": "Buying",
+   "fieldtype": "Check",
+   "inListView": true,
+   "default": "1"
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "terms",
+   "label": "Terms and Conditions",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "terms_and_conditions_help",
+   "label": "Terms and Conditions Help",
+   "fieldtype": "HTML",
+   "options": "<h4>Standard Terms and Conditions Example</h4>\n\n<pre>Delivery Terms for Order number {{ name }}\n\n-Order Date : {{ transaction_date }} \n-Expected Delivery Date : {{ delivery_date }}\n</pre>\n\n<h4>How to get fieldnames</h4>\n\n<p>The fieldnames you can use in your email template are the fields in the document from which you are sending the email. You can find out the fields of any documents via Setup &gt; Customize Form View and selecting the document type (e.g. Sales Invoice)</p>\n\n<h4>Templating</h4>\n\n<p>Templates are compiled using the Jinja Templating Language. To learn more about Jinja, <a class=\"strong\" href=\"http://jinja.pocoo.org/docs/dev/templates/\">read this documentation.</a></p>"
+  }
+ ]
+}

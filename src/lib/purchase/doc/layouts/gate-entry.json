@@ -1,0 +1,123 @@
+{
+ "doctype": "Gate Entry",
+ "module": "Pacific Group",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": true,
+ "autoname": "naming_series:",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "label": "Naming Series",
+   "fieldtype": "Select",
+   "options": "GE-25-26-.#####\nGE-.{financial_year}.-.#####",
+   "reqd": true,
+   "default": "GE-25-26-.#####"
+  },
+  {
+   "fieldname": "location",
+   "label": "Location",
+   "fieldtype": "Data",
+   "default": "Hosur"
+  },
+  {
+   "fieldname": "po_no",
+   "label": "Po No",
+   "fieldtype": "Link",
+   "options": "Purchase Order",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "invoice_no",
+   "label": "Invoice No",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "inward_no",
+   "label": "Inward No",
+   "fieldtype": "Link",
+   "options": "Purchase Receipt",
+   "readOnly": true,
+   "inListView": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "supplier",
+   "label": "Supplier",
+   "fieldtype": "Link",
+   "options": "Supplier",
+   "reqd": true,
+   "inListView": true,
+   "fetchFrom": "po_no.supplier"
+  },
+  {
+   "fieldname": "column_break_2ojyr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "invoice_date",
+   "label": "Invoice Date",
+   "fieldtype": "Date",
+   "default": "Today",
+   "fetchFrom": "invoice_no.posting_date"
+  },
+  {
+   "fieldname": "gate_entry_date",
+   "label": "Gate Entry Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "inward_date",
+   "label": "Inward Date",
+   "fieldtype": "Date",
+   "readOnly": true,
+   "inListView": true,
+   "allowOnSubmit": true,
+   "fetchFrom": "inward_no.posting_date"
+  },
+  {
+   "fieldname": "po_date",
+   "label": "Po Date",
+   "fieldtype": "Date",
+   "fetchFrom": "po_no.transaction_date"
+  },
+  {
+   "fieldname": "financial_year",
+   "label": "Financial Year",
+   "fieldtype": "Link",
+   "options": "Fiscal Year"
+  },
+  {
+   "fieldname": "vehicle_no",
+   "label": "Vehicle No",
+   "fieldtype": "Data",
+   "reqd": true
+  },
+  {
+   "fieldname": "section_break_hyjox",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "items",
+   "label": "Items",
+   "fieldtype": "Table",
+   "options": "Gate Entry Item",
+   "reqd": true
+  },
+  {
+   "fieldname": "amended_from",
+   "label": "Amended From",
+   "fieldtype": "Link",
+   "options": "Gate Entry",
+   "readOnly": true,
+   "printHide": true
+  }
+ ]
+}

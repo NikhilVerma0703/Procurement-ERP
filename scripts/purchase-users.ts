@@ -1,12 +1,13 @@
 // STANDALONE ONLY — the sign-in accounts of the standalone app (purchase_logins).
 //
 //   npm run users -- list
-//   npm run users -- add <email> --name "<Full Name>" --role PURCHASE|APPROVER|ADMIN
+//   npm run users -- add <email> --name "<Full Name>" --role PURCHASE|STORE|APPROVER|ADMIN
 //   npm run users -- password <email>
-//   npm run users -- role <email> PURCHASE|APPROVER|ADMIN
+//   npm run users -- role <email> PURCHASE|STORE|APPROVER|ADMIN
 //   npm run users -- disable <email>        (enable <email> to undo)
 //
-// Roles: PURCHASE creates and edits drafts, APPROVER approves and rejects, ADMIN does everything.
+// Roles: PURCHASE creates and edits drafts, STORE does that and works in the Stock module (the
+// storekeeper, owner 21-11-2026), APPROVER approves and rejects, ADMIN does everything.
 // The password is asked for without echoing it. Without a terminal (a script), it is read from the
 // environment variable PURCHASE_USER_PASSWORD instead. It is never printed or stored in clear.
 import readline from "node:readline";
@@ -14,7 +15,7 @@ import { Writable } from "node:stream";
 import bcrypt from "bcryptjs";
 import { PrismaClient, type PurchaseLoginRole } from "@prisma/client";
 
-const ROLES: readonly PurchaseLoginRole[] = ["PURCHASE", "APPROVER", "ADMIN"];
+const ROLES: readonly PurchaseLoginRole[] = ["PURCHASE", "STORE", "APPROVER", "ADMIN"];
 const MIN_PASSWORD = 8;
 
 const db = new PrismaClient();
@@ -116,7 +117,7 @@ async function main() {
       break;
     }
     default:
-      console.log("Commands: list · add <email> --name \"…\" --role PURCHASE|APPROVER|ADMIN · password <email> · role <email> <ROLE> · disable <email> · enable <email>");
+      console.log("Commands: list · add <email> --name \"…\" --role PURCHASE|STORE|APPROVER|ADMIN · password <email> · role <email> <ROLE> · disable <email> · enable <email>");
   }
 }
 

@@ -1,0 +1,376 @@
+{
+ "doctype": "Material Request Item",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "hash",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "bold": true,
+   "inListView": true,
+   "columns": 3
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "printHide": true
+  },
+  {
+   "fieldname": "col_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "schedule_date",
+   "label": "Required By",
+   "fieldtype": "Date",
+   "reqd": true,
+   "bold": true,
+   "inListView": true,
+   "columns": 2,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "section_break_4",
+   "label": "Description",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text Editor",
+   "reqd": true
+  },
+  {
+   "fieldname": "gst_hsn_code",
+   "label": "HSN/SAC",
+   "fieldtype": "Data",
+   "allowOnSubmit": true,
+   "fetchFrom": "item_code.gst_hsn_code",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_group",
+   "label": "Item Group",
+   "fieldtype": "Link",
+   "options": "Item Group",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "brand",
+   "label": "Brand",
+   "fieldtype": "Link",
+   "options": "Brand",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "image",
+   "label": "Image",
+   "fieldtype": "Attach Image",
+   "readOnly": true,
+   "fetchFrom": "item_code.image",
+   "printHide": true
+  },
+  {
+   "fieldname": "quantity_and_warehouse",
+   "label": "Quantity and Warehouse",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "qty",
+   "label": "Quantity",
+   "fieldtype": "Float",
+   "reqd": true,
+   "inListView": true,
+   "columns": 1
+  },
+  {
+   "fieldname": "stock_uom",
+   "label": "Stock UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "reqd": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "from_warehouse",
+   "label": "Source Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "dependsOn": "eval:parent.material_request_type == \"Material Transfer\""
+  },
+  {
+   "fieldname": "warehouse",
+   "label": "Target Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "inListView": true,
+   "columns": 3
+  },
+  {
+   "fieldname": "col_break2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "reqd": true,
+   "inListView": true,
+   "columns": 1
+  },
+  {
+   "fieldname": "conversion_factor",
+   "label": "UOM Conversion Factor",
+   "fieldtype": "Float",
+   "reqd": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "stock_qty",
+   "label": "Stock Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "qty_info_sec_break",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "min_order_qty",
+   "label": "Min Order Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "projected_qty",
+   "label": "Projected Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "qty_info_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "actual_qty",
+   "label": "Actual Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "ordered_qty",
+   "label": "Completed Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "dependsOn": "eval:doc.docstatus==1",
+   "printHide": true
+  },
+  {
+   "fieldname": "received_qty",
+   "label": "Received Qty",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "dependsOn": "eval:doc.docstatus==1",
+   "printHide": true
+  },
+  {
+   "fieldname": "rate_and_amount_section_break",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "rate",
+   "label": "Rate",
+   "fieldtype": "Currency",
+   "printHide": true
+  },
+  {
+   "fieldname": "price_list_rate",
+   "label": "Price List Rate",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "col_break3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amount",
+   "label": "Amount",
+   "fieldtype": "Currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "accounting_details_section",
+   "label": "Accounting Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "expense_account",
+   "label": "Expense Account",
+   "fieldtype": "Link",
+   "options": "Account",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_glru",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "wip_composite_asset",
+   "label": "WIP Composite Asset",
+   "fieldtype": "Link",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "manufacture_details",
+   "label": "Manufacture",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:in_list([\"Manufacture\", \"Purchase\"], parent.material_request_type)",
+   "collapsible": true
+  },
+  {
+   "fieldname": "manufacturer",
+   "label": "Manufacturer",
+   "fieldtype": "Link",
+   "options": "Manufacturer"
+  },
+  {
+   "fieldname": "manufacturer_part_no",
+   "label": "Manufacturer Part Number",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "col_break_mfg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bom_no",
+   "label": "BOM No",
+   "fieldtype": "Link",
+   "options": "BOM",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "accounting_dimensions_section",
+   "label": "Accounting Dimensions",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "project",
+   "label": "Project",
+   "fieldtype": "Link",
+   "options": "Project"
+  },
+  {
+   "fieldname": "dimension_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "label": "Cost Center",
+   "fieldtype": "Link",
+   "options": "Cost Center",
+   "printHide": true
+  },
+  {
+   "fieldname": "more_info",
+   "label": "More Information",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "lead_time_date",
+   "label": "Lead Time Date",
+   "fieldtype": "Date",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "sales_order",
+   "label": "Sales Order",
+   "fieldtype": "Link",
+   "options": "Sales Order",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "sales_order_item",
+   "label": "Sales Order Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "col_break4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "production_plan",
+   "label": "Production Plan",
+   "fieldtype": "Link",
+   "options": "Production Plan",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "material_request_plan_item",
+   "label": "Material Request Plan Item",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "job_card_item",
+   "label": "Job Card Item",
+   "fieldtype": "Data",
+   "hidden": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_46",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "page_break",
+   "label": "Page Break",
+   "fieldtype": "Check",
+   "allowOnSubmit": true,
+   "printHide": true
+  }
+ ]
+}

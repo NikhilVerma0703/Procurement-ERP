@@ -1,0 +1,38 @@
+{
+ "doctype": "Contact Phone",
+ "module": "Contacts",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "phone",
+   "label": "Number",
+   "fieldtype": "Data",
+   "options": "Phone",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "is_primary_phone",
+   "label": "Is Primary Phone",
+   "fieldtype": "Check",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "is_primary_mobile_no",
+   "label": "Is Primary Mobile",
+   "fieldtype": "Check",
+   "inListView": true,
+   "columns": 2
+  }
+ ]
+}

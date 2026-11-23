@@ -10,7 +10,7 @@ from the backup's own table definitions (`docs/reference/erpnext-schema/*.sql`, 
 `scripts/analysis/erpnext_schema.py`) and from how often each column was ever filled.
 
 Result:
-- 43 tables (`purchase_*`)
+- 43 tables (`purchase_*`) at Step 2; 77 since Phase II (21-11-2026), which added the Stock module's 27 (below)
 - 12 enum types (`purchase_*`)
 - 82 foreign keys
 - applied to the local PostgreSQL 18 database `procurement_erp`
@@ -124,3 +124,33 @@ The data stays in the backup and in each PO's `legacy` copy.
   answer.
 - **Cost Overhead fold-in rule.** How the add-on folded overhead charges into the totals is settled by the golden
   tests in Step 4. It changes calculations, not columns.
+
+## Phase II: the Stock module's documents (21-11-2026)
+
+Migration `20261121114044_stock_module_documents`, importer `src/lib/purchase/migrate/stock-build.ts`, the same rules
+as above. Links to the Phase I masters (item, warehouse, supplier, customer, PO, PO line, price list) are foreign keys
+**beside** the ERPNext name, which is always kept (`*_code`, `*_number`): a link the backup cannot resolve stays
+readable and is reported. Links to records the module has no screen for (accounts, cost centres, templates,
+addresses, letter heads) are kept as the ERPNext names, as the old forms showed them, until their screens exist.
+
+| ERPNext | Rows (21-11) | Table |
+|---|---:|---|
+| Gate Entry / Gate Entry Item (the add-on) | 4,682 / 13,919 | `purchase_gate_entries` / `purchase_gate_entry_items` |
+| Purchase Receipt / Item / tax rows | 5,593 / 11,378 / 7,871 | `purchase_receipts` / `purchase_receipt_items` / `purchase_receipt_taxes` |
+| Landed Cost Voucher / receipts / items / charges | 378 / 378 / 732 / 390 | `purchase_landed_cost_vouchers` / `_receipts` / `_items` / `_taxes` |
+| Material Request / Item | 4,145 / 7,494 | `purchase_material_requests` / `purchase_material_request_items` |
+| Stock Entry Type, Stock Entry / Detail | 8, 4,496 / 11,227 | `purchase_stock_entry_types`, `purchase_stock_entries` / `purchase_stock_entry_details` |
+| Stock Reconciliation / Item | 305 / 1,384 | `purchase_stock_reconciliations` / `purchase_stock_reconciliation_items` |
+| Delivery Note / Item / Sales Taxes and Charges | 77 / 117 / 6 | `purchase_delivery_notes` / `_items` / `_taxes` |
+| Packing Slip / Item | 78 / 3,913 | `purchase_packing_slips` / `purchase_packing_slip_items` |
+| Stock Ledger Entry (FIFO queue kept as stored) | 26,041 | `purchase_stock_ledger_entries` |
+| Bin | 4,689 | `purchase_bins` |
+| Item Price | 5,220 | `purchase_item_prices` |
+| Serial No (with the add-on's slab dimensions), Batch | 24,803, 3,021 | `purchase_serial_nos`, `purchase_batches` |
+| Quality Inspection / Reading | 2,375 / 32,786 | `purchase_quality_inspections` / `purchase_quality_inspection_readings` |
+| Services Items (the add-on's, on receipts) | 566 | `purchase_receipt_service_items` |
+| Sample Item (the add-on's, on packing slips) | 73 | `purchase_packing_slip_sample_items` |
+| Sales Team (on delivery notes) | 6 | `purchase_delivery_note_sales_team` |
+
+Posting times are kept as ERPNext stored them (`HH:MM:SS.ffffff`); the ledger also keeps the posting instant
+(`posting_date_time`, the old wall clock converted to UTC) and ERPNext's creation time, its order's last tie-break.

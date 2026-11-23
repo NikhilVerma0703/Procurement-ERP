@@ -1,0 +1,70 @@
+{
+ "doctype": "Item Variant Attribute",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "variant_of",
+   "label": "Variant Of",
+   "fieldtype": "Link",
+   "options": "Item"
+  },
+  {
+   "fieldname": "attribute",
+   "label": "Attribute",
+   "fieldtype": "Link",
+   "options": "Item Attribute",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "attribute_value",
+   "label": "Attribute Value",
+   "fieldtype": "Data",
+   "inListView": true
+  },
+  {
+   "fieldname": "numeric_values",
+   "label": "Numeric Values",
+   "fieldtype": "Check",
+   "dependsOn": "has_variants"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break",
+   "dependsOn": "numeric_values"
+  },
+  {
+   "fieldname": "from_range",
+   "label": "From Range",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "increment",
+   "label": "Increment",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_range",
+   "label": "To Range",
+   "fieldtype": "Float"
+  }
+ ]
+}

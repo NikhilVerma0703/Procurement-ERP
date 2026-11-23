@@ -1,0 +1,29 @@
+{
+ "doctype": "Customs Tariff Number",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:tariff_number",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "tariff_number",
+   "label": "Tariff Number",
+   "fieldtype": "Data",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Data",
+   "inListView": true
+  }
+ ]
+}

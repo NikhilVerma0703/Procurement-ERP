@@ -1,0 +1,186 @@
+{
+ "doctype": "Item Group",
+ "module": "Setup",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:item_group_name",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": "parent_item_group",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "gs",
+   "label": "General Settings",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "item_group_name",
+   "label": "Item Group Name",
+   "fieldtype": "Data",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "parent_item_group",
+   "label": "Parent Item Group",
+   "fieldtype": "Link",
+   "options": "Item Group",
+   "bold": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "is_group",
+   "label": "Is Group",
+   "fieldtype": "Check",
+   "bold": true,
+   "inListView": true,
+   "description": "Only leaf nodes are allowed in transaction"
+  },
+  {
+   "fieldname": "image",
+   "label": "Image",
+   "fieldtype": "Attach Image",
+   "hidden": true
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "defaults",
+   "label": "Defaults",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "gst_hsn_code",
+   "label": "HSN/SAC",
+   "fieldtype": "Link",
+   "options": "GST HSN Code",
+   "description": "You can search code by the description of the category."
+  },
+  {
+   "fieldname": "item_group_defaults",
+   "label": "Item Group Defaults",
+   "fieldtype": "Table",
+   "options": "Item Default"
+  },
+  {
+   "fieldname": "sec_break_taxes",
+   "label": "Item Tax",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "taxes",
+   "label": "Taxes",
+   "fieldtype": "Table",
+   "options": "Item Tax"
+  },
+  {
+   "fieldname": "sb9",
+   "label": "Website Settings",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "route",
+   "label": "Route",
+   "fieldtype": "Data",
+   "dependsOn": "show_in_website"
+  },
+  {
+   "fieldname": "website_title",
+   "label": "Title",
+   "fieldtype": "Data",
+   "dependsOn": "show_in_website"
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text Editor",
+   "dependsOn": "show_in_website",
+   "description": "HTML / Banner that will show on the top of product list."
+  },
+  {
+   "fieldname": "show_in_website",
+   "label": "Show in Website",
+   "fieldtype": "Check",
+   "description": "Make Item Group visible in website"
+  },
+  {
+   "fieldname": "include_descendants",
+   "label": "Include Descendants",
+   "fieldtype": "Check",
+   "dependsOn": "show_in_website",
+   "description": "Include Website Items belonging to child Item Groups"
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "weightage",
+   "label": "Weightage",
+   "fieldtype": "Int",
+   "dependsOn": "show_in_website"
+  },
+  {
+   "fieldname": "slideshow",
+   "label": "Slideshow",
+   "fieldtype": "Link",
+   "options": "Website Slideshow",
+   "dependsOn": "show_in_website",
+   "description": "Show this slideshow at the top of the page"
+  },
+  {
+   "fieldname": "website_specifications",
+   "label": "Website Specifications",
+   "fieldtype": "Table",
+   "options": "Item Website Specification",
+   "dependsOn": "show_in_website"
+  },
+  {
+   "fieldname": "website_filters_section",
+   "label": "Website Filters",
+   "fieldtype": "Section Break",
+   "dependsOn": "show_in_website",
+   "collapsible": true
+  },
+  {
+   "fieldname": "filter_fields",
+   "label": "Item Fields",
+   "fieldtype": "Table",
+   "options": "Website Filter Field"
+  },
+  {
+   "fieldname": "filter_attributes",
+   "label": "Attributes",
+   "fieldtype": "Table",
+   "options": "Website Attribute"
+  },
+  {
+   "fieldname": "lft",
+   "label": "lft",
+   "fieldtype": "Int",
+   "hidden": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "rgt",
+   "label": "rgt",
+   "fieldtype": "Int",
+   "hidden": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "old_parent",
+   "label": "old_parent",
+   "fieldtype": "Link",
+   "options": "Item Group",
+   "hidden": true,
+   "printHide": true
+  }
+ ]
+}

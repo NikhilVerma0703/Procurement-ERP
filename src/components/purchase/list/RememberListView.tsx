@@ -9,7 +9,8 @@ import { PURCHASE_PATHS } from "@/lib/purchase/routes";
 // view is kept in this browser for this login; opening the list with a plain
 // address (the sidebar link) restores it. Clearing every filter is remembered
 // too, so the plain list then stays plain.
-const keyFor = (userId: string) => `purchase.po-list.${userId}`;
+export const listViewKey = (userId: string) => `purchase.po-list.${userId}`;
+const keyFor = listViewKey;
 
 export function RememberListView({ userId, search }: { userId: string; search: string }) {
   const router = useRouter();

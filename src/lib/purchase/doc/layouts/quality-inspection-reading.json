@@ -1,0 +1,196 @@
+{
+ "doctype": "Quality Inspection Reading",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "hash",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "bag_weight",
+   "label": "Bag Weight",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "specification",
+   "label": "Qc Test",
+   "fieldtype": "Link",
+   "options": "Quality Inspection Parameter",
+   "reqd": true,
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "rate",
+   "label": "Rate",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "parameter_group",
+   "label": "Parameter Group",
+   "fieldtype": "Link",
+   "options": "Quality Inspection Parameter Group",
+   "readOnly": true,
+   "fetchFrom": "specification.parameter_group"
+  },
+  {
+   "fieldname": "item_status",
+   "label": "Status",
+   "fieldtype": "Select",
+   "options": "Yes\nNo",
+   "inListView": true
+  },
+  {
+   "fieldname": "status",
+   "label": "State",
+   "fieldtype": "Select",
+   "options": "\nAccepted\nRejected",
+   "columns": 2,
+   "default": "Accepted"
+  },
+  {
+   "fieldname": "location",
+   "label": "Location",
+   "fieldtype": "Data",
+   "inListView": true
+  },
+  {
+   "fieldname": "value",
+   "label": "Acceptance Criteria Value",
+   "fieldtype": "Data",
+   "dependsOn": "eval:(!doc.formula_based_criteria && !doc.numeric)",
+   "columns": 2
+  },
+  {
+   "fieldname": "numeric",
+   "label": "Numeric",
+   "fieldtype": "Check",
+   "default": "1"
+  },
+  {
+   "fieldname": "manual_inspection",
+   "label": "Manual Inspection",
+   "fieldtype": "Check",
+   "description": "Set the status manually."
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "min_value",
+   "label": "Minimum Value",
+   "fieldtype": "Float",
+   "dependsOn": "eval:(!doc.formula_based_criteria && doc.numeric)",
+   "description": "Applied on each reading."
+  },
+  {
+   "fieldname": "max_value",
+   "label": "Maximum Value",
+   "fieldtype": "Float",
+   "dependsOn": "eval:(!doc.formula_based_criteria && doc.numeric)",
+   "description": "Applied on each reading."
+  },
+  {
+   "fieldname": "formula_based_criteria",
+   "label": "Formula Based Criteria",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "acceptance_formula",
+   "label": "Acceptance Criteria Formula",
+   "fieldtype": "Code",
+   "dependsOn": "formula_based_criteria",
+   "description": "Simple Python formula applied on Reading fields.<br> Numeric eg. 1: <b>reading_1 &gt; 0.2 and reading_1 &lt; 0.5</b><br>\nNumeric eg. 2: <b>mean &gt; 3.5</b> (mean of populated fields)<br>\nValue based eg.:  <b>reading_value in (\"A\", \"B\", \"C\")</b>"
+  },
+  {
+   "fieldname": "section_break_3",
+   "label": "Value Based Inspection",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:!doc.numeric"
+  },
+  {
+   "fieldname": "reading_value",
+   "label": "Remarks",
+   "fieldtype": "Data",
+   "dependsOn": "eval:!doc.numeric",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "section_break_14",
+   "label": "Numeric Inspection",
+   "fieldtype": "Section Break",
+   "dependsOn": "numeric"
+  },
+  {
+   "fieldname": "reading_1",
+   "label": "Reading 1",
+   "fieldtype": "Data",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "reading_2",
+   "label": "Reading 2",
+   "fieldtype": "Data",
+   "columns": 1
+  },
+  {
+   "fieldname": "reading_3",
+   "label": "Reading 3",
+   "fieldtype": "Data",
+   "columns": 1
+  },
+  {
+   "fieldname": "reading_4",
+   "label": "Reading 4",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reading_5",
+   "label": "Reading 5",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "reading_6",
+   "label": "Reading 6",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "reading_7",
+   "label": "Reading 7",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "reading_8",
+   "label": "Reading 8",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "column_break_14",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reading_9",
+   "label": "Reading 9",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "reading_10",
+   "label": "Reading 10",
+   "fieldtype": "Data"
+  }
+ ]
+}

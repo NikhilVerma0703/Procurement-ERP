@@ -1,0 +1,171 @@
+{
+ "doctype": "Address",
+ "module": "Contacts",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": "country, state",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "address_details",
+   "fieldtype": "Section Break",
+   "options": "fa fa-map-marker"
+  },
+  {
+   "fieldname": "address_title",
+   "label": "Address Title",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "address_type",
+   "label": "Address Type",
+   "fieldtype": "Select",
+   "options": "Billing\nShipping\nOffice\nPersonal\nPlant\nPostal\nShop\nSubsidiary\nWarehouse\nCurrent\nPermanent\nOther",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "address_line1",
+   "label": "Address Line 1",
+   "fieldtype": "Data",
+   "reqd": true
+  },
+  {
+   "fieldname": "address_line2",
+   "label": "Address Line 2",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "city",
+   "label": "City/Town",
+   "fieldtype": "Data",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "county",
+   "label": "County",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "state",
+   "label": "State/Province",
+   "fieldtype": "Autocomplete",
+   "mandatoryDependsOn": "eval: doc.country == 'India'"
+  },
+  {
+   "fieldname": "country",
+   "label": "Country",
+   "fieldtype": "Link",
+   "options": "Country",
+   "reqd": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "pincode",
+   "label": "Postal Code",
+   "fieldtype": "Data",
+   "mandatoryDependsOn": "eval: doc.country == 'India' &&(gst_settings.enable_e_invoice || gst_settings.enable_e_waybill)"
+  },
+  {
+   "fieldname": "column_break0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "email_id",
+   "label": "Email Address",
+   "fieldtype": "Data",
+   "options": "Email"
+  },
+  {
+   "fieldname": "phone",
+   "label": "Phone",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "fax",
+   "label": "Fax",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "tax_category",
+   "label": "Tax Category",
+   "fieldtype": "Link",
+   "options": "Tax Category"
+  },
+  {
+   "fieldname": "is_primary_address",
+   "label": "Preferred Billing Address",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "is_shipping_address",
+   "label": "Preferred Shipping Address",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "disabled",
+   "label": "Disabled",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "tax_details_section",
+   "label": "Tax Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "gstin",
+   "label": "GSTIN / UIN",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "gst_state",
+   "label": "GST State",
+   "fieldtype": "Select",
+   "options": "\nAndaman and Nicobar Islands\nAndhra Pradesh\nArunachal Pradesh\nAssam\nBihar\nChandigarh\nChhattisgarh\nDadra and Nagar Haveli and Daman and Diu\nDelhi\nGoa\nGujarat\nHaryana\nHimachal Pradesh\nJammu and Kashmir\nJharkhand\nKarnataka\nKerala\nLadakh\nLakshadweep Islands\nMadhya Pradesh\nMaharashtra\nManipur\nMeghalaya\nMizoram\nNagaland\nOdisha\nOther Countries\nOther Territory\nPuducherry\nPunjab\nRajasthan\nSikkim\nTamil Nadu\nTelangana\nTripura\nUttar Pradesh\nUttarakhand\nWest Bengal",
+   "readOnly": true
+  },
+  {
+   "fieldname": "tax_details_column_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_category",
+   "label": "GST Category",
+   "fieldtype": "Select",
+   "options": "Registered Regular\nRegistered Composition\nUnregistered\nSEZ\nOverseas\nDeemed Export\nUIN Holders\nTax Deductor\nTax Collector",
+   "reqd": true,
+   "default": "Unregistered"
+  },
+  {
+   "fieldname": "gst_state_number",
+   "label": "GST State Number",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "linked_with",
+   "label": "Reference",
+   "fieldtype": "Section Break",
+   "options": "fa fa-pushpin"
+  },
+  {
+   "fieldname": "is_your_company_address",
+   "label": "Is Your Company Address",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "links",
+   "label": "Links",
+   "fieldtype": "Table",
+   "options": "Dynamic Link"
+  }
+ ]
+}

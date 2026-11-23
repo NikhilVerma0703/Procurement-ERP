@@ -1,0 +1,22 @@
+{
+ "doctype": "Website Filter Field",
+ "module": "Portal",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "fieldname",
+   "label": "Fieldname",
+   "fieldtype": "Autocomplete",
+   "inListView": true
+  }
+ ]
+}

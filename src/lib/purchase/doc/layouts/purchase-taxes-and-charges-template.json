@@ -1,0 +1,63 @@
+{
+ "doctype": "Purchase Taxes and Charges Template",
+ "module": "Accounts",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": true,
+ "titleField": "title",
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "title",
+   "label": "Title",
+   "fieldtype": "Data",
+   "reqd": true
+  },
+  {
+   "fieldname": "is_default",
+   "label": "Default",
+   "fieldtype": "Check",
+   "inListView": true
+  },
+  {
+   "fieldname": "disabled",
+   "label": "Disabled",
+   "fieldtype": "Check",
+   "inListView": true
+  },
+  {
+   "fieldname": "column_break4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "tax_category",
+   "label": "Tax Category",
+   "fieldtype": "Link",
+   "options": "Tax Category"
+  },
+  {
+   "fieldname": "section_break6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "taxes",
+   "label": "Purchase Taxes and Charges",
+   "fieldtype": "Table",
+   "options": "Purchase Taxes and Charges"
+  }
+ ]
+}

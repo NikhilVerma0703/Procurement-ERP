@@ -9,9 +9,11 @@ const INR = { symbol: "₹", fractionUnits: 100 };
 const ci = { mode: "insensitive" };
 
 describe("access", () => {
-  it("lets the three standalone roles view, and nobody else", () => {
+  it("lets the four standalone roles view, and nobody else", () => {
     expect(purchaseTierOf({ role: "APPROVER" })).toBe("APPROVER");
-    expect(purchaseTierOf({ role: "STORE" })).toBeNull();
+    // STORE became a tier in Phase II (the storekeeper, owner 21-11-2026); other ERP roles are not.
+    expect(purchaseTierOf({ role: "STORE" })).toBe("STORE");
+    expect(purchaseTierOf({ role: "OPERATOR" })).toBeNull();
     expect(purchaseCan({ role: "PURCHASE" }, "view")).toBe(true);
     expect(purchaseCan(null, "view")).toBe(false);
     expect(purchaseCan({ role: "ADMIN" }, "constructor" as PurchaseAction)).toBe(false);

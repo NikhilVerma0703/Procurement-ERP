@@ -1,0 +1,1108 @@
+{
+ "doctype": "Purchase Receipt",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": true,
+ "autoname": "naming_series:",
+ "showTitleFieldInLink": false,
+ "titleField": "title",
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": "status, posting_date, supplier",
+ "defaultPrintFormat": "QR Codes",
+ "fields": [
+  {
+   "fieldname": "supplier_section",
+   "fieldtype": "Section Break",
+   "options": "fa fa-user"
+  },
+  {
+   "fieldname": "column_break0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "title",
+   "label": "Title",
+   "fieldtype": "Data",
+   "hidden": true,
+   "inListView": true,
+   "allowOnSubmit": true,
+   "default": "{supplier_name}",
+   "printHide": true
+  },
+  {
+   "fieldname": "naming_series",
+   "label": "Series",
+   "fieldtype": "Select",
+   "options": "PR-.YY.-\nPRRET-.YY.-\n\nPR/25-26/.MM-\nMAT-PRE-.YYYY.-\nMAT-PR-RET-.YYYY.-",
+   "reqd": true,
+   "default": "PR/25-26/.MM-",
+   "printHide": true
+  },
+  {
+   "fieldname": "supplier",
+   "label": "Supplier",
+   "fieldtype": "Link",
+   "options": "Supplier",
+   "reqd": true,
+   "bold": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "supplier_name",
+   "label": "Supplier Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "dependsOn": "supplier",
+   "bold": true,
+   "fetchFrom": "supplier.supplier_name"
+  },
+  {
+   "fieldname": "ewaybill",
+   "label": "e-Waybill No.",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "dependsOn": "eval: doc.docstatus === 1 && (doc.ewaybill || doc.e_waybill_status !== 'Not Applicable')",
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "supplier_delivery_note",
+   "label": "Supplier Delivery Note",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "bill_no",
+   "label": "Supplier Invoice No",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "column_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "posting_date",
+   "label": "Date",
+   "fieldtype": "Date",
+   "reqd": true,
+   "inListView": true,
+   "default": "Today"
+  },
+  {
+   "fieldname": "posting_time",
+   "label": "Posting Time",
+   "fieldtype": "Time",
+   "reqd": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "set_posting_time",
+   "label": "Edit Posting Date and Time",
+   "fieldtype": "Check",
+   "dependsOn": "eval:doc.docstatus==0",
+   "printHide": true
+  },
+  {
+   "fieldname": "bill_date",
+   "label": "Supplier Invoice Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "reqd": true,
+   "inStandardFilter": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "apply_putaway_rule",
+   "label": "Apply Putaway Rule",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "is_return",
+   "label": "Is Return",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "return_against",
+   "label": "Return Against Purchase Receipt",
+   "fieldtype": "Link",
+   "options": "Purchase Receipt",
+   "readOnly": true,
+   "dependsOn": "is_return",
+   "printHide": true
+  },
+  {
+   "fieldname": "gate_entry",
+   "label": "Gate Entry",
+   "fieldtype": "Link",
+   "options": "Gate Entry",
+   "readOnly": true,
+   "inListView": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "custom_mode_of_transport",
+   "label": "Mode Of Transport",
+   "fieldtype": "Select",
+   "options": "\nRoad\nAir\nRail\nShip",
+   "fetchFrom": "purchase_order.custom_mode_of_transport"
+  },
+  {
+   "fieldname": "accounting_dimensions_section",
+   "label": "Accounting Dimensions",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "cost_center",
+   "label": "Cost Center",
+   "fieldtype": "Link",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "dimension_col_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "project",
+   "label": "Project",
+   "fieldtype": "Link",
+   "options": "Project"
+  },
+  {
+   "fieldname": "currency_and_price_list",
+   "label": "Currency and Price List",
+   "fieldtype": "Section Break",
+   "options": "fa fa-tag",
+   "collapsible": true
+  },
+  {
+   "fieldname": "currency",
+   "label": "Currency",
+   "fieldtype": "Link",
+   "options": "Currency",
+   "reqd": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "conversion_rate",
+   "label": "Exchange Rate",
+   "fieldtype": "Float",
+   "reqd": true,
+   "precision": "9",
+   "description": "Rate at which supplier's currency is converted to company's base currency",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "buying_price_list",
+   "label": "Price List",
+   "fieldtype": "Link",
+   "options": "Price List",
+   "printHide": true
+  },
+  {
+   "fieldname": "price_list_currency",
+   "label": "Price List Currency",
+   "fieldtype": "Link",
+   "options": "Currency",
+   "readOnly": true,
+   "dependsOn": "buying_price_list",
+   "printHide": true
+  },
+  {
+   "fieldname": "plc_conversion_rate",
+   "label": "Price List Exchange Rate",
+   "fieldtype": "Float",
+   "dependsOn": "buying_price_list",
+   "precision": "9",
+   "printHide": true
+  },
+  {
+   "fieldname": "ignore_pricing_rule",
+   "label": "Ignore Pricing Rule",
+   "fieldtype": "Check",
+   "printHide": true,
+   "permlevel": 1
+  },
+  {
+   "fieldname": "sec_warehouse",
+   "label": "Items",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scan_barcode",
+   "label": "Scan Barcode",
+   "fieldtype": "Data",
+   "options": "Barcode"
+  },
+  {
+   "fieldname": "custom_inspection_required_before_purchase",
+   "label": "Inspection Required before Purchase",
+   "fieldtype": "Check",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_31",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "set_warehouse",
+   "label": "Accepted Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "printHide": true
+  },
+  {
+   "fieldname": "set_from_warehouse",
+   "label": "Set From Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "dependsOn": "eval: doc.is_internal_supplier"
+  },
+  {
+   "fieldname": "col_break_warehouse",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rejected_warehouse",
+   "label": "Rejected Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "printHide": true
+  },
+  {
+   "fieldname": "is_subcontracted",
+   "label": "Is Subcontracted",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "supplier_warehouse",
+   "label": "Supplier Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "dependsOn": "eval:doc.is_subcontracted",
+   "printHide": true
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "options": "fa fa-shopping-cart"
+  },
+  {
+   "fieldname": "items",
+   "label": "Items",
+   "fieldtype": "Table",
+   "options": "Purchase Receipt Item",
+   "reqd": true
+  },
+  {
+   "fieldname": "section_break0",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_qty",
+   "label": "Total Quantity",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "total_net_weight",
+   "label": "Total Net Weight",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "dependsOn": "total_net_weight",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_43",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "base_total",
+   "label": "Total (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "base_net_total",
+   "label": "Net Total (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "reqd": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_27",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total",
+   "label": "Total",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "net_total",
+   "label": "Net Total",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "services_item",
+   "label": "Cost Overhead",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "services_items",
+   "label": "Cost Overheads",
+   "fieldtype": "Table",
+   "options": "Services Items"
+  },
+  {
+   "fieldname": "taxes_charges_section",
+   "label": "Taxes and Charges",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "tax_category",
+   "label": "Tax Category",
+   "fieldtype": "Link",
+   "options": "Tax Category",
+   "printHide": true
+  },
+  {
+   "fieldname": "taxes_and_charges",
+   "label": "Purchase Taxes and Charges Template",
+   "fieldtype": "Link",
+   "options": "Purchase Taxes and Charges Template",
+   "printHide": true
+  },
+  {
+   "fieldname": "shipping_col",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shipping_rule",
+   "label": "Shipping Rule",
+   "fieldtype": "Link",
+   "options": "Shipping Rule"
+  },
+  {
+   "fieldname": "column_break_53",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "incoterm",
+   "label": "Incoterm",
+   "fieldtype": "Link",
+   "options": "Incoterm"
+  },
+  {
+   "fieldname": "named_place",
+   "label": "Named Place",
+   "fieldtype": "Data",
+   "dependsOn": "incoterm"
+  },
+  {
+   "fieldname": "taxes_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "taxes",
+   "label": "Purchase Taxes and Charges",
+   "fieldtype": "Table",
+   "options": "Purchase Taxes and Charges"
+  },
+  {
+   "fieldname": "totals",
+   "fieldtype": "Section Break",
+   "options": "fa fa-money"
+  },
+  {
+   "fieldname": "base_taxes_and_charges_added",
+   "label": "Taxes and Charges Added (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "base_taxes_and_charges_deducted",
+   "label": "Taxes and Charges Deducted (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "base_total_taxes_and_charges",
+   "label": "Total Taxes and Charges (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "taxes_and_charges_added",
+   "label": "Taxes and Charges Added",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "taxes_and_charges_deducted",
+   "label": "Taxes and Charges Deducted",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "total_taxes_and_charges",
+   "label": "Total Taxes and Charges",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_46",
+   "label": "Totals",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "base_grand_total",
+   "label": "Grand Total (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "base_rounding_adjustment",
+   "label": "Rounding Adjustment (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "dependsOn": "eval:!doc.disable_rounded_total",
+   "printHide": true
+  },
+  {
+   "fieldname": "base_rounded_total",
+   "label": "Rounded Total (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "base_in_words",
+   "label": "In Words (Company Currency)",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_50",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "grand_total",
+   "label": "Grand Total",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "rounding_adjustment",
+   "label": "Rounding Adjustment",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "dependsOn": "eval:!doc.disable_rounded_total",
+   "printHide": true
+  },
+  {
+   "fieldname": "rounded_total",
+   "label": "Rounded Total",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "readOnly": true,
+   "dependsOn": "eval:!doc.disable_rounded_total"
+  },
+  {
+   "fieldname": "in_words",
+   "label": "In Words",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "disable_rounded_total",
+   "label": "Disable Rounded Total",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "section_break_42",
+   "label": "Additional Discount",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "apply_discount_on",
+   "label": "Apply Additional Discount On",
+   "fieldtype": "Select",
+   "options": "\nGrand Total\nNet Total",
+   "default": "Grand Total",
+   "printHide": true
+  },
+  {
+   "fieldname": "base_discount_amount",
+   "label": "Additional Discount Amount (Company Currency)",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_44",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "additional_discount_percentage",
+   "label": "Additional Discount Percentage",
+   "fieldtype": "Float",
+   "printHide": true
+  },
+  {
+   "fieldname": "discount_amount",
+   "label": "Additional Discount Amount",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "printHide": true
+  },
+  {
+   "fieldname": "sec_tax_breakup",
+   "label": "Tax Breakup",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "other_charges_calculation",
+   "label": "Taxes and Charges Calculation",
+   "fieldtype": "Text Editor",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_gst_breakup",
+   "label": "GST Breakup",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "gst_breakup_table",
+   "label": "GST Breakup Table",
+   "fieldtype": "Text Editor",
+   "readOnly": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "pricing_rule_details",
+   "label": "Pricing Rules",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "pricing_rules",
+   "label": "Pricing Rule Detail",
+   "fieldtype": "Table",
+   "options": "Pricing Rule Detail",
+   "readOnly": true
+  },
+  {
+   "fieldname": "raw_material_details",
+   "label": "Raw Materials Consumed",
+   "fieldtype": "Section Break",
+   "options": "fa fa-table",
+   "readOnly": true,
+   "collapsible": true,
+   "collapsibleDependsOn": "supplied_items",
+   "printHide": true
+  },
+  {
+   "fieldname": "get_current_stock",
+   "label": "Get Current Stock",
+   "fieldtype": "Button",
+   "options": "get_current_stock",
+   "dependsOn": "supplied_items",
+   "printHide": true
+  },
+  {
+   "fieldname": "supplied_items",
+   "label": "Consumed Items",
+   "fieldtype": "Table",
+   "options": "Purchase Receipt Item Supplied",
+   "printHide": true
+  },
+  {
+   "fieldname": "address_and_contact_tab",
+   "label": "Address & Contact",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "section_addresses",
+   "label": "Supplier Address",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "supplier_address",
+   "label": "Supplier Address",
+   "fieldtype": "Link",
+   "options": "Address",
+   "printHide": true
+  },
+  {
+   "fieldname": "address_display",
+   "label": "Address",
+   "fieldtype": "Small Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "supplier_gstin",
+   "label": "Supplier GSTIN",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "fetchFrom": "supplier_address.gstin",
+   "printHide": true
+  },
+  {
+   "fieldname": "gst_category",
+   "label": "GST Category",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "fetchFrom": "supplier_address.gst_category",
+   "printHide": true
+  },
+  {
+   "fieldname": "col_break_address",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_person",
+   "label": "Contact Person",
+   "fieldtype": "Link",
+   "options": "Contact",
+   "printHide": true
+  },
+  {
+   "fieldname": "contact_display",
+   "label": "Contact",
+   "fieldtype": "Small Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "contact_mobile",
+   "label": "Mobile No",
+   "fieldtype": "Small Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "contact_email",
+   "label": "Contact Email",
+   "fieldtype": "Small Text",
+   "options": "Email",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "section_break_98",
+   "label": "Company Shipping Address",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "shipping_address",
+   "label": "Shipping Address Template",
+   "fieldtype": "Link",
+   "options": "Address",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_100",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shipping_address_display",
+   "label": "Shipping Address",
+   "fieldtype": "Small Text",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "billing_address_section",
+   "label": "Company Billing Address",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "billing_address",
+   "label": "Billing Address",
+   "fieldtype": "Link",
+   "options": "Address"
+  },
+  {
+   "fieldname": "column_break_104",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "billing_address_display",
+   "label": "Billing Address",
+   "fieldtype": "Small Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "company_gstin",
+   "label": "Company GSTIN",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "fetchFrom": "billing_address.gstin",
+   "printHide": true
+  },
+  {
+   "fieldname": "place_of_supply",
+   "label": "Place of Supply",
+   "fieldtype": "Autocomplete",
+   "options": "01-Jammu and Kashmir\n02-Himachal Pradesh\n03-Punjab\n04-Chandigarh\n05-Uttarakhand\n06-Haryana\n07-Delhi\n08-Rajasthan\n09-Uttar Pradesh\n10-Bihar\n11-Sikkim\n12-Arunachal Pradesh\n13-Nagaland\n14-Manipur\n15-Mizoram\n16-Tripura\n17-Meghalaya\n18-Assam\n19-West Bengal\n20-Jharkhand\n21-Odisha\n22-Chhattisgarh\n23-Madhya Pradesh\n24-Gujarat\n26-Dadra and Nagar Haveli and Daman and Diu\n27-Maharashtra\n29-Karnataka\n30-Goa\n31-Lakshadweep Islands\n32-Kerala\n33-Tamil Nadu\n34-Puducherry\n35-Andaman and Nicobar Islands\n36-Telangana\n37-Andhra Pradesh\n38-Ladakh\n96-Other Countries\n97-Other Territory",
+   "printHide": true
+  },
+  {
+   "fieldname": "terms_tab",
+   "label": "Terms",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "tc_name",
+   "label": "Terms",
+   "fieldtype": "Link",
+   "options": "Terms and Conditions",
+   "printHide": true
+  },
+  {
+   "fieldname": "terms",
+   "label": "Terms and Conditions",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "more_info_tab",
+   "label": "More Info",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "status_section",
+   "label": "Status",
+   "fieldtype": "Section Break",
+   "options": "fa fa-file-text",
+   "collapsible": true
+  },
+  {
+   "fieldname": "status",
+   "label": "Status",
+   "fieldtype": "Select",
+   "options": "\nDraft\nPartly Billed\nTo Bill\nCompleted\nReturn Issued\nCancelled\nClosed",
+   "reqd": true,
+   "readOnly": true,
+   "inStandardFilter": true,
+   "default": "Draft",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break4",
+   "fieldtype": "Column Break",
+   "printHide": true
+  },
+  {
+   "fieldname": "per_billed",
+   "label": "% Amount Billed",
+   "fieldtype": "Percent",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "per_returned",
+   "label": "% Returned",
+   "fieldtype": "Percent",
+   "readOnly": true,
+   "dependsOn": "eval:!doc.__islocal",
+   "printHide": true
+  },
+  {
+   "fieldname": "subscription_detail",
+   "label": "Auto Repeat",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "auto_repeat",
+   "label": "Auto Repeat",
+   "fieldtype": "Link",
+   "options": "Auto Repeat",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "printing_settings",
+   "label": "Printing Settings",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "letter_head",
+   "label": "Letter Head",
+   "fieldtype": "Link",
+   "options": "Letter Head",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "group_same_items",
+   "label": "Group same items",
+   "fieldtype": "Check",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_97",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "select_print_heading",
+   "label": "Print Heading",
+   "fieldtype": "Link",
+   "options": "Print Heading",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "language",
+   "label": "Print Language",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "transporter_info",
+   "label": "Transporter",
+   "fieldtype": "Section Break",
+   "options": "fa fa-truck",
+   "collapsible": true,
+   "collapsibleDependsOn": "transporter_name"
+  },
+  {
+   "fieldname": "transporter",
+   "label": "Transporter",
+   "fieldtype": "Link",
+   "options": "Supplier",
+   "printHide": true
+  },
+  {
+   "fieldname": "gst_transporter_id",
+   "label": "GST Transporter ID",
+   "fieldtype": "Data",
+   "fetchFrom": "transporter.gst_transporter_id",
+   "printHide": true
+  },
+  {
+   "fieldname": "transporter_name",
+   "label": "Transporter Name",
+   "fieldtype": "Small Text",
+   "readOnly": true,
+   "fetchFrom": "transporter.supplier_name",
+   "printHide": true
+  },
+  {
+   "fieldname": "vehicle_no",
+   "label": "Vehicle No",
+   "fieldtype": "Data",
+   "printHide": true
+  },
+  {
+   "fieldname": "distance",
+   "label": "Distance (in km)",
+   "fieldtype": "Int",
+   "description": "Set as zero to update distance as per the e-Waybill portal (if available)",
+   "printHide": true
+  },
+  {
+   "fieldname": "mode_of_transport",
+   "label": "Mode of Transport",
+   "fieldtype": "Select",
+   "options": "\nRoad\nAir\nRail\nShip",
+   "default": "Road",
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lr_no",
+   "label": "Transport Receipt No",
+   "fieldtype": "Data",
+   "printHide": true
+  },
+  {
+   "fieldname": "lr_date",
+   "label": "Transport Receipt Date",
+   "fieldtype": "Date",
+   "default": "Today",
+   "printHide": true
+  },
+  {
+   "fieldname": "driver",
+   "label": "Driver",
+   "fieldtype": "Link",
+   "options": "Driver",
+   "printHide": true
+  },
+  {
+   "fieldname": "driver_name",
+   "label": "Driver Name",
+   "fieldtype": "Small Text",
+   "fetchFrom": "driver.full_name",
+   "printHide": true
+  },
+  {
+   "fieldname": "gst_vehicle_type",
+   "label": "GST Vehicle Type",
+   "fieldtype": "Select",
+   "options": "Regular\nOver Dimensional Cargo (ODC)",
+   "dependsOn": "eval:[\"Road\", \"Ship\"].includes(doc.mode_of_transport)",
+   "readOnlyDependsOn": "eval: doc.mode_of_transport == 'Ship'",
+   "default": "Regular",
+   "printHide": true
+  },
+  {
+   "fieldname": "gst_section",
+   "label": "GST Details",
+   "fieldtype": "Section Break",
+   "collapsible": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "ineligibility_reason",
+   "label": "Reason for Ineligibility",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "additional_info_section",
+   "label": "Additional Info",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "instructions",
+   "label": "Instructions",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "is_internal_supplier",
+   "label": "Is Internal Supplier",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "fetchFrom": "supplier.is_internal_supplier"
+  },
+  {
+   "fieldname": "represents_company",
+   "label": "Represents Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "readOnly": true,
+   "fetchFrom": "supplier.represents_company"
+  },
+  {
+   "fieldname": "inter_company_reference",
+   "label": "Inter Company Reference",
+   "fieldtype": "Link",
+   "options": "Delivery Note",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "column_break_131",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remarks",
+   "label": "Remarks",
+   "fieldtype": "Small Text",
+   "printHide": true
+  },
+  {
+   "fieldname": "range",
+   "label": "Range",
+   "fieldtype": "Data",
+   "hidden": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "amended_from",
+   "label": "Amended From",
+   "fieldtype": "Link",
+   "options": "Purchase Receipt",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "is_old_subcontracting_flow",
+   "label": "Is Old Subcontracting Flow",
+   "fieldtype": "Check",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "other_details",
+   "label": "Other Details",
+   "fieldtype": "HTML",
+   "options": "<div class=\"columnHeading\">Other Details</div>",
+   "hidden": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "connections_tab",
+   "label": "Connections",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "is_reverse_charge",
+   "label": "Is Reverse Charge",
+   "fieldtype": "Check",
+   "printHide": true
+  }
+ ]
+}

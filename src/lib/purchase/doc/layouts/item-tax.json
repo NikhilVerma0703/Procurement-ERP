@@ -1,0 +1,49 @@
+{
+ "doctype": "Item Tax",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "item_tax_template",
+   "label": "Item Tax Template",
+   "fieldtype": "Link",
+   "options": "Item Tax Template",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "tax_category",
+   "label": "Tax Category",
+   "fieldtype": "Link",
+   "options": "Tax Category",
+   "inListView": true
+  },
+  {
+   "fieldname": "valid_from",
+   "label": "Valid From",
+   "fieldtype": "Date",
+   "inListView": true
+  },
+  {
+   "fieldname": "minimum_net_rate",
+   "label": "Minimum Net Rate",
+   "fieldtype": "Float",
+   "inListView": true
+  },
+  {
+   "fieldname": "maximum_net_rate",
+   "label": "Maximum Net Rate",
+   "fieldtype": "Float",
+   "inListView": true
+  }
+ ]
+}

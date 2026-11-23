@@ -1,7 +1,7 @@
 # Step 4: calculation, GST and status engine
 
 **Status:** done (16-11-2026). The engine reproduces the stored figures of all 3,199 historical POs; every difference
-is explained (golden check below). Re-run on the 19-11-2026 backup: 3,217 POs, 0 unexplained differences. The owner decided on 16-11-2026 to correct the old site's defects, not copy them
+is explained (golden check below). Re-run on the 21-11-2026 backup: 3,227 POs, 0 unexplained differences. The owner decided on 16-11-2026 to correct the old site's defects, not copy them
 (§6).
 
 **Code:** `src/lib/purchase/calc/`
@@ -114,6 +114,12 @@ stored one.
 **Re-run on the 19-11-2026 backup:** 3,217 POs checked, **2,596** match on every figure, **0 unexplained differences**,
 833 with the carried-over rounding adjustment. The differences have the same causes as below
 (`data/reports/golden-20261119-100001.md`).
+
+**Re-run on the 21-11-2026 backup:** 3,227 POs checked, **2,605** match on every figure, **0 unexplained differences**
+(`data/reports/golden-20261121-*.md`).
+
+**Re-run on the 20-11-2026 backup:** 3,219 POs checked, **2,598** match on every figure, **0 unexplained
+differences**, 834 with the carried-over rounding adjustment; the same causes (`data/reports/golden-20261120-092943.md`).
 
 **The remaining differences are figures the old site never refreshed:**
 

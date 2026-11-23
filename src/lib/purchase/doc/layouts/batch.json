@@ -1,0 +1,169 @@
+{
+ "doctype": "Batch",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:batch_id",
+ "showTitleFieldInLink": false,
+ "titleField": "batch_id",
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "sb_disabled",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "disabled",
+   "label": "Disabled",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "column_break_24",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "use_batchwise_valuation",
+   "label": "Use Batch-wise Valuation",
+   "fieldtype": "Check",
+   "readOnly": true
+  },
+  {
+   "fieldname": "sb_batch",
+   "label": "Batch Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "batch_id",
+   "label": "Batch ID",
+   "fieldtype": "Data",
+   "reqd": true,
+   "dependsOn": "eval:doc.__islocal",
+   "inListView": true
+  },
+  {
+   "fieldname": "item",
+   "label": "Item",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "readOnlyDependsOn": "eval:!doc.__islocal",
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "inListView": true,
+   "fetchFrom": "item.item_name"
+  },
+  {
+   "fieldname": "image",
+   "label": "image",
+   "fieldtype": "Attach Image",
+   "hidden": true
+  },
+  {
+   "fieldname": "parent_batch",
+   "label": "Parent Batch",
+   "fieldtype": "Link",
+   "options": "Batch",
+   "readOnly": true,
+   "dependsOn": "eval:doc.parent_batch"
+  },
+  {
+   "fieldname": "manufacturing_date",
+   "label": "Manufacturing Date",
+   "fieldtype": "Date",
+   "default": "Today"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "batch_qty",
+   "label": "Batch Quantity",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "stock_uom",
+   "label": "Batch UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "readOnly": true,
+   "fetchFrom": "item.stock_uom"
+  },
+  {
+   "fieldname": "expiry_date",
+   "label": "Expiry Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "source",
+   "label": "Source",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "supplier",
+   "label": "Supplier",
+   "fieldtype": "Link",
+   "options": "Supplier",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reference_doctype",
+   "label": "Source Document Type",
+   "fieldtype": "Link",
+   "options": "DocType",
+   "readOnly": true
+  },
+  {
+   "fieldname": "reference_name",
+   "label": "Source Document Name",
+   "fieldtype": "Dynamic Link",
+   "options": "reference_doctype",
+   "readOnly": true
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "description",
+   "label": "Batch Description",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "manufacturing_section",
+   "label": "Manufacturing",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "qty_to_produce",
+   "label": "Qty To Produce",
+   "fieldtype": "Float",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_23",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "produced_qty",
+   "label": "Produced Qty",
+   "fieldtype": "Float",
+   "readOnly": true
+  }
+ ]
+}

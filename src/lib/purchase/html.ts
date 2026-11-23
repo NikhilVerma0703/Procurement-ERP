@@ -14,8 +14,27 @@ const DROP_WITH_CONTENT = new Set(["script", "style", "iframe", "object", "embed
 const TAG = /^<\s*(\/?)\s*([a-zA-Z][a-zA-Z0-9]*)\b[^>]*?(\/?)\s*>/;
 const ENTITY = /^&(#\d{1,7}|#x[0-9a-fA-F]{1,6}|[a-zA-Z][a-zA-Z0-9]{1,31});/;
 
+/**
+ * With `tables` (Phase II, 21-11-2026): a document's read-only Tax Breakup and GST Breakup are
+ * tables (ERPNext's and India Compliance's HTML), so table elements are allowed too, keeping only
+ * plain class names and colspan / rowspan — still nothing that could run or load anything.
+ */
+const TABLE_TAGS = new Set(["table", "thead", "tbody", "tfoot", "tr", "th", "td", "colgroup", "col"]);
+const ATTR = /\s([a-zA-Z-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>"']+))/g;
+
+function tableAttributes(tag: string): string {
+  let out = "";
+  for (const m of tag.matchAll(ATTR)) {
+    const name = m[1].toLowerCase();
+    const value = m[2] ?? m[3] ?? m[4] ?? "";
+    if (name === "class" && /^[A-Za-z0-9 _-]{1,100}$/.test(value)) out += ` class="${value}"`;
+    if ((name === "colspan" || name === "rowspan") && /^\d{1,3}$/.test(value)) out += ` ${name}="${value}"`;
+  }
+  return out;
+}
+
 /** Allowed tags only, no attributes, text escaped. Unknown tags are dropped, their text kept. */
-export function sanitizeHtml(input: string | null | undefined): string {
+export function sanitizeHtml(input: string | null | undefined, opts: { tables?: boolean } = {}): string {
   const s = String(input ?? "");
   let out = "";
   let i = 0;
@@ -41,8 +60,11 @@ export function sanitizeHtml(input: string | null | undefined): string {
         i = close ? i + close.index + close[0].length : s.length;
         continue;
       }
-      if (!ALLOWED.has(name)) continue;
+      const table = !!opts.tables && TABLE_TAGS.has(name);
+      if (!ALLOWED.has(name) && !table) continue;
       if (VOID.has(name)) out += closing ? "" : "<br>";
+      else if (name === "col") out += closing ? "" : `<col${tableAttributes(whole)}>`;
+      else if (table || (opts.tables && name === "div")) out += closing ? `</${name}>` : `<${name}${tableAttributes(whole)}>`;
       else out += closing ? `</${name}>` : `<${name}>`;
       continue;
     }
@@ -64,6 +86,11 @@ export function sanitizeHtml(input: string | null | undefined): string {
 }
 
 /** Is there any text in it? (An empty editor leaves "<p><br></p>".) */
+/** Text safe to place in HTML (the GST breakup's HSN codes, Phase II). */
+export function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+}
+
 export function htmlIsEmpty(html: string | null | undefined): boolean {
   return htmlToText(html).trim() === "";
 }

@@ -9,7 +9,8 @@ import { deleteInRounds, type BulkOutcome, type BulkRow } from "../bulk-delete";
 import type { PurchaseUser } from "../server/current-user";
 import { db } from "../server/db";
 import type { ActionResult } from "./form-schema";
-import { deleteOrder, submitOrder } from "./transitions";
+import { closeOrder, deleteOrder, poStateOf, reopenOrder, submitOrder } from "./transitions";
+import { stateAllows } from "./workflow";
 
 export type { BulkOutcome, BulkRow } from "../bulk-delete";
 
@@ -48,6 +49,38 @@ export async function bulkDeleteOrders(user: PurchaseUser, ids: readonly string[
   );
   for (const id of missing) outcome.failed.push({ id, name: "", error: GONE });
   return { ok: true, value: outcome };
+}
+
+/**
+ * The list's ⋯ › Close and ⋯ › Reopen over the ticked POs (purchase_order_list.js →
+ * close_or_unclose_purchase_orders). Close takes each submitted PO that can be closed (not
+ * closed, delivered or cancelled, and not fully received and billed); Reopen takes each closed
+ * one back to the status its figures give. Like ERPNext, the others are passed over without a
+ * word (it emptied its message log); each PO goes through its own Close or Re-open, with its
+ * timeline line.
+ */
+export async function bulkCloseOrders(user: PurchaseUser, ids: readonly string[], to: "Closed" | "Submitted"): Promise<ActionResult<BulkOutcome>> {
+  const rows = await db.purchaseOrder.findMany({
+    where: { id: { in: [...ids] } },
+    select: { id: true, number: true, docStatus: true, workflowState: true, status: true, perReceived: true, perBilled: true },
+  });
+  const done: BulkRow[] = [];
+  const failed: BulkOutcome["failed"] = [];
+  for (const o of rows) {
+    const state = poStateOf(o);
+    const wanted = to === "Closed" ? stateAllows(state, "close") : state.docStatus === "Submitted" && state.status === "Closed";
+    if (!wanted) continue;
+    const row = { id: o.id, name: o.number };
+    try {
+      const r = to === "Closed" ? await closeOrder(user, { id: o.id }) : await reopenOrder(user, { id: o.id });
+      if (r.ok) done.push(row);
+      else failed.push({ ...row, error: r.error });
+    } catch (e) {
+      console.error(`bulk ${to === "Closed" ? "close" : "reopen"} failed`, o.number, e);
+      failed.push({ ...row, error: `${o.number} could not be ${to === "Closed" ? "closed" : "re-opened"}.` });
+    }
+  }
+  return { ok: true, value: { done, failed } };
 }
 
 /**

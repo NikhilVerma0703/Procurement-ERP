@@ -1,0 +1,65 @@
+{
+ "doctype": "Product Bundle",
+ "module": "Selling",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "basic_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "new_item_code",
+   "label": "Parent Item",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Data",
+   "inListView": true
+  },
+  {
+   "fieldname": "column_break_eonk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "disabled",
+   "label": "Disabled",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "item_section",
+   "label": "Items",
+   "fieldtype": "Section Break",
+   "description": "List items that form the package."
+  },
+  {
+   "fieldname": "items",
+   "label": "Items",
+   "fieldtype": "Table",
+   "options": "Product Bundle Item",
+   "reqd": true
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "about",
+   "fieldtype": "HTML",
+   "options": "<h3>About Product Bundle</h3>\n\n<p>Aggregate group of <b>Items</b> into another <b>Item</b>. This is useful if you are bundling a certain <b>Items</b> into a package and you maintain stock of the packed <b>Items</b> and not the aggregate <b>Item</b>.</p>\n<p>The package <b>Item</b> will have <code>Is Stock Item</code> as <b>No</b> and <code>Is Sales Item</code> as <b>Yes</b>.</p>\n<h4>Example:</h4>\n<p>If you are selling Laptops and Backpacks separately and have a special price if the customer buys both, then the Laptop + Backpack will be a new Product Bundle Item.</p>"
+  }
+ ]
+}

@@ -1,0 +1,203 @@
+{
+ "doctype": "Warehouse",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "warehouse_detail",
+   "label": "Warehouse Detail",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "disabled",
+   "label": "Disabled",
+   "fieldtype": "Check",
+   "hidden": true
+  },
+  {
+   "fieldname": "warehouse_name",
+   "label": "Warehouse Name",
+   "fieldtype": "Data",
+   "reqd": true
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "is_group",
+   "label": "Is Group Warehouse",
+   "fieldtype": "Check",
+   "bold": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "parent_warehouse",
+   "label": "Parent Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "bold": true
+  },
+  {
+   "fieldname": "is_rejected_warehouse",
+   "label": "Is Rejected Warehouse",
+   "fieldtype": "Check",
+   "description": "If yes, then this warehouse will be used to store rejected materials"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "account",
+   "label": "Account",
+   "fieldtype": "Link",
+   "options": "Account",
+   "description": "If blank, parent Warehouse Account or company default will be considered in transactions"
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "reqd": true,
+   "readOnlyDependsOn": "eval: !doc.__islocal",
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "address_and_contact",
+   "label": "Address and Contact",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:!doc.__islocal"
+  },
+  {
+   "fieldname": "address_html",
+   "label": "Address HTML",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_html",
+   "label": "Contact HTML",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "warehouse_contact_info",
+   "label": "Warehouse Contact Info",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "email_id",
+   "label": "Email Address",
+   "fieldtype": "Data",
+   "hidden": true
+  },
+  {
+   "fieldname": "phone_no",
+   "label": "Phone No",
+   "fieldtype": "Data",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "mobile_no",
+   "label": "Mobile No",
+   "fieldtype": "Data",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "column_break0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address_line_1",
+   "label": "Address Line 1",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "address_line_2",
+   "label": "Address Line 2",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "city",
+   "label": "City",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "state",
+   "label": "State",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "pin",
+   "label": "PIN",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "transit_section",
+   "label": "Transit",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "warehouse_type",
+   "label": "Warehouse Type",
+   "fieldtype": "Link",
+   "options": "Warehouse Type",
+   "dependsOn": "eval:(!doc.is_group);"
+  },
+  {
+   "fieldname": "column_break_qajx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_in_transit_warehouse",
+   "label": "Default In-Transit Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "dependsOn": "eval: doc.warehouse_type !== 'Transit';"
+  },
+  {
+   "fieldname": "tree_details",
+   "label": "Tree Details",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "lft",
+   "label": "lft",
+   "fieldtype": "Int",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "rgt",
+   "label": "rgt",
+   "fieldtype": "Int",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "old_parent",
+   "label": "Old Parent",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "hidden": true,
+   "readOnly": true
+  }
+ ]
+}

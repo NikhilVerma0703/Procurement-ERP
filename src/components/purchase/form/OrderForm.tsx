@@ -7,35 +7,41 @@
 //     user's role allow (workflow.ts): Save while there are changes;
 //     Actions ▾ (Approve, Reject) on a saved draft; Status ▾ (Hold / Resume,
 //     Close / Re-open) and Cancel once submitted, Update after changing a field
-//     allowed after submit; Amend on a cancelled PO; ⋯ (Duplicate, Delete,
-//     Reload, New Purchase Order);
+//     allowed after submit; Amend on a cancelled PO; Tools ▾ (Update Rate as per
+//     Last Purchase) on a draft; ‹ › (Previous / Next Document, in the list's
+//     order); ⋯ (Print, Email, Jump to field, Links, Duplicate, Copy to
+//     Clipboard, Reload, Delete, New Purchase Order), as Frappe ordered them;
 //   * tabs: Details, Address & Contact, Drop Ship, Terms, More Info,
 //     Connections;
 //   * Save validates with the server's own schema first, drops the empty rows
 //     (Frappe's remove_empty_rows), and shows refused fields in red; the
 //     server re-validates and recomputes everything (CLAUDE.md).
-// Ctrl+S saves, as in Frappe; leaving with unsaved changes asks first.
-import { ChevronDown, Loader2, MoreHorizontal, Printer } from "lucide-react";
+// Ctrl+S saves and Ctrl+J opens Jump to field, as in Frappe; leaving with
+// unsaved changes asks first.
+import { ChevronDown, ChevronLeft, ChevronRight, Loader2, MoreHorizontal, Printer } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import {
-  approveOrderAction, cancelOrderAction, closeOrderAction, deleteOrderAction, holdOrderAction, rejectOrderAction,
-  reopenOrderAction, resumeOrderAction, saveOrderAction, updateOrderItemsAction, updateSubmittedOrderAction,
+  adjacentOrderAction, approveOrderAction, cancelOrderAction, closeOrderAction, deleteOrderAction, holdOrderAction,
+  lastPurchaseRatesAction, rejectOrderAction, reopenOrderAction, resumeOrderAction, saveOrderAction,
+  updateOrderItemsAction, updateSubmittedOrderAction,
 } from "@/app/purchase/orders/actions";
 import { cn } from "@/lib/purchase/cn";
 import { timeAgoMini } from "@/lib/purchase/format";
 import type { FormMasters, OrderDoc } from "@/lib/purchase/orders/form-load";
 import { fieldErrorsOf, orderFormSchema, type ActionResult } from "@/lib/purchase/orders/form-schema";
 import type { PoAction } from "@/lib/purchase/orders/workflow";
-import { orderNewPath, orderPath, orderPrintPath, PURCHASE_PATHS } from "@/lib/purchase/routes";
+import { orderNewPath, orderPath, orderPrintPath, PURCHASE_PATHS, receiptNewPath } from "@/lib/purchase/routes";
 import { useCompose } from "../activity/compose";
+import { listViewKey } from "../list/RememberListView";
 import { usePopover } from "../ui/usePopover";
 import { FormContext, useFormState, type FormCtx } from "./context";
 import { DetailsTab } from "./DetailsTab";
 import { ConfirmDialog } from "./Grid";
 import { AddressTab, ConnectionsTab, DropShipTab, MoreInfoTab, TermsTab } from "./OtherTabs";
+import { JumpToField } from "./JumpToField";
 import { dropEmptyRows } from "./rows";
 import { useTriggers } from "./triggers";
 import { UpdateItemsDialog } from "./UpdateItemsDialog";
@@ -65,11 +71,14 @@ export function OrderForm({
   sidebar,
   footer,
   canEmail = false,
+  userId,
 }: {
   doc: OrderDoc;
   masters: FormMasters;
   allowed: PoAction[];
   userEmail: string;
+  /** The signed-in user's id: ‹ › follow the list as this user last left it. */
+  userId?: string;
   /** A saved PO's sidebar (attachments, who created and edited it). */
   sidebar?: ReactNode;
   /** A saved PO's comment box and timeline, below the tabs. */
@@ -86,6 +95,8 @@ export function OrderForm({
   const [confirm, setConfirm] = useState<null | { message: string; yes: string; run: () => Promise<void> }>(null);
   const [holding, setHolding] = useState(false);
   const [updatingItems, setUpdatingItems] = useState(false);
+  const [jumping, setJumping] = useState(false);
+  const formRoot = useRef<HTMLDivElement>(null);
   const isNew = !doc.id;
 
   const req = useCallback(() => ({ id: doc.id!, expectedUpdatedAt: doc.updatedAt ?? undefined }), [doc.id, doc.updatedAt]);
@@ -161,7 +172,53 @@ export function OrderForm({
   const compose = useCompose();
   const openEmail = canEmail && compose && !isNew && doc.docStatus !== "Cancelled" ? () => compose.open() : null;
 
-  // Ctrl+S saves (or updates), Ctrl+E opens New Email, as in Frappe.
+  /** ‹ ›: the next or previous PO in the list as this user last left it (ERPNext's get_next). */
+  const navigate = useCallback(async (prev: boolean) => {
+    if (!doc.id) return;
+    let search = "";
+    try {
+      search = (userId && window.localStorage.getItem(listViewKey(userId))) || "";
+    } catch {
+      /* no saved list view: the list's own default order */
+    }
+    const r = await adjacentOrderAction(doc.id, prev, search);
+    if (!r.ok) return void toast(r.error);
+    router.push(orderPath(r.value.id));
+  }, [doc.id, userId, router]);
+
+  /** ⋯ › Copy to Clipboard: the PO as data (Frappe copied the document as JSON). */
+  const copyToClipboard = useCallback(async () => {
+    const data = { doctype: "Purchase Order", name: doc.number, docstatus: doc.docStatus, workflow_state: doc.workflowState, status: doc.status, ...f.values };
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(data, null, 1));
+      toast.success("Copied to clipboard.");
+    } catch {
+      toast.error("The browser did not allow copying to the clipboard.");
+    }
+  }, [doc.number, doc.docStatus, doc.workflowState, doc.status, f.values]);
+
+  /** Tools › Update Rate as per Last Purchase: each row's rates from the item's last purchase (lib/purchase/orders/last-purchase.ts). */
+  const updateRates = useCallback(async () => {
+    setBusy("rates");
+    try {
+      const rows = f.values.items.map((row) => ({ itemCode: row.itemCode || null, conversionFactor: Number(row.conversionFactor) || 1 }));
+      const r = await lastPurchaseRatesAction(rows, doc.number ?? null, Number(f.values.conversionRate) || 1);
+      if (!r.ok) return void toast.error(r.error);
+      r.value.forEach((rates, i) => {
+        if (rates) f.setRow("items", i, { priceListRate: rates.priceListRate, discountPercentage: rates.discountPercentage, discountAmount: 0, rate: rates.rate });
+      });
+    } finally {
+      setBusy(null);
+    }
+  }, [f, doc.number]);
+
+  /** ⋯ › Links: the documents linked with this PO, on its Connections tab. */
+  const showLinks = useCallback(() => {
+    setTab("connections");
+    window.setTimeout(() => formRoot.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 30);
+  }, []);
+
+  // Ctrl+S saves (or updates), Ctrl+E opens New Email, Ctrl+J Jump to field, as in Frappe.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
@@ -171,6 +228,9 @@ export function OrderForm({
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "e" && openEmail) {
         e.preventDefault();
         openEmail();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "j") {
+        e.preventDefault();
+        setJumping(true);
       }
     };
     document.addEventListener("keydown", onKey);
@@ -243,6 +303,14 @@ export function OrderForm({
             onNew={() => router.push(PURCHASE_PATHS.orderNew)}
             onEmail={openEmail ?? undefined}
             onUpdateItems={() => setUpdatingItems(true)}
+            onPrev={() => void navigate(true)}
+            onNext={() => void navigate(false)}
+            onPrint={() => doc.id && router.push(orderPrintPath(doc.id))}
+            onJump={() => setJumping(true)}
+            onLinks={showLinks}
+            onCopy={() => void copyToClipboard()}
+            onUpdateRates={() => void updateRates()}
+            onMakeReceipt={() => doc.id && router.push(receiptNewPath(doc.id))}
           />
         </div>
       </div>
@@ -250,7 +318,7 @@ export function OrderForm({
       {/* The old form's layout: the sidebar on the left, the tabs and, below them, the comments and
           timeline. On a narrow screen they stack: tabs, sidebar, comments. */}
       <div className={cn(sidebar && "grid gap-x-6 lg:grid-cols-[13rem_minmax(0,1fr)]")}>
-      <div className={cn("po-card", sidebar && "min-w-0 lg:col-start-2 lg:row-start-1")}>
+      <div ref={formRoot} className={cn("po-card", sidebar && "min-w-0 lg:col-start-2 lg:row-start-1")}>
         <div className="flex gap-1 overflow-x-auto border-b border-gray-200 px-3 sm:px-4" role="tablist">
           {tabs.map(([key, label]) => (
             <button
@@ -265,12 +333,12 @@ export function OrderForm({
             </button>
           ))}
         </div>
-        <div hidden={tab !== "details"}><DetailsTab t={t} /></div>
-        <div hidden={tab !== "address"}><AddressTab t={t} /></div>
-        {showDropShip && <div hidden={tab !== "dropship"}><DropShipTab t={t} /></div>}
-        <div hidden={tab !== "terms"}><TermsTab t={t} /></div>
-        <div hidden={tab !== "more"}><MoreInfoTab /></div>
-        {!isNew && <div hidden={tab !== "connections"}><ConnectionsTab /></div>}
+        <div hidden={tab !== "details"} data-po-tab="details"><DetailsTab t={t} /></div>
+        <div hidden={tab !== "address"} data-po-tab="address"><AddressTab t={t} /></div>
+        {showDropShip && <div hidden={tab !== "dropship"} data-po-tab="dropship"><DropShipTab t={t} /></div>}
+        <div hidden={tab !== "terms"} data-po-tab="terms"><TermsTab t={t} /></div>
+        <div hidden={tab !== "more"} data-po-tab="more"><MoreInfoTab /></div>
+        {!isNew && <div hidden={tab !== "connections"} data-po-tab="connections"><ConnectionsTab /></div>}
       </div>
       {sidebar && <aside className="mt-4 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:mt-0" aria-label="Sidebar">{sidebar}</aside>}
       {footer && <div className="min-w-0 lg:col-start-2 lg:row-start-2">{footer}</div>}
@@ -292,6 +360,7 @@ export function OrderForm({
       )}
 
       {confirm && <ConfirmDialog message={confirm.message} yesLabel={confirm.yes} busy={Boolean(busy)} onNo={() => setConfirm(null)} onYes={() => void confirm.run()} />}
+      {jumping && <JumpToField root={formRoot.current} onTab={(key) => setTab(key as Tab)} onClose={() => setJumping(false)} />}
       {updatingItems && (
         <UpdateItemsDialog
           busy={busy === "updateItems"}
@@ -337,6 +406,14 @@ function Buttons(p: {
   /** Opens New Email (absent when the user may not email). */
   onEmail?: () => void;
   onUpdateItems: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onPrint: () => void;
+  onJump: () => void;
+  onLinks: () => void;
+  onCopy: () => void;
+  onUpdateRates: () => void;
+  onMakeReceipt: () => void;
 }) {
   const { f, isNew, busy } = p;
   const a = f.allowed;
@@ -351,14 +428,23 @@ function Buttons(p: {
         a.has("reopen") && { label: "Re-open", run: p.onReopen },
       ].filter(Boolean) as { label: string; run: () => void }[])
     : [];
+  // Frappe's ⋯ menu, in its order (form/toolbar.js). Customize, Repeat and Send SMS are not offered.
   const more = [
-    // Frappe's menu: Email (Ctrl+E) for a saved PO that is not cancelled.
+    !isNew && { label: "Print", run: p.onPrint },
+    // Email (Ctrl+E) for a saved PO that is not cancelled.
     !isNew && p.onEmail && doc.docStatus !== "Cancelled" && { label: "Email", run: p.onEmail },
+    { label: "Jump to field", run: p.onJump },
+    !isNew && { label: "Links", run: p.onLinks },
     !isNew && a.has("duplicate") && { label: "Duplicate", run: p.onDuplicate },
-    !isNew && a.has("delete") && { label: "Delete", run: p.onDelete, danger: true },
+    !isNew && { label: "Copy to Clipboard", run: p.onCopy },
     !isNew && { label: "Reload", run: p.onReload },
+    !isNew && a.has("delete") && { label: "Delete", run: p.onDelete, danger: true },
     f.allowed.has("save") || isNew ? { label: "New Purchase Order", run: p.onNew } : null,
   ].filter(Boolean) as { label: string; run: () => void; danger?: boolean }[];
+  // purchase_order.js: Tools on a draft (Link to Material Request belongs to Material Requests, not in this module).
+  const tools = doc.docStatus === "Draft" && f.editable ? [{ label: "Update Rate as per Last Purchase", run: p.onUpdateRates }] : [];
+  // purchase_order.js: Create › Purchase Receipt on a submitted PO still to be received (the Create group is the primary button).
+  const create = doc.docStatus === "Submitted" && a.has("makeReceipt") && !f.dirty ? [{ label: "Purchase Receipt", run: p.onMakeReceipt }] : [];
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -367,11 +453,21 @@ function Buttons(p: {
           Update Items
         </button>
       )}
+      {tools.length > 0 && <Menu label="Tools" items={tools} disabled={Boolean(busy)} busy={busy === "rates"} />}
       {status.length > 0 && !f.dirty && <Menu label="Status" items={status} disabled={Boolean(busy)} />}
+      {create.length > 0 && <Menu label="Create" items={create} disabled={Boolean(busy)} />}
       {!isNew && doc.id && (
-        <Link href={orderPrintPath(doc.id)} className="po-btn-secondary px-2.5" aria-label="Print" title="Print">
-          <Printer className="h-4 w-4" />
-        </Link>
+        <>
+          <button type="button" className="po-btn-secondary px-2" aria-label="Previous Document" title="Previous Document" onClick={p.onPrev}>
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button type="button" className="po-btn-secondary px-2" aria-label="Next Document" title="Next Document" onClick={p.onNext}>
+            <ChevronRight className="h-4 w-4" />
+          </button>
+          <Link href={orderPrintPath(doc.id)} className="po-btn-secondary px-2.5" aria-label="Print" title="Print">
+            <Printer className="h-4 w-4" />
+          </Link>
+        </>
       )}
       {more.length > 0 && <Menu icon items={more} disabled={Boolean(busy)} />}
       {doc.docStatus === "Submitted" && a.has("cancel") && !f.dirty && (

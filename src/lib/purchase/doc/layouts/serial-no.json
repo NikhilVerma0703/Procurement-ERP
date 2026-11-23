@@ -1,0 +1,373 @@
+{
+ "doctype": "Serial No",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:serial_no",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": "item_code",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "serial_no",
+   "label": "Serial No",
+   "fieldtype": "Data",
+   "reqd": true
+  },
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "warehouse",
+   "label": "Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "readOnly": true,
+   "inListView": true,
+   "inStandardFilter": true,
+   "description": "Warehouse can only be changed via Stock Entry / Delivery Note / Purchase Receipt"
+  },
+  {
+   "fieldname": "batch_no",
+   "label": "Batch No",
+   "fieldtype": "Link",
+   "options": "Batch",
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "column_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_name",
+   "label": "Item Name",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "item_group",
+   "label": "Item Group",
+   "fieldtype": "Link",
+   "options": "Item Group",
+   "readOnly": true
+  },
+  {
+   "fieldname": "brand",
+   "label": "Brand",
+   "fieldtype": "Link",
+   "options": "Brand",
+   "readOnly": true
+  },
+  {
+   "fieldname": "sales_order",
+   "label": "Sales Order",
+   "fieldtype": "Link",
+   "options": "Sales Order"
+  },
+  {
+   "fieldname": "purchase_details",
+   "label": "Purchase / Manufacture Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "purchase_document_type",
+   "label": "Creation Document Type",
+   "fieldtype": "Link",
+   "options": "DocType",
+   "readOnly": true
+  },
+  {
+   "fieldname": "purchase_document_no",
+   "label": "Creation Document No",
+   "fieldtype": "Dynamic Link",
+   "options": "purchase_document_type",
+   "readOnly": true
+  },
+  {
+   "fieldname": "purchase_date",
+   "label": "Creation Date",
+   "fieldtype": "Date",
+   "readOnly": true
+  },
+  {
+   "fieldname": "purchase_time",
+   "label": "Creation Time",
+   "fieldtype": "Time",
+   "readOnly": true
+  },
+  {
+   "fieldname": "purchase_rate",
+   "label": "Incoming Rate",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "supplier",
+   "label": "Supplier",
+   "fieldtype": "Link",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "supplier_name",
+   "label": "Supplier Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "bold": true
+  },
+  {
+   "fieldname": "asset_details",
+   "label": "Asset Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "asset",
+   "label": "Asset",
+   "fieldtype": "Link",
+   "options": "Asset",
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "asset_status",
+   "label": "Asset Status",
+   "fieldtype": "Select",
+   "options": "\nIssue\nReceipt\nTransfer",
+   "readOnly": true,
+   "dependsOn": "asset"
+  },
+  {
+   "fieldname": "column_break_24",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "location",
+   "label": "Location",
+   "fieldtype": "Link",
+   "options": "Location",
+   "readOnly": true
+  },
+  {
+   "fieldname": "employee",
+   "label": "Employee",
+   "fieldtype": "Link",
+   "options": "Employee",
+   "readOnly": true
+  },
+  {
+   "fieldname": "delivery_details",
+   "label": "Delivery Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "delivery_document_type",
+   "label": "Delivery Document Type",
+   "fieldtype": "Link",
+   "options": "DocType",
+   "readOnly": true
+  },
+  {
+   "fieldname": "delivery_document_no",
+   "label": "Delivery Document No",
+   "fieldtype": "Dynamic Link",
+   "options": "delivery_document_type",
+   "readOnly": true
+  },
+  {
+   "fieldname": "delivery_date",
+   "label": "Delivery Date",
+   "fieldtype": "Date",
+   "readOnly": true
+  },
+  {
+   "fieldname": "delivery_time",
+   "label": "Delivery Time",
+   "fieldtype": "Time",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer",
+   "label": "Customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "printHide": true
+  },
+  {
+   "fieldname": "customer_name",
+   "label": "Customer Name",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "bold": true
+  },
+  {
+   "fieldname": "invoice_details",
+   "label": "Invoice Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sales_invoice",
+   "label": "Sales Invoice",
+   "fieldtype": "Link",
+   "options": "Sales Invoice",
+   "readOnly": true
+  },
+  {
+   "fieldname": "warranty_amc_details",
+   "label": "Warranty / AMC Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "warranty_expiry_date",
+   "label": "Warranty Expiry Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "amc_expiry_date",
+   "label": "AMC Expiry Date",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "column_break7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "maintenance_status",
+   "label": "Maintenance Status",
+   "fieldtype": "Select",
+   "options": "\nUnder Warranty\nOut of Warranty\nUnder AMC\nOut of AMC",
+   "readOnly": true
+  },
+  {
+   "fieldname": "warranty_period",
+   "label": "Warranty Period (Days)",
+   "fieldtype": "Int",
+   "readOnly": true
+  },
+  {
+   "fieldname": "more_info",
+   "label": "More Information",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "serial_no_details",
+   "label": "Serial No Details",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "reqd": true
+  },
+  {
+   "fieldname": "status",
+   "label": "Status",
+   "fieldtype": "Select",
+   "options": "\nActive\nInactive\nDelivered\nExpired",
+   "readOnly": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "custom_section_break_dfwvv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "custom_is_scrap",
+   "label": "Is Scrap",
+   "fieldtype": "Check",
+   "readOnly": true
+  },
+  {
+   "fieldname": "custom_length",
+   "label": "Length",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "custom_width",
+   "label": "Width",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "custom_weight",
+   "label": "Weight",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "custom_defects",
+   "label": "Defects",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "custom_column_break_xrukn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "work_order",
+   "label": "Work Order",
+   "fieldtype": "Link",
+   "options": "Work Order"
+  },
+  {
+   "fieldname": "custom_color_code",
+   "label": "Color Code",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "custom_thickness",
+   "label": "Thickness",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "custom_grade",
+   "label": "Grade",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "custom_remarks",
+   "label": "Remarks",
+   "fieldtype": "Data"
+  }
+ ]
+}

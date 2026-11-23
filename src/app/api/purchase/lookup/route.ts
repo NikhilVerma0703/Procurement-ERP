@@ -224,6 +224,37 @@ const LOOKUPS: Record<string, (a: Args) => Promise<Row[]>> = {
   letterHead: async ({ q }) =>
     (await db.purchaseLetterHead.findMany({ where: { disabled: false, ...(q ? { code: has(q) } : {}) }, select: { code: true }, take: LIMIT })).map((l) => ({ value: l.code })),
 
+  // Phase II (Stock): the receipt form's links.
+  // A row's batch: the item's own batches (ERPNext's batch query).
+  batch: async ({ q, item }) =>
+    (await db.purchaseBatch.findMany({
+      where: { ...(item ? { itemCode: item } : {}), ...(q ? { code: has(q) } : {}) },
+      select: { code: true, itemCode: true, manufacturingDate: true },
+      orderBy: { createdAt: "desc" },
+      take: 60,
+    })).map((b) => ({ value: b.code, description: [b.itemCode, b.manufacturingDate ? b.manufacturingDate.toISOString().slice(0, 10) : null].filter(Boolean).join(", ") })),
+
+  // A receipt's Gate Entry (the add-on's): submitted entries, of the receipt's supplier when it has one.
+  gateEntry: async ({ q, supplier }) =>
+    (await db.purchaseGateEntry.findMany({
+      where: { docStatus: "SUBMITTED", ...(supplier ? { supplierCode: supplier } : {}), ...(q ? { OR: [{ number: has(q) }, { orderNumber: has(q) }, { invoiceNo: has(q) }] } : {}) },
+      select: { number: true, orderNumber: true, supplierCode: true },
+      orderBy: { number: "desc" },
+      take: 60,
+    })).map((g) => ({ value: g.number, description: [g.orderNumber, g.supplierCode].filter(Boolean).join(", ") })),
+
+  // A Purchase Order to receive against: submitted, of the supplier, not closed or fully received.
+  purchaseOrder: async ({ q, supplier }) =>
+    (await db.purchaseOrder.findMany({
+      where: {
+        docStatus: "SUBMITTED", status: { notIn: ["CLOSED", "ON_HOLD", "COMPLETED", "DELIVERED"] },
+        ...(supplier ? { supplier: { code: supplier } } : {}), ...(q ? { OR: [{ number: has(q) }, { supplierName: has(q) }] } : {}),
+      },
+      select: { number: true, supplierName: true, transactionDate: true },
+      orderBy: { number: "desc" },
+      take: 60,
+    })).map((o) => ({ value: o.number, description: [o.supplierName, o.transactionDate.toISOString().slice(0, 10)].join(", ") })),
+
   // get_item_uom_query: the item's stock UOM and the UOMs of its conversion table.
   uom: async ({ q, item }) => {
     if (!item) {

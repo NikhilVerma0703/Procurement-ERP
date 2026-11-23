@@ -1,0 +1,60 @@
+{
+ "doctype": "Pricing Rule Detail",
+ "module": "Accounts",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "pricing_rule",
+   "label": "Pricing Rule",
+   "fieldtype": "Link",
+   "options": "Pricing Rule",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "item_code",
+   "label": "Item Code",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "margin_type",
+   "label": "Margin Type",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "rate_or_discount",
+   "label": "Rate or Discount",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "child_docname",
+   "label": "Child Docname",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "rule_applied",
+   "label": "Rule Applied",
+   "fieldtype": "Check",
+   "readOnly": true,
+   "default": "1"
+  }
+ ]
+}

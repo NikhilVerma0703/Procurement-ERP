@@ -1,0 +1,65 @@
+{
+ "doctype": "Sales Team",
+ "module": "Selling",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "sales_person",
+   "label": "Sales Person",
+   "fieldtype": "Link",
+   "options": "Sales Person",
+   "reqd": true,
+   "inListView": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "contact_no",
+   "label": "Contact No.",
+   "fieldtype": "Data",
+   "hidden": true,
+   "inListView": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "allocated_percentage",
+   "label": "Contribution (%)",
+   "fieldtype": "Float",
+   "inListView": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "allocated_amount",
+   "label": "Contribution to Net Total",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "readOnly": true,
+   "inListView": true,
+   "allowOnSubmit": true
+  },
+  {
+   "fieldname": "commission_rate",
+   "label": "Commission Rate",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "inListView": true,
+   "fetchFrom": "sales_person.commission_rate"
+  },
+  {
+   "fieldname": "incentives",
+   "label": "Incentives",
+   "fieldtype": "Currency",
+   "options": "Company:company:default_currency",
+   "inListView": true,
+   "allowOnSubmit": true
+  }
+ ]
+}

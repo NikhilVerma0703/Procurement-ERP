@@ -1,0 +1,42 @@
+{
+ "doctype": "Services Items",
+ "module": "Pacific Group",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "service_item",
+   "label": "Service Item",
+   "fieldtype": "Link",
+   "options": "Item",
+   "inListView": true
+  },
+  {
+   "fieldname": "service_charges",
+   "label": "Service Charges",
+   "fieldtype": "Data",
+   "inListView": true
+  },
+  {
+   "fieldname": "account_head",
+   "label": "Account Head",
+   "fieldtype": "Link",
+   "options": "Account"
+  },
+  {
+   "fieldname": "charge_type",
+   "label": "Charge Type",
+   "fieldtype": "Data",
+   "readOnly": true,
+   "default": "Actual"
+  }
+ ]
+}

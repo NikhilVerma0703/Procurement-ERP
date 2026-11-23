@@ -1,0 +1,161 @@
+{
+ "doctype": "Delivery Stop",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "customer",
+   "label": "Customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "inListView": true,
+   "columns": 2
+  },
+  {
+   "fieldname": "address",
+   "label": "Address Name",
+   "fieldtype": "Link",
+   "options": "Address",
+   "reqd": true,
+   "inListView": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "locked",
+   "label": "Locked",
+   "fieldtype": "Check",
+   "inListView": true
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_address",
+   "label": "Customer Address",
+   "fieldtype": "Small Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "visited",
+   "label": "Visited",
+   "fieldtype": "Check",
+   "dependsOn": "eval:doc.docstatus==1",
+   "allowOnSubmit": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "order_information_section",
+   "label": "Order Information",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "delivery_note",
+   "label": "Delivery Note",
+   "fieldtype": "Link",
+   "options": "Delivery Note",
+   "readOnly": true,
+   "inListView": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "cb_order",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "grand_total",
+   "label": "Grand Total",
+   "fieldtype": "Currency",
+   "readOnly": true
+  },
+  {
+   "fieldname": "section_break_7",
+   "label": "Contact Information",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "contact",
+   "label": "Contact Name",
+   "fieldtype": "Link",
+   "options": "Contact",
+   "printHide": true
+  },
+  {
+   "fieldname": "email_sent_to",
+   "label": "Email sent to",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_contact",
+   "label": "Customer Contact",
+   "fieldtype": "Small Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "section_break_9",
+   "label": "Dispatch Information",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "distance",
+   "label": "Distance",
+   "fieldtype": "Float",
+   "readOnly": true,
+   "precision": "2"
+  },
+  {
+   "fieldname": "estimated_arrival",
+   "label": "Estimated Arrival",
+   "fieldtype": "Datetime",
+   "inListView": true
+  },
+  {
+   "fieldname": "lat",
+   "label": "Latitude",
+   "fieldtype": "Float",
+   "hidden": true
+  },
+  {
+   "fieldname": "column_break_19",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "readOnly": true,
+   "dependsOn": "eval:doc.distance"
+  },
+  {
+   "fieldname": "lng",
+   "label": "Longitude",
+   "fieldtype": "Float",
+   "hidden": true
+  },
+  {
+   "fieldname": "more_information_section",
+   "label": "More Information",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "details",
+   "label": "Details",
+   "fieldtype": "Text Editor"
+  }
+ ]
+}

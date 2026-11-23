@@ -1,0 +1,637 @@
+<!-- ERPNext Print Format: Packing List Report | DocType: Packing Slip | type: Jinja | standard: No | disabled: 0 | last modified: 2024-11-07 13:04:24.215766 -->
+<style>
+body
+{
+   padding: 0px;
+}
+div
+{
+    width: 99.8%;
+}
+.text-center
+{
+    text-align: center;
+}
+.first-left-div
+{
+    border-right: 1px solid #000;
+    border-left: 1px solid #000 ;
+}
+.flex
+{
+    display: flex;
+}
+.justify-space-between
+{
+    justify-content: space-between;
+}
+.head .left {
+    width:200px;
+    padding:10px;
+}
+.head .left img
+{
+    width: 150px;
+}
+.head .right
+{
+    width: 100%;
+}
+.border-btm-black
+{
+    border-bottom: 1px solid #000;
+}
+.border-right-black
+{
+    border-right: 1px solid #000;
+}
+.justify-end
+{
+    justify-content: end;
+}
+.justify-end p
+{
+    padding: 10px;
+}
+table tr td {
+    border :1px solid #000;
+    padding:10px;
+}
+.right.mleft {
+    position: relative;
+    left: -77px;
+    top: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.print-format p
+{
+    padding: 0px 10px;
+}
+.print-format td
+{
+    font-size: 10px;
+}
+.head
+{
+	border-left: 1px solid #000;
+    border-right: 1px solid #000;
+}
+.exporter
+{
+	border-left: 1px solid #000;
+}
+.bdr-right
+{
+	border-right: 1px solid #000;
+}
+.bdr-left
+{
+	border-left: 1px solid #000;
+}
+.bdr-bottom
+{
+	border-bottom: 1px solid #000;
+}
+.padd
+{
+	margin-top: 55px;
+}
+.flex-column
+{
+    flex-direction: column;
+    /* justify-content: center; */
+    justify-content: space-around;
+}
+.pad-btn
+{
+    padding-bottom: 30px;
+}
+.border-box
+{
+    border: 1px solid;
+}
+.padding-twenty
+{
+    padding-bottom: 24px;
+}
+
+.text-center
+{
+    text-align: center;
+}
+.bdr-top
+{
+    border-top: .5px solid #000;
+}
+.cost-overhead {
+  display: flex;
+  flex-direction: column;
+  font-size: xx-small;
+  margin-bottom:-1px;
+  width: 100%;
+}
+
+.cost-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
+
+.left-heading {
+  white-space: nowrap;
+   margin-top: -10px;
+}
+
+.center-value {
+text-align: start;
+margin-top: -10px;
+}
+.right-total-value {
+    margin-left: 3px;
+    text-align: end;
+    padding-right: 10px;
+}
+.other-details {
+    font-size: xx-small;
+}
+.bdr-bottom.pad-left {
+    font-size: xx-small;
+}
+.pad-left {
+     font-size: xx-small;
+    padding-left: 2px;
+}
+.fob-pad-left {
+     font-size: xx-small;
+     border-top:1px solid;
+    padding-left: 2px;
+}
+section.terms.flex {
+    font-size: xx-small;
+}
+section.flex.border-box.invoice-top {
+    font-size: xx-small;
+}
+.bdr-top {
+    font-size: xx-small;
+}
+.my-table th,
+  .my-table td {
+    padding: 5px; /* Adjust padding as needed */
+    font-size: 8px; /* Adjust font size as needed */
+  }
+  .right-elements {
+    text-align: right;
+    margin-top: -80;
+}
+.xx-small{
+   padding-left: 2px; 
+}
+.bdr-top-right
+{
+    border-top: .5px solid #000;
+    padding-left: 2px; 
+}
+.right-value {
+    text-align: start;
+    margin-top: -9px;
+    margin-left: 20%;
+}
+.print-format td, .print-format th {
+    padding: 2px !important;
+}
+.rate-in-word {
+    margin-top: -12px;
+    padding-left: 2px;
+    font-size: xx-small;
+}
+.print-format td {
+    font-size: 7px;
+    font-weight: bold;
+    text-align: right;
+}
+.border-right-black {
+    width: 150%;
+}
+  
+</style>
+<body>
+    {% set com = frappe.get_doc('Company', doc.company) %}
+    {% set img = frappe.get_doc('Letter Head', com.default_letter_head) %}
+    {%set company_add=frappe.get_doc("Dynamic Link",{"parenttype":"Address","link_doctype":"Company","link_name":com.name})%}
+    {% set address=frappe.get_doc("Address",{"name":company_add.parent,"is_your_company_address":1}) %}
+    {% set cus_add = frappe.get_doc('Address', doc.customer_address) %}
+    {% set cust = frappe.get_doc('Customer', doc.customer) %}
+      <section class="head flex bdr-top">
+            <div class="left">
+                <img src="{{img.image}}" alt="pacific-logo">
+            </div>
+            <div class="right mleft">
+                <p><b><font size=2>Packing List </font></b></p>
+            </div>
+            
+        </section>
+        <section class="flex border-box invoice-top">
+            <div class="bdr-right">
+                <div class="bdr-bottom pad-left">
+                    <b>Exporter :</b>
+                    <br><b>{{ com.name }}</b><br>
+                    {{ address.address_line1 }},{{ address.address_line2}},{{ address.city }},{{ address.state }},{{address.pincode}},{{ address.county }}<br>
+                    <b>GST NO : </b>{{com.gstin}}  ,<b> PAN NO : </b>{{ com.pan }}
+                </div>
+                <div class="pad-left">
+                    <b>Consignee :</b><br>
+                    <b>{{ doc.customer }},</b><br>
+                    {{ cus_add.country }}
+                </div>
+                <div class="bdr-top">
+                    <div class="pad-left">
+                        <b>Notify Party :</b><br>
+                        <b>{{ doc.customer }}</b><br>
+                        {{ cus_add.country }}
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="flex flex-column">
+                    <div class="flex bdr-bottom">
+                        <div class="pad-left">
+                            Invoice No:{{ doc.name }}
+                        </div>
+                        <div class="bdr-left pad-left">
+                            Invoice Date: {{ frappe.utils.formatdate(doc.posting_date) }}
+                        </div>
+                    </div>
+                    <div class="flex bdr-bottom">
+                        <div class="pad-left">
+                            Buyer's PO No: <b>{{ doc.po_no }}</b>
+                        </div>
+                        <div style="text-align:end">
+                            PO Date:<b>{{ frappe.utils.formatdate(doc.po_date, "dd-mm-yyyy") }}</b>
+                        </div>
+                        <!--<div class="bdr-left pad-left">-->
+                        <!--    <p>Buyer's Order Date :</p>-->
+                        <!--    <p><b>(REF#{{ frappe.format_date(doc.po_date) }})</b></p>-->
+                        <!--</div>-->
+                    </div>
+                     <div class="flex bdr-bottom">
+                        <div class="pad-left">
+                          <!--  <p>RBI Code No.: {{ None }}</p>-->
+                          IEC Code: {{doc.custom_iec_code }}
+                          </div>
+                                                  <div class="bdr-left pad-left">
+                            RBI Code No.:678
+                        </div>
+                 
+                        {% for i in doc.sales_team %}
+                        <div>
+                            Sales:<b>{{ i.sales_person }}</b>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="flex bdr-bottom">
+                        <div class="pad-left">
+                          <!-- <p>Other Referenece(s) :</p>
+                            <p><b>{{ doc.items[0].sales_order }}</b></p>
+                        </div>
+                        <div class="bdr-left pad-left">
+                            IEC  No  : <b>{{ doc.custom_iec_code }}</b><br>
+                            GSTIN NO: <b>{{ com.gstin }}</b>-->
+                        </div>
+                    </div>
+                    <div class="flex bdr-bottom">
+                        <div class="pad-left">
+                            Jurisdictional Central Excise Division Office Address:
+                        </div>
+                    </div>
+                    <div class="flex bdr-bottom">
+                        <div class="pad-left" style="font">
+                            
+                                OFFICE OF THE ASSISTANT COMMISSIONER OF CUSTOMS, CUSTOMS
+                                PREVENTIVE UNIT, 21B, RAAGAVIS CENTER, I-FLOOR, NETHAJI NAGAR,
+                                NANJUNDAPURAM MAIN ROAD, RAMANATHAPURAM, COIMBATORE-641045.
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="pad-left">
+                    Buyer if Not Consignee: 
+                    {% if cust.custom_buyer_if_not_consignee %}
+                        <br>
+                        {% set address_doc = frappe.get_doc("Address", cust.custom_address_name_) %}
+                        <b>{{ address_doc.address_title }}</b>
+                    {% endif %}
+                </div>
+
+
+
+
+                    <div style="display: flex;">
+                        <div style="flex: 1;">
+                            {% if cust.custom_buyer_if_not_consignee %}
+                            <b>{{ cust.custom_country }}</b>
+                        </div>
+                        <div style="flex: 1;">
+                            Tel: <b>{{ cust.custom_tel_ph_no }}</b>
+                            {% endif %}
+                        </div>
+                    </div>
+<div class="flex bdr-bottom" style="border-top: .5px solid #000; display: flex; align-items: stretch;">
+    <div class="pad-left">
+        Country of Origin of goods:<br>
+        <b>{{ com.country }}</b>
+    </div>
+    <div class="bdr-left pad-left">
+        Country of Final Destination:<br>
+        <b>{{ cus_add.country }}</b>
+    </div>
+</div>
+                <div class="pad-left">
+                    <b>Terms & Conditions: </b><br>
+                    Delivery Terms: <b>{{ doc.terms }}</b>
+                </div>
+        <div class="fob-pad-left">
+                    <b>{{doc.custom_fob_details}}</b>
+                </div>
+            </div>
+        </section>
+        <section class="terms flex">
+              <div class="pad-left" style="border-right: 1px solid; border-left: 1px solid; border-bottom: 1px solid;">
+                <div class="" style="display: flex;">
+                    <div style="flex: 1; border-right: 1px solid;">
+                        Pre-Carriage By :<br>
+                        <b>{{ doc.mode_of_transport  }}</b>
+                    </div>
+                    <div style="flex: 1;">
+                        Place of Receipt By Pre-Carrier:<br>
+                        <b>{{ doc.place_of_receipt_of_pre_carrie }}</b>
+                    </div>
+                </div>
+                <div class="bdr-top" style="display: flex;">
+                    <div style="flex: 1; border-right: 1px solid;">
+                        Vessel/Flight No:<br>
+                        <b>{{ doc.vessel_no }}</b>
+                    </div>
+                    <div style="flex: 1;">
+                        Port of Loading:<br>
+                        <b>{{ doc.loading_port }}</b>
+                    </div>
+                </div>
+                <div class="bdr-top" style="display: flex;">
+                    <div style="flex: 1; border-right: 1px solid;">
+                        Port of Discharge:<br>
+                        <b>{{ doc.discharge_port }}</b>
+                    </div>
+                    <div style="flex: 1; height: 50px;">
+                        Final Destination:<br>
+                        <b>{{ doc.final_destination }}</b>
+                    </div>
+                </div>
+            </div>
+            <div class="bdr-bottom" style="border-right: 1px solid;">
+                <div class="bdr-top">
+                   Payment Terms: <b>{{ doc.payment_terms_template }} </b><br>
+                       Our Bank Details: <br><b>Kotak Mahindra Bank Limited
+                        10/7, Umiya Landmark, Lavelle Road,
+                        Next to Chancery Hotel, Bangalore 560001
+                        Karnataka, India
+                        AD Code: 0180038-8400009
+                        A/c No. 3214292773
+                        Swift Code - KKBKINBBXXX
+                        </b>
+                    <br>
+                        <b>Routing Bank: The Bank of Newyork Mellon, No.1, Wall St.
+                        Newyork, NY 10015
+                        Swift Code - IRVTUS3NXXX</b>
+                    
+                </div>
+            </div>
+        </section>
+        {% macro tablehead() %}
+        <table width="100%" style="border: 1px solid;">
+            <tr>
+                <th style="width:2.3%;color:black;background-color:#eeeeee;font-weight: bold;font-size:8px;" rowspan="2">Marks and Nos</th>
+                <th style="width:6.8%;color:black; background-color:#eeeeee;font-weight: bold;font-size:8px;" rowspan="2">No od W / Crt/Bl/Box</th>
+                <th style="width:6.8%;color:black; background-color:#eeeeee;font-weight: bold;font-size:8px;" rowspan="2">HSN Code</th>
+                <th style="width:3%;color:black; background-color:#eeeeee;font-weight: bold;font-size:8px;text-align:center;" colspan="5">Description of goods</th>
+                <th style="width:1%;color:black; background-color:#eeeeee;font-weight: bold;font-size:8px;" rowspan="2">Unit</th>
+                <th style="width:2%;color:black; background-color:#eeeeee;font-weight: bold;font-size:8px;" rowspan="2">Quantity</th></th>
+                <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold;font-size:8px;" rowspan="2">Rate In {{doc.currency}} unit</th>
+                <th style="width:0.5%;color:black; background-color:#eeeeee;font-weight: bold;font-size:8px;" rowspan="2">Total Amount in {{doc.currency}}</th>
+            </tr>
+                <tr>
+                    <td><b>Color Code</b></td>
+                    <td><b>Thick</b></td>
+                    <td><b>Description </b></td>  
+                    <td><b>No of Slabs</b></td>
+                    <td><b>Net Weight</b></td>
+                </tr>
+          {% endmacro %}
+              {{ tablehead() }}
+                {% set ns = namespace(total_quantity=0) %}
+                {% for item in doc.items %}
+                {% set item_net_weight = [] %}
+                {% if item.serial_no %}
+                    {% set serial_no = item.serial_no %}
+                    {% set list_serial_no = serial_no.split() %}
+                {% set packed_item=frappe.get_all("Packing Slip Item", 
+                {"batch_no": item.batch_no, 
+                 "custom_serial_no": ["in", list_serial_no],
+                 "docstatus": 1
+                }, 
+                "net_weight") %}
+                {% for packed_item_data in packed_item %}
+                {% set _ = item_net_weight.append(packed_item_data.net_weight) %}
+                    {% endfor %}
+                {% endif %}
+                {% set item_code_list = item.item_code.split('-') %}
+                {% set thickness_in_item = "" %}
+            
+            {% set marks_and_nos = "" %}
+            {% if item_code_list|length >=4 %}
+            {% set thickness_in_item=item_code_list[-1] %}
+            {% endif %}
+            {% if item_code_list|length >2 %}
+            {% set marks_and_nos = item_code_list[2] %}
+            {% endif %}
+            {% set ns.total_quantity = ns.total_quantity + item.quantity %}
+            {% set uom_factor="" %}
+            {% if item.uom_factor %}
+            {% set uom_factor=item.uom_factor %}
+            {% endif %}
+                <tr style="font-size:8">
+                <td style="width:8%">{{item.custom_marks_and_nos}}</td>
+                <td style="width:8%">{{item.custom_no_of_w__crtblbox}}</td>
+                <th style="width:6.8%;color:black; background-color:#eeeeee;font-weight: bold;font-size:8px;border: 1px solid;text-align: center;">{{ item.gst_hsn_code }}</th>
+                <td>
+                {% set variant_of_value = frappe.db.get_value('Item', {'item_code': item.item_code}, 'variant_of') %}
+                {{ variant_of_value }}
+                </td>
+                <td style="width:8%">{{ thickness_in_item }}</td>
+                <td style="width:20%">{{ item.description }}</td>
+                <td style="width:8%">{{ item.qty }}</td>
+                <td style="width:8%">{{item_net_weight | sum}}</td>
+                <td style="width:10%">{{ uom_factor }}</td>
+                <td style="width:10%">{{ item.quantity }}</td>
+                <td style="width:24%">{{ item.area_rate }}</td>
+                <td style="width:24%">{{ item.amount }}</td>
+            </tr>
+             {% if loop.index ==11 %}
+                {{ tablehead() }}
+                <div class="page-break"></div>
+
+            {% elif loop.index > 11 and (loop.index -11 ) % 20 == 0 %}
+                {{ tablehead() }}
+                <div class="page-break"></div>
+   
+            {% endif %}
+            {% endfor %}
+              <tr style="background:#ebebeb;">
+               <td style="border-right:none !important"></td><td></td>
+               <td style="border-left:none !important;border-right:none !important;text-align:centre">Total</td>
+               <td></td>
+               <td></td>
+               <td></td>
+               <td>{{ doc.total_qty}}</td>
+               <td style="border-left:none !important"></td>
+               <td></td>
+               <td><strong>{{ "%.2f" | format(ns.total_quantity) }}</strong></td>
+               <td></td>
+               <td>{{ doc.total }}</td>
+            </tr>
+        </table>
+        <section style=" border: 1px solid black;">
+                            {% set custom_advance_authorisation_number = " " %}
+                {% set custom_dt = " " %}
+                {% set custom_epcg_no = " " %}
+                {% set custom_dated = " " %}
+                {% set conversion_rate = "" %}
+                {% set custom_container_no = "" %}
+                {% set custom_liner_otl_no = "" %}
+                {% set custom_f_seal_no = "" %}
+                {% set vehicle_no = "" %}
+                {% set custom_bl_no = "" %}
+                {% set custom_sb_no = "" %}
+                {% if doc.custom_advance_authorisation_number %}
+                    {% set custom_advance_authorisation_number = doc.custom_advance_authorisation_number %}
+                {% endif %}
+                {% if doc.custom_dt %}
+                    {% set custom_dt = doc.custom_dt %}
+                {% endif %}
+                {% if doc.custom_epcg_no %}
+                    {% set custom_epcg_no = doc.custom_epcg_no %}
+                {% endif %}
+                {% if doc.custom_dated %}
+                    {% set custom_dated = doc.custom_dated %}
+                {% endif %}
+                                {% if doc.conversion_rate %}
+                    {% set conversion_rate = doc.conversion_rate %}
+                {% endif %}
+                {% if doc.lr_no %}
+                    {% set custom_container_no = doc.lr_no %}
+                {% endif %}
+                {% if doc.custom_liner_otl_no %}
+                    {% set custom_liner_otl_no = doc.custom_liner_otl_no %}
+                {% endif %}
+                {% if doc.custom_f_seal_no %}
+                    {% set custom_f_seal_no = doc.custom_f_seal_no %}
+                {% endif %}
+                                {% if doc.vehicle_no %}
+                    {% set vehicle_no = doc.vehicle_no %}
+                {% endif %}
+                                {% if doc.custom_bl_no %}
+                    {% set custom_bl_no = doc.custom_bl_no %}
+                {% endif %}
+                                {% if doc.custom_sb_no %}
+                    {% set custom_sb_no = doc.custom_sb_no %}
+                {% endif %}
+            <div class="cost-overhead">
+              <div class="cost-item" style="padding-top: 10px;">
+                <div class="left-heading">
+                {% for data in doc.services_items %}
+                    <b>{{data.service_item}}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{data.service_charges}}<br>
+                {% endfor %}
+                
+                <b>Less Discount</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{doc.discount_amount}}<br>
+                
+              {% if custom_epcg_no %}
+              <b>EPCG, No:- {{ custom_epcg_no }}{% if custom_dated %} dated:- {{ custom_dated }}{% endif %}</b><br>
+             {% endif %}
+              {% if custom_advance_authorisation_number %}
+             <b>Advance Authorisation Number:- '{{ custom_advance_authorisation_number }}'{% if custom_dt %} DT: {{ custom_dt }}{% endif %}</b><br>
+             {% endif %}
+                <b>Exchange Rate:&nbsp;&nbsp;{{conversion_rate}}</b><br>
+                <b>Sb No: </b>{{custom_sb_no}}<br>
+                </div>
+                <br>
+                
+                
+                <div class="right-value">
+                 <br>  
+                {% if doc.currency!="INR" %}
+                    <div><b>Total(USD) {{ doc.grand_total }}</b></div>
+                    <div><b>Total(INR) {{ doc.base_grand_total }}</b></div> 
+                {% endif %}
+                    
+                    <b>Container No : {{custom_container_no}}</b><br>
+                    <b>F Seal No : </b>{{custom_f_seal_no}}<br>
+                    <b>Liner's Otl No : <b>{{custom_liner_otl_no}}</b><br>
+                    <b>Vehicle No: <b>{{ vehicle_no }}</b><br>
+                    <b>Bl No : <b>{{custom_bl_no}}</b>
+            </div>
+           </div>
+           <br>
+          
+
+            <div class="rate-in-word">
+                {% if doc.currency!="INR" %}
+                In Words ({{doc.currency}}):<b>{{ doc.in_words }}</b><br>
+                {% endif %}
+                In Words (INR):<b>{{ doc.base_in_words }}</b>      
+                <!--<p><b>{{ doc.grand_total }}</b></p>-->
+            </div>
+            <!--<div class="flex justify-end">
+                <p><b>TOTAL</b></p>
+                <p><b>{{ doc.grand_total }}</b></p>
+            </div>-->
+             <div class="bdr-top">
+                   <b style="padding-left: 2px;"> "Supply Meant For Export Under LUT", No AD3309230441095/2023-24 dated 19.09.2024 valid upto 31.03.2024 Vide File No. LUT Furnished
+                    Under Rule 96A Of CGST Rules, 2017 For Export Of Goods Without Payment Of IGST.</b>
+            </div>
+        </section>
+     <!--   <div class="page-break"></div>-->
+        <section class="flex bdr-left bdr-right bdr-bottom bdr-top">
+          
+            <div class="border-right-black" style="padding-left: 2px;">
+                {% set paking = "" %}
+                {% set gorss_wt = "" %}
+                {% set net_wt = "" %}
+                 {% if doc.items %}
+
+                    {% set paking = frappe.get_all("Packing Slip",fields=['net_weight_pkg','gross_weight_pkg'],filters={"delivery_note": doc.items[0].delivery_note}) %}
+                    {% if paking %}
+                    {% if paking[0].gross_weight_pkg %}
+                    {%set gorss_wt= paking[0].gross_weight_pkg %}
+                    {% endif %}
+                    {% if paking[0].net_weight_pkg %}
+                    {%set net_wt= paking[0].net_weight_pkg %}
+                    {% endif %}
+                    {% endif %}
+                {% endif %}
+                <b><u>Weight In Mt</u></b><br>
+                 <b>Gross Wt : {{gorss_wt}}</b><br>
+                 <b>Net Wt   : {{net_wt}}</b><br>
+                <b><u>Declaration:</u></b><br>
+                We certify that the above goods are of Indian Origin and we also
+                    declare that this invoice shows  the actual price of the Goods
+                    dispatched that all particulars are true and correct.
+            </div>
+            <div>
+                <p><b>For {{ com.name }}</b></p><br><br><br>
+                <p class="padd text-center"><b>Authorised Signatory & Stamp</b></p>
+            </div>
+        </section>
+    </body>

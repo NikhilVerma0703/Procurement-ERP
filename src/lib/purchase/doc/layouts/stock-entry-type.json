@@ -1,0 +1,31 @@
+{
+ "doctype": "Stock Entry Type",
+ "module": "Stock",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "Prompt",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "purpose",
+   "label": "Purpose",
+   "fieldtype": "Select",
+   "options": "\nMaterial Issue\nMaterial Receipt\nMaterial Transfer\nMaterial Transfer for Manufacture\nMaterial Consumption for Manufacture\nManufacture\nRepack\nSend to Subcontractor",
+   "reqd": true,
+   "inListView": true,
+   "default": "Material Issue"
+  },
+  {
+   "fieldname": "add_to_transit",
+   "label": "Add to Transit",
+   "fieldtype": "Check",
+   "dependsOn": "eval: doc.purpose == 'Material Transfer'"
+  }
+ ]
+}

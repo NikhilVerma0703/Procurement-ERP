@@ -1,0 +1,37 @@
+{
+ "doctype": "Item Barcode",
+ "module": "Stock",
+ "istable": true,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "hash",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "barcode",
+   "label": "Barcode",
+   "fieldtype": "Data",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "barcode_type",
+   "label": "Barcode Type",
+   "fieldtype": "Select",
+   "options": "\nEAN\nUPC-A",
+   "inListView": true
+  },
+  {
+   "fieldname": "uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM",
+   "inListView": true
+  }
+ ]
+}

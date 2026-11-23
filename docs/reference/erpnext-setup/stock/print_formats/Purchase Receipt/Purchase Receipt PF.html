@@ -1,0 +1,311 @@
+<!-- ERPNext Print Format: Purchase Receipt PF | DocType: Purchase Receipt | type: Jinja | standard: Yes | disabled: 0 | last modified: 2024-03-21 16:24:50.923011 -->
+<style>
+table, th, td {
+  border: 1px solid #000;
+}
+.page-break {
+  page-break-after: always;
+}
+.print-format p {
+    font-size: 10px;
+    margin: 3px 0px 3px;
+}
+.print-format td, .print-format th {
+    padding: 4.6px !important;
+    font-size: 10px;
+}
+table.col-md-6.new {
+    width: 49%;
+}
+.row-new {
+    display: flex;
+    gap: 2%;
+    margin-left: 0px !important;
+}
+.row{
+    font-size:"xx-small"
+}
+</style>
+
+<style>
+table, th, td {
+  border: 1px solid black;
+  
+}
+.page-break {
+  page-break-after: always;
+}</style>
+
+{% macro header() %}
+<section style="padding-left: 10px; border: 1px solid #000;">
+
+  {% set supplier_address = frappe.get_doc('Address', doc.supplier_address) %}
+  {% set shipping_address = frappe.get_doc('Address', doc.shipping_address) %}
+<div class="row">
+        <div class="col-xs-4">
+             <!--<div class="col-xs-12">-->
+                <img src="/assets/pacific_group/images/pacific_logo.png" style="width:250px; margin-left: 10px;">
+             <!--</div>-->
+        </div>
+        <div class="col-xs-8">
+             <div class="col-xs-12" style = 'padding-top:0px;'>
+                 <p class="heading-right"><b style="font-size: 18px;">PURCHASE ORDER</b></p>
+             </div>
+        </div>
+</div>
+
+
+<div class = "row" >
+    <div class = "col-xs-12" style = "padding: 4px;">
+        <div class = "col-xs-6" style="border: 1px solid #000;">
+             <p><b>To : {{doc.supplier_address}}</b></p>
+                <p><b>{{doc.address_display}}</b></p>
+
+                <p><b>GST NO :</b>{{supplier_address.gstin}} </p>
+                <div style = "display:flex;justify-content: space-between;">
+                <p><b>STATE :</b> {{supplier_address.gst_state}}</p>
+                <br>
+                <p><b>STATE CODE :{{supplier_address.gst_state_number}} </b></p>
+                </div>
+            
+        </div>
+        <div class = "col-xs-6">
+            <div class = "col-xs-12" style="width: 100%;padding: 0px;margin-top: -8px">
+              <div class ="row">
+                <div class = "col-xs-12" style="width: 99%;padding: 0px;margin-top: -7px;">
+                    <table style = "width:98.6%;">
+                        <tr>
+                            <td colspan="2"><b>PO NO</b></td>
+                            <td ><b>PO DATE</b></td>
+                        </tr>
+                        <tr> 
+                            <td colspan="2" >{{doc.name}} </td>
+                            <td colspan="2" >{{doc.transaction_date}} </td>
+                        </tr>
+                        <tr>
+                           <td  colspan="2"  ><b>CURRENCY</b></td>
+                           <td  colspan="2"  ><b>DELIVERY DATE</b></td>
+                            
+                        </tr>
+                        <tr>
+                           <td  colspan="2"  >{{doc.currency}}</td>
+                           <td  colspan="2"  >{{doc.schedule_date}}</td>
+                            
+                        </tr>
+                        <tr>
+                           <td  colspan="2"  ><b>SHIPPING METHOD</b></td>
+                           <td  colspan="2"  style = "border-left:hidden">BY ROAD</td>
+                            
+                        </tr>
+                    </table>
+                </div>
+            </div>
+                
+            </div>
+            
+        </div>
+        
+        
+    </div>
+</div>    
+
+
+<div class = "row" >
+    <div class = "col-xs-12" style = "border:0px solid black;margin-top: -20px;">
+     <div class = "col-xs-6" style = "border-right : 1px solid black;padding-left: 0">
+          <p><b>To : {{doc.shipping_address}}</b>
+                <p>{{doc.shipping_address_display}}</p>
+                <br>
+                <p><b>GST NO :</b>{{shipping_address.gstin}}</p>
+                 <div style = "display:flex;justify-content: space-between;">
+                <p><b>STATE :</b>{{shipping_address.gst_state}}</p>
+                
+                <p><b>STATE CODE :</b>{{shipping_address.gst_state_number}}</p>
+                </div>
+     </div>
+     <div style="display: flex; flex-direction: column; width: 50%; padding-right: -15px !important;" >
+         <div style="height: auto;padding-left: 9px">
+             <p><b>DELIVERY TERM :</b> </p>
+             <p>{{doc.tc_name}}</p>
+             <p>{{doc.terms}}</p>
+         </div>
+         <div style="border-top: 1px solid #000;padding-left: 9px;border-left: 0px solid black;">
+              <p><b>PAYMENT TERMS:</b> </p>
+              <p>{{ doc.payment_terms_template }}</p>
+            {% if doc.payment_schedule %}
+            <ul>
+                {% for row in doc.payment_schedule %}
+                <li>{{row.payment_term}}</li>
+                <li>{{row.payment_amount}}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>None</p>
+            {% endif %}
+         </div>
+     </div>
+     
+    </div>
+</div>
+</section>
+
+{% endmacro %}
+
+
+{% macro tableheader() %}
+<div class = "row">
+<table style="font-size: 8px;    width: 95.9%;margin-top: -59px !important;margin-bottom: 0px;margin-left: 15px;">
+        <tr>
+            <th style="width:0.3%;color:black;background-color:#eeeeee;font-weight: bold" rowspan="2">SNO</th>
+            <th style="width:8%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">PRODUCT CODE AND DESCRIPTION</th>
+             <th style="width:3%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">HSN CODE</th>
+            <th style="width:1%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">UOM</th>
+            <th style="width:2%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">QTY</th>
+            <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">RATE</th>
+            <th style="width:0.5%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">DIS %</th>
+            <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold"  rowspan="2">TAXABLE VALUES</th>
+            <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" colspan="2">CGST</th>
+            <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" colspan="2">SGST</th>
+            <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" colspan="2">IGST</th>
+            <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" rowspan="2">Total Amount</th>
+        </tr>
+        <tr>
+            <th>%</th>
+            <th>AMT</th>
+                        <th>%</th>
+                        <th>AMT</th>
+                              <th>%</th>
+                        <th>AMT</th>     
+
+        </tr>
+{% endmacro %}
+
+
+
+<!--{% macro tablefooter() %}-->
+</table>
+</div>
+
+<!--{% endmacro %}-->
+
+{{ header()}}
+
+{{ tableheader()}}
+
+{% for row in doc.items %}
+        <tr>
+            <td style=" padding: 3px;max-width:0px;"><b>{{row.idx}}</b></td>
+            <td>{{row.item_code}} </td>
+             <td>{{row.gst_hsn_code}}</td>
+            <td>{{row.uom }}</td>
+            <td>{{row.qty}}</td>
+            <td> {{row.get_formatted("rate", doc) }}</td>
+            <td>{{row.discount_percentage}}</td>
+            <td>{{row.amount - row.discount_percentage}}</td>
+            <td>{{row.cgst}}</td>
+            <td>{{row.cgst_amt}}</td>
+            <td>{{row.sgst}}</td>
+            <td>{{row.sgst_amt}}</td>
+            <td>{{row.igst}}</td>
+            <td>{{row.igst_amt}}</td>
+            <td>{{ '%0.2f'| format(row.amount + row.cgst_amt + row.sgst_amt + row.igst_amt|float) }}</td>
+        </tr>
+       
+      {% if (row.idx%10 == 0) and (doc.items|length != row.idx) %}
+       
+       <!--{{tablefooter()}}-->
+         <div class="page-break"></div>
+
+       {{header()}}
+        {{tableheader()}}
+        
+        {% elif row.idx == doc.items|length %}
+            
+                    <br>
+                    <br>
+
+        <!--{{tablefooter()}}-->
+            
+      
+       {% endif %}
+       
+      
+           {% endfor %}
+     
+           <div class="row-new" >
+                            {% if doc.services_items %}
+                     <table style = "padding-top:10px;font-size: 10px;" class="col-md-6 new">
+            <tr style = "padding-top:10px;">
+                <th style="width:3%;color:black;background-color:#eeeeee;font-weight: bold" >SNO</th>
+                <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold" >SERVICE ITEMS</th>
+                 <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold">SERVICE CHARGES</th>
+                
+             </tr>    
+             {% for row in doc.services_items %}
+                {% if row.service_charges is not none and row.service_charges != 0 %}
+                <tr>
+                    <td>{{ row.idx }}</td>
+                    <td>{{ row.service_item }}</td>
+                    <td>{{ row.service_charges }}</td>
+
+                </tr>
+                {% endif %}
+                {% endfor %}
+                </table>
+                {% endif %}
+       <table class="col-md-6 new" >
+            <tr>
+                 <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold">ACCOUNT HEAD</th>
+                 <th style="width:4%;color:black; background-color:#eeeeee;font-weight: bold">Amount</th>
+            </tr>
+            {% for row in doc.services_items %}
+                {% if row.service_charges is not none and row.service_charges != 0 %}
+                <tr>
+                    <td>{{ row.account_head }}</td>
+                    {% for tax in doc.taxes %}
+                        {% if row.account_head == tax.account_head %}
+                            <td>{{ tax.tax_amount }}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endif %}
+                {% endfor %}
+        </table>
+        </div>
+           <div style="padding-top: 10px;">
+            <div style="display: flex; justify-content: space-between; padding-right: 20px;">
+            <div>
+            <p><b>REMARKS : </b>{{doc.status}} </p>
+            <p><b>DISCOUNT AMOUNT : </b>{{doc.discount_amount}} </p>
+            <p><b>Taxes and Charges Added : </b>{{doc.taxes_and_charges_added}} </p>
+            </div>
+            <div>
+            <p><b>Total Amount : </b>{{doc.grand_total}} </p>
+            <p><b>IN WORDS : </b>{{doc.in_words}} </p>
+            </div>
+            </div>
+            <p>1. PLEASE REFER TO ANNEXURE FOR TERMS AND CONDITIONS OF THIS PURCHASE ORDER.</p>
+                <p>2. PLEASE EXECUTE THIS ORDER IN ACCORDANCE WITH THE PRICES, TERMS, DELIVERY METHOD, AND SPECIFICATIONS LISTED ABOVE AND TERMS
+                    CONDITIONS MENTIONED HEREIN BELOW AS ANNEXURE.</p>
+                <p>3. PLEASE NOTIFY US IMMEDIATELY IF YOU ARE UNABLE TO SHIP AS SPECIFIED.</p>
+                <p>4. PLEASE ARRANGE TO SEND COPY OF MSDS/COA ALONG WITH EVERY CONSIGNMENT (IF APPLICABLE).</p>
+                <p>5. PLEASE ENSURE TO SEND INVOICE ALONG WITH DISPATCH OF MATERIALS.</p>
+                <br>
+            <div style="display: flex; justify-content: space-between; ">
+            
+            <div style="font-size: 10px">
+                Delivery Terms : <strong>DAP</strong>
+            </div>
+            <div style="font-size: 10px">
+                <p><b>FOR PACIFIC ENGINEERED SURFACE PRIVATE LIMITED</b></p>
+                <p style="text-align: center;"><b>AUTHORISED SIGNATORY</b></p>
+            </div>
+        </div>
+        </div>
+    <div class = "col-xs-12" style="text-align: center;padding-top: 5px;">
+     <p>PACIFIC ENGINEERED SURFACES PRIVATE lIMITED</p>
+     <p>Factory : SY.NO73/2B .NALLANGANAKOTAPALLI, N.H.7,HOSUR krishnagiri , Tamil Nadu , 635109 , India.</p>
+     <p>Email:pespl@thepacific.group;www.pacific.group;Tel: +91 8123514050,CIN : U51909TZ2020PCTC03915</p>
+     </div>
+     
+  

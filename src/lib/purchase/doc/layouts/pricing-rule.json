@@ -1,0 +1,545 @@
+{
+ "doctype": "Pricing Rule",
+ "module": "Accounts",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "naming_series:",
+ "showTitleFieldInLink": false,
+ "titleField": "title",
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "applicability_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "naming_series",
+   "label": "Naming Series",
+   "fieldtype": "Select",
+   "options": "PRLE-.####",
+   "default": "PRLE-.####"
+  },
+  {
+   "fieldname": "title",
+   "label": "Title",
+   "fieldtype": "Data",
+   "reqd": true
+  },
+  {
+   "fieldname": "disable",
+   "label": "Disable",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "apply_on",
+   "label": "Apply On",
+   "fieldtype": "Select",
+   "options": "\nItem Code\nItem Group\nBrand\nTransaction",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true,
+   "default": "Item Code"
+  },
+  {
+   "fieldname": "price_or_product_discount",
+   "label": "Price or Product Discount",
+   "fieldtype": "Select",
+   "options": "Price\nProduct",
+   "reqd": true
+  },
+  {
+   "fieldname": "warehouse",
+   "label": "Warehouse",
+   "fieldtype": "Link",
+   "options": "Warehouse",
+   "dependsOn": "eval:doc.apply_on != 'Transaction'"
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "items",
+   "label": "Apply Rule On Item Code",
+   "fieldtype": "Table",
+   "options": "Pricing Rule Item Code",
+   "dependsOn": "eval:doc.apply_on == 'Item Code'"
+  },
+  {
+   "fieldname": "item_groups",
+   "label": "Apply Rule On Item Group",
+   "fieldtype": "Table",
+   "options": "Pricing Rule Item Group",
+   "dependsOn": "eval:doc.apply_on == 'Item Group'"
+  },
+  {
+   "fieldname": "brands",
+   "label": "Apply Rule On Brand",
+   "fieldtype": "Table",
+   "options": "Pricing Rule Brand",
+   "dependsOn": "eval:doc.apply_on == 'Brand'"
+  },
+  {
+   "fieldname": "mixed_conditions",
+   "label": "Mixed Conditions",
+   "fieldtype": "Check",
+   "dependsOn": "eval:doc.apply_on != 'Transaction'",
+   "description": "Conditions will be applied on all the selected items combined. "
+  },
+  {
+   "fieldname": "is_cumulative",
+   "label": "Is Cumulative",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "coupon_code_based",
+   "label": "Coupon Code Based",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "section_break_18",
+   "label": "Discount on Other Item",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:doc.apply_on != 'Transaction' && !doc.mixed_conditions",
+   "collapsible": true
+  },
+  {
+   "fieldname": "apply_rule_on_other",
+   "label": "Apply Rule On Other",
+   "fieldtype": "Select",
+   "options": "\nItem Code\nItem Group\nBrand"
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "other_item_code",
+   "label": "Item Code",
+   "fieldtype": "Link",
+   "options": "Item",
+   "dependsOn": "eval:doc.apply_rule_on_other == 'Item Code'"
+  },
+  {
+   "fieldname": "other_item_group",
+   "label": "Item Group",
+   "fieldtype": "Link",
+   "options": "Item Group",
+   "dependsOn": "eval:doc.apply_rule_on_other == 'Item Group'"
+  },
+  {
+   "fieldname": "other_brand",
+   "label": "Brand",
+   "fieldtype": "Link",
+   "options": "Brand",
+   "dependsOn": "eval:doc.apply_rule_on_other == 'Brand'"
+  },
+  {
+   "fieldname": "section_break_7",
+   "label": "Party Information",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "selling",
+   "label": "Selling",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "buying",
+   "label": "Buying",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "applicable_for",
+   "label": "Applicable For",
+   "fieldtype": "Select",
+   "options": "\nCustomer\nCustomer Group\nTerritory\nSales Partner\nCampaign\nSupplier\nSupplier Group",
+   "dependsOn": "eval: doc.buying || doc.selling"
+  },
+  {
+   "fieldname": "customer",
+   "label": "Customer",
+   "fieldtype": "Link",
+   "options": "Customer",
+   "dependsOn": "eval:doc.applicable_for==\"Customer\""
+  },
+  {
+   "fieldname": "customer_group",
+   "label": "Customer Group",
+   "fieldtype": "Link",
+   "options": "Customer Group",
+   "dependsOn": "eval:doc.applicable_for==\"Customer Group\""
+  },
+  {
+   "fieldname": "territory",
+   "label": "Territory",
+   "fieldtype": "Link",
+   "options": "Territory",
+   "dependsOn": "eval:doc.applicable_for==\"Territory\""
+  },
+  {
+   "fieldname": "sales_partner",
+   "label": "Sales Partner",
+   "fieldtype": "Link",
+   "options": "Sales Partner",
+   "dependsOn": "eval:doc.applicable_for==\"Sales Partner\""
+  },
+  {
+   "fieldname": "campaign",
+   "label": "Campaign",
+   "fieldtype": "Link",
+   "options": "Campaign",
+   "dependsOn": "eval:doc.applicable_for==\"Campaign\""
+  },
+  {
+   "fieldname": "supplier",
+   "label": "Supplier",
+   "fieldtype": "Link",
+   "options": "Supplier",
+   "dependsOn": "eval:doc.applicable_for==\"Supplier\""
+  },
+  {
+   "fieldname": "supplier_group",
+   "label": "Supplier Group",
+   "fieldtype": "Link",
+   "options": "Supplier Group",
+   "dependsOn": "eval:doc.applicable_for==\"Supplier Group\""
+  },
+  {
+   "fieldname": "section_break_19",
+   "label": "Quantity and Amount",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "min_qty",
+   "label": "Min Qty (As Per Stock UOM)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "max_qty",
+   "label": "Max Qty (As Per Stock UOM)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "column_break_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "min_amt",
+   "label": "Min Amt",
+   "fieldtype": "Currency",
+   "options": "currency"
+  },
+  {
+   "fieldname": "max_amt",
+   "label": "Max Amt",
+   "fieldtype": "Currency",
+   "options": "currency"
+  },
+  {
+   "fieldname": "product_discount_scheme_section",
+   "label": "Product Discount Scheme",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:doc.price_or_product_discount == 'Product'"
+  },
+  {
+   "fieldname": "same_item",
+   "label": "Same Item",
+   "fieldtype": "Check",
+   "dependsOn": "eval:!doc.mixed_conditions && doc.apply_on != 'Transaction'"
+  },
+  {
+   "fieldname": "free_item",
+   "label": "Free Item",
+   "fieldtype": "Link",
+   "options": "Item",
+   "dependsOn": "eval:(!doc.same_item || doc.apply_on == 'Transaction') || doc.mixed_conditions"
+  },
+  {
+   "fieldname": "free_qty",
+   "label": "Qty",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "free_item_rate",
+   "label": "Free Item Rate",
+   "fieldtype": "Currency",
+   "description": "If rate is zero then item will be treated as \"Free Item\""
+  },
+  {
+   "fieldname": "column_break_42",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "free_item_uom",
+   "label": "UOM",
+   "fieldtype": "Link",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "round_free_qty",
+   "label": "Round Free Qty",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "dont_enforce_free_item_qty",
+   "label": "Don't Enforce Free Item Qty",
+   "fieldtype": "Check",
+   "dependsOn": "eval:doc.price_or_product_discount == 'Product'"
+  },
+  {
+   "fieldname": "is_recursive",
+   "label": "Is Recursive",
+   "fieldtype": "Check",
+   "description": "Discounts to be applied in sequential ranges like buy 1 get 1, buy 2 get 2, buy 3 get 3 and so on"
+  },
+  {
+   "fieldname": "recurse_for",
+   "label": "Recurse Every (As Per Transaction UOM)",
+   "fieldtype": "Float",
+   "dependsOn": "is_recursive",
+   "mandatoryDependsOn": "is_recursive",
+   "description": "Give free item for every N quantity"
+  },
+  {
+   "fieldname": "apply_recursion_over",
+   "label": "Apply Recursion Over (As Per Transaction UOM)",
+   "fieldtype": "Float",
+   "dependsOn": "is_recursive",
+   "description": "Qty for which recursion isn't applicable."
+  },
+  {
+   "fieldname": "section_break_23",
+   "label": "Period Settings",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "valid_from",
+   "label": "Valid From",
+   "fieldtype": "Date",
+   "default": "Today"
+  },
+  {
+   "fieldname": "valid_upto",
+   "label": "Valid Upto",
+   "fieldtype": "Date"
+  },
+  {
+   "fieldname": "col_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "label": "Company",
+   "fieldtype": "Link",
+   "options": "Company"
+  },
+  {
+   "fieldname": "currency",
+   "label": "Currency",
+   "fieldtype": "Link",
+   "options": "Currency",
+   "reqd": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "margin",
+   "label": "Margin",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "margin_type",
+   "label": "Margin Type",
+   "fieldtype": "Select",
+   "options": "\nPercentage\nAmount",
+   "default": "Percentage"
+  },
+  {
+   "fieldname": "column_break_33",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "margin_rate_or_amount",
+   "label": "Margin Rate or Amount",
+   "fieldtype": "Float",
+   "dependsOn": "eval:doc.margin_type"
+  },
+  {
+   "fieldname": "price_discount_scheme_section",
+   "label": "Price Discount Scheme",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:doc.price_or_product_discount == 'Price'"
+  },
+  {
+   "fieldname": "rate_or_discount",
+   "label": "Rate or Discount",
+   "fieldtype": "Select",
+   "options": "\nRate\nDiscount Percentage\nDiscount Amount",
+   "default": "Discount Percentage"
+  },
+  {
+   "fieldname": "apply_discount_on",
+   "label": "Apply Discount On",
+   "fieldtype": "Select",
+   "options": "Grand Total\nNet Total",
+   "dependsOn": "eval:doc.apply_on == 'Transaction' && doc.rate_or_discount != 'Rate'",
+   "default": "Grand Total"
+  },
+  {
+   "fieldname": "col_break2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rate",
+   "label": "Rate",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "dependsOn": "eval:doc.rate_or_discount==\"Rate\""
+  },
+  {
+   "fieldname": "discount_amount",
+   "label": "Discount Amount",
+   "fieldtype": "Currency",
+   "options": "currency",
+   "dependsOn": "eval:doc.rate_or_discount==\"Discount Amount\""
+  },
+  {
+   "fieldname": "discount_percentage",
+   "label": "Discount Percentage",
+   "fieldtype": "Float",
+   "dependsOn": "eval:doc.rate_or_discount==\"Discount Percentage\""
+  },
+  {
+   "fieldname": "for_price_list",
+   "label": "For Price List",
+   "fieldtype": "Link",
+   "options": "Price List",
+   "dependsOn": "eval:doc.rate_or_discount!=\"Rate\""
+  },
+  {
+   "fieldname": "dynamic_condition_tab",
+   "label": "Dynamic Condition",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "condition",
+   "label": "Condition",
+   "fieldtype": "Code",
+   "options": "PythonExpression",
+   "description": "Simple Python Expression, Example: territory != 'All Territories'"
+  },
+  {
+   "fieldname": "section_break_13",
+   "label": "Advanced Settings",
+   "fieldtype": "Tab Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "apply_multiple_pricing_rules",
+   "label": "Apply Multiple Pricing Rules",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "apply_discount_on_rate",
+   "label": "Apply Discount on Discounted Rate",
+   "fieldtype": "Check",
+   "dependsOn": "eval:in_list(['Discount Percentage'], doc.rate_or_discount) && doc.apply_multiple_pricing_rules"
+  },
+  {
+   "fieldname": "column_break_66",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "threshold_percentage",
+   "label": "Threshold for Suggestion (In Percentage)",
+   "fieldtype": "Percent",
+   "description": "System will notify to increase or decrease quantity or amount "
+  },
+  {
+   "fieldname": "validate_pricing_rule_section",
+   "label": "Validate Pricing Rule",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "validate_applied_rule",
+   "label": "Validate Applied Rule",
+   "fieldtype": "Check",
+   "dependsOn": "eval:doc.price_or_product_discount == 'Price'",
+   "description": "If enabled, then system will only validate the pricing rule and not apply automatically. User has to manually set the discount percentage / margin / free items to validate the pricing rule"
+  },
+  {
+   "fieldname": "column_break_texp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rule_description",
+   "label": "Rule Description",
+   "fieldtype": "Small Text",
+   "dependsOn": "validate_applied_rule"
+  },
+  {
+   "fieldname": "priority_section",
+   "label": "Priority",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "has_priority",
+   "label": "Has Priority",
+   "fieldtype": "Check",
+   "description": "Enable this checkbox even if you want to set the zero priority"
+  },
+  {
+   "fieldname": "column_break_sayg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "priority",
+   "label": "Priority",
+   "fieldtype": "Select",
+   "options": "\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20",
+   "dependsOn": "has_priority",
+   "description": "Higher the number, higher the priority"
+  },
+  {
+   "fieldname": "help_section",
+   "label": "Help Article",
+   "fieldtype": "Tab Break",
+   "options": "Simple"
+  },
+  {
+   "fieldname": "pricing_rule_help",
+   "label": "Pricing Rule Help",
+   "fieldtype": "HTML"
+  },
+  {
+   "fieldname": "reference_section",
+   "label": "Reference",
+   "fieldtype": "Section Break",
+   "hidden": true
+  },
+  {
+   "fieldname": "promotional_scheme_id",
+   "label": "Promotional Scheme Id",
+   "fieldtype": "Data",
+   "hidden": true,
+   "readOnly": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "promotional_scheme",
+   "label": "Promotional Scheme",
+   "fieldtype": "Link",
+   "options": "Promotional Scheme",
+   "readOnly": true,
+   "printHide": true
+  }
+ ]
+}

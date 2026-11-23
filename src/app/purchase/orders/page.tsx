@@ -45,6 +45,7 @@ export default async function PurchaseOrderListPage({ searchParams }: { searchPa
             defaultLayout={DEFAULT_PO_LAYOUT}
             canApprove={purchaseCan(user, "approve")}
             canDelete={purchaseCan(user, "save")}
+            canManage={purchaseCan(user, "manage")}
           />
         }
       />

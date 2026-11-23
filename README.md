@@ -2,7 +2,7 @@
 
 A complete, independent replica of **Buying → Purchase Order** from the company's old ERPNext site
 (pacificengineeredsurfaces.nestorhawk.com, ERPNext 14.92 + India Compliance 14.34 + the custom `pacific_group`
-add-on). It carries all historical data: 3,217 purchase orders (19-11-2026 backup) with their suppliers, items, addresses, contacts and
+add-on). It carries all historical data: 3,227 purchase orders (21-11-2026 backup) with their suppliers, items, addresses, contacts and
 templates, related as they were.
 
 It runs **standalone** first. After acceptance it is merged into the Main ERP

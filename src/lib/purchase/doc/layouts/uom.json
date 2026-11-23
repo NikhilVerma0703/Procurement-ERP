@@ -1,0 +1,35 @@
+{
+ "doctype": "UOM",
+ "module": "Setup",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:uom_name",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "enabled",
+   "label": "Enabled",
+   "fieldtype": "Check",
+   "default": "1"
+  },
+  {
+   "fieldname": "uom_name",
+   "label": "UOM Name",
+   "fieldtype": "Data",
+   "reqd": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "must_be_whole_number",
+   "label": "Must be Whole Number",
+   "fieldtype": "Check",
+   "description": "Check this to disallow fractions. (for Nos)"
+  }
+ ]
+}

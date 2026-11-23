@@ -30,7 +30,21 @@ const DELEGATE: Record<(typeof INSERT_ORDER)[number], string> = {
   orders: "purchaseOrder", orderItems: "purchaseOrderItem",
   orderTaxes: "purchaseOrderTax", orderCostOverheads: "purchaseOrderCostOverhead",
   orderPaymentSchedules: "purchaseOrderPaymentSchedule", orderLinks: "purchaseOrderLink", orderEvents: "purchaseOrderEvent",
-  attachments: "purchaseAttachment", users: "purchaseUser", likes: "purchaseLike",
+  attachments: "purchaseAttachment", users: "purchaseUser", likes: "purchaseLike", docEvents: "purchaseDocEvent",
+  // Phase II: the Stock module's documents.
+  stockEntryTypes: "purchaseStockEntryType", gateEntries: "purchaseGateEntry", gateEntryItems: "purchaseGateEntryItem",
+  receipts: "purchaseReceipt", receiptItems: "purchaseReceiptItem", receiptTaxes: "purchaseReceiptTax",
+  landedCostVouchers: "purchaseLandedCostVoucher", landedCostReceipts: "purchaseLandedCostReceipt",
+  landedCostItems: "purchaseLandedCostItem", landedCostTaxes: "purchaseLandedCostTax",
+  materialRequests: "purchaseMaterialRequest", materialRequestItems: "purchaseMaterialRequestItem",
+  stockEntries: "purchaseStockEntry", stockEntryDetails: "purchaseStockEntryDetail",
+  stockReconciliations: "purchaseStockReconciliation", stockReconciliationItems: "purchaseStockReconciliationItem",
+  deliveryNotes: "purchaseDeliveryNote", deliveryNoteItems: "purchaseDeliveryNoteItem", deliveryNoteTaxes: "purchaseDeliveryNoteTax",
+  packingSlips: "purchasePackingSlip", packingSlipItems: "purchasePackingSlipItem", stockLedgerEntries: "purchaseStockLedgerEntry",
+  bins: "purchaseBin", itemPrices: "purchaseItemPrice", serialNos: "purchaseSerialNo", batches: "purchaseBatch",
+  qualityInspections: "purchaseQualityInspection", qualityInspectionReadings: "purchaseQualityInspectionReading",
+  receiptServiceItems: "purchaseReceiptServiceItem", packingSlipSampleItems: "purchasePackingSlipSampleItem",
+  deliveryNoteSalesTeam: "purchaseDeliveryNoteSalesTeam",
 };
 
 /** The module's tables, read from the schema itself (purchase_* except the run log). */

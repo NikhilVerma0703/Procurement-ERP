@@ -1,20 +1,22 @@
 // WHO MAY USE THE PURCHASE MODULE — the one rule (the shape of the Main ERP's
 // lib/pigment/access.ts).
 //
-// STANDALONE: the app's own logins carry one of three roles, mirroring the old
+// STANDALONE: the app's own logins carry one of four roles, mirroring the old
 // site's workflow (plan §3): PURCHASE creates and edits drafts (ERPNext
 // "Purchase Head"), APPROVER approves and rejects (ERPNext "Admin"), ADMIN
-// does everything. AT THE MERGE this file is rewired to the Main ERP's roles
-// (a capped PURCHASE role, as PIGMENT is) without the screens changing: they
-// only ever ask purchaseCan(user, action). Which buttons a PO in a given state
-// shows is orders/workflow.ts.
+// does everything. STORE (Phase II, owner 21-11-2026) is the storekeeper: all
+// that PURCHASE does — he raises POs on the same screens — and the Stock module
+// besides (docs/12 §6). AT THE MERGE this file is rewired to the Main ERP's roles
+// (a capped PURCHASE role, as PIGMENT is; STORE is the ERP's own store role)
+// without the screens changing: they only ever ask purchaseCan(user, action).
+// Which buttons a PO in a given state shows is orders/workflow.ts.
 //
 // PURE AND EDGE-SAFE: no Prisma, no `next/headers`, no server-only imports.
 // The server gate over it is server/gate.ts.
 
-export type PurchaseTier = "PURCHASE" | "APPROVER" | "ADMIN";
+export type PurchaseTier = "PURCHASE" | "APPROVER" | "ADMIN" | "STORE";
 
-export const PURCHASE_TIERS: readonly PurchaseTier[] = ["PURCHASE", "APPROVER", "ADMIN"];
+export const PURCHASE_TIERS: readonly PurchaseTier[] = ["PURCHASE", "APPROVER", "ADMIN", "STORE"];
 
 /** The tier of a user (anything with a `role`), or null when the module is not theirs. */
 export function purchaseTierOf(user: unknown): PurchaseTier | null {
@@ -43,6 +45,8 @@ export const PURCHASE_ACTIONS = [
   "masters",
   /** Like a PO or a master (the ♥ on a list row and in a form), as anyone who could open it could. */
   "like",
+  /** Open and work in the Stock module: receipts, stock transactions, stock reports (Phase II). */
+  "stock",
 ] as const;
 
 export type PurchaseAction = (typeof PURCHASE_ACTIONS)[number];
@@ -53,17 +57,22 @@ export type PurchaseAction = (typeof PURCHASE_ACTIONS)[number];
  * and Reject, and editing an approved PO, by "Admin" (po_setup.json, workflow).
  */
 export const PURCHASE_ACTORS: Record<PurchaseAction, readonly PurchaseTier[]> = {
-  view: ["PURCHASE", "APPROVER", "ADMIN"],
-  save: ["PURCHASE", "ADMIN"],
+  view: ["PURCHASE", "STORE", "APPROVER", "ADMIN"],
+  // Both buyers raise POs on the one set of screens: Althaf 2,166 of the old site's 3,227, Thiru R
+  // (STORE) 891 (owner, 21-11-2026: "shared rather than duplicated").
+  save: ["PURCHASE", "STORE", "ADMIN"],
   approve: ["APPROVER", "ADMIN"],
   manage: ["APPROVER", "ADMIN"],
-  comment: ["PURCHASE", "APPROVER", "ADMIN"],
-  attach: ["PURCHASE", "APPROVER", "ADMIN"],
-  email: ["PURCHASE", "APPROVER", "ADMIN"],
+  comment: ["PURCHASE", "STORE", "APPROVER", "ADMIN"],
+  attach: ["PURCHASE", "STORE", "APPROVER", "ADMIN"],
+  email: ["PURCHASE", "STORE", "APPROVER", "ADMIN"],
   // The people who raise POs keep the records they need (ERPNext: Purchase Master Manager, Item
   // Manager); approvers see them.
-  masters: ["PURCHASE", "ADMIN"],
-  like: ["PURCHASE", "APPROVER", "ADMIN"],
+  masters: ["PURCHASE", "STORE", "ADMIN"],
+  like: ["PURCHASE", "STORE", "APPROVER", "ADMIN"],
+  // The Stock module is the storekeeper's (owner, 21-11-2026: Althaf "Buying", Thiru R "complete
+  // Procurement ERP"). Buyers and approvers are not shown it.
+  stock: ["STORE", "ADMIN"],
 };
 
 /** May this user do this? An action nobody defined fails closed, a prototype key included. */

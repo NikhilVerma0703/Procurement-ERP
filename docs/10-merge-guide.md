@@ -4,7 +4,7 @@
 `vmundra-pacific/Pacific-ERP` the way Pigment did (27-10-2026, `scripts/0146`). The new names were checked against
 Pacific-ERP's `main` at `e4d9eacf` (read through git, nothing changed):
 
-- **No clashes:** none of the module's 49 tables, 9 enum types or `Purchase*` models exists there. Nothing in the
+- **No clashes:** none of the module's 77 tables (49 before Phase II's Stock documents), 9 enum types or `Purchase*` models exists there. Nothing in the
   module points at an ERP table.
 - **No new packages:** every library the module uses is already in the Main ERP. `server-only` comes with Next.js
   there; `pdf-lib`, which joins the sheets when several POs are printed at once (19-11-2026), is there at the same
@@ -53,7 +53,7 @@ Nothing else in the module reaches past these. Each already has the Main ERP's s
 |---|---|---|
 | `server/db.ts` | its own `PrismaClient` | `export { prisma as db } from "@/lib/prisma"` (the pooled connection, `DATABASE_URL_POOLED`, as the rest of the app) |
 | `server/current-user.ts` | next-auth plus `purchase_logins` | `currentUser()` from `@/lib/rbac`, mapped to `PurchaseUser` (id, email, name, role as tier). `loginNames(emails)` reads the ERP's `users` names. |
-| `access.ts` (pure) | tier = the login's role | tier from the ERP role: `PURCHASE` → `PURCHASE`, `ADMIN` → `ADMIN`. The approver tier is decision 1 below. Also `maySeePurchaseModule` and `isPurchasePath` for the middleware door, as `lib/pigment/access.ts`. |
+| `access.ts` (pure) | tier = the login's role | tier from the ERP role: `PURCHASE` → `PURCHASE`, `ADMIN` → `ADMIN`, and (Phase II, docs/12 §6) the ERP's own `STORE` → `STORE`, the storekeeper's Buying + Stock. The approver tier is decision 1 below. Also `maySeePurchaseModule` and `isPurchasePath` for the middleware door, as `lib/pigment/access.ts`. |
 | `server/gate.ts`, `server/page.ts` | as now | unchanged. Each page also calls `requirePageUser()` first, as Pigment's pages do. |
 | `server/write.ts` | runs the write | the body of `pigmentWrite`: `unlessViewing` / `viewAsBlocked` (`@/lib/viewAsServer`), so "View as" stays read-only |
 | `server/audit.ts` | the PO's own history (`purchase_order_events`) | keeps that (it is the PO's timeline). Also writes `action_log` (`logActionTx`) for permanent deletes, with kinds added to `lib/actionLogKinds.ts` (e.g. `purchaseOrderDeleted`, `purchaseMasterDeleted`), as Pigment logs its deletes. |
@@ -136,14 +136,14 @@ transaction.
    queries. It only adds things: the `PURCHASE` value and the `purchase_*` tables. Running it again changes nothing.
 5. **The data**, once (this repository, `DATABASE_URL` = production's direct URL in the shell):
    `npm run import:erpnext -- --target <production host>` → "✓ Import matches the backup" with the final backup's
-   counts (3,217 POs on the 19-11-2026 backup).
+   counts (3,227 POs and the Stock documents on the 21-11-2026 backup).
 6. **The proof:** `npm run verify:erpnext`, `npm run golden` and `check-sheets.ts`, as in 4.1. Keep the reports from
    `data/reports/`.
 7. **Deploy:** merge the module's PR into `main`. Vercel builds it with `prisma generate && next build`; no step of
    the build touches the database.
 8. **Logins:** in Users & Roles, give the buyers `PURCHASE` (and approval, by decision 1).
 9. **On the live site:**
-   - `/purchase/orders` reads "20 of 3,217" (the final count).
+   - `/purchase/orders` reads "20 of 3,227" (or the final backup's count).
    - Open, print and export a few POs, and the acceptance checklist's section I.
    - `npm run verify:erpnext` once more: still ✓, since nothing has been done there yet.
 10. **Hand over.** Switch the old site off, or leave it read-only until its subscription ends.

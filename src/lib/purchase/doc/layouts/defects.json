@@ -1,0 +1,29 @@
+{
+ "doctype": "Defects",
+ "module": "Pacific Group",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:defects",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "enabled",
+   "label": "Enabled",
+   "fieldtype": "Check",
+   "default": "1"
+  },
+  {
+   "fieldname": "defects",
+   "label": "Defects",
+   "fieldtype": "Data",
+   "reqd": true,
+   "inListView": true
+  }
+ ]
+}

@@ -1,0 +1,398 @@
+{
+ "doctype": "Supplier",
+ "module": "Buying",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "naming_series:",
+ "showTitleFieldInLink": false,
+ "titleField": "supplier_name",
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": "supplier_name, supplier_group",
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "label": "Series",
+   "fieldtype": "Select",
+   "options": "SUP-.YYYY.-",
+   "hidden": true
+  },
+  {
+   "fieldname": "supplier_name",
+   "label": "Supplier Name",
+   "fieldtype": "Data",
+   "reqd": true,
+   "bold": true
+  },
+  {
+   "fieldname": "country",
+   "label": "Country",
+   "fieldtype": "Link",
+   "options": "Country"
+  },
+  {
+   "fieldname": "column_break0",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "supplier_group",
+   "label": "Supplier Group",
+   "fieldtype": "Link",
+   "options": "Supplier Group",
+   "reqd": true,
+   "inListView": true,
+   "inStandardFilter": true
+  },
+  {
+   "fieldname": "supplier_type",
+   "label": "Supplier Type",
+   "fieldtype": "Select",
+   "options": "Company\nIndividual\nPartnership",
+   "reqd": true,
+   "default": "Company"
+  },
+  {
+   "fieldname": "is_transporter",
+   "label": "Is Transporter",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "image",
+   "label": "Image",
+   "fieldtype": "Attach Image",
+   "hidden": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "defaults_section",
+   "label": "Defaults",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "default_currency",
+   "label": "Billing Currency",
+   "fieldtype": "Link",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "default_bank_account",
+   "label": "Default Company Bank Account",
+   "fieldtype": "Link",
+   "options": "Bank Account"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_price_list",
+   "label": "Price List",
+   "fieldtype": "Link",
+   "options": "Price List"
+  },
+  {
+   "fieldname": "payment_terms",
+   "label": "Default Payment Terms Template",
+   "fieldtype": "Link",
+   "options": "Payment Terms Template"
+  },
+  {
+   "fieldname": "internal_supplier_section",
+   "label": "Internal Supplier",
+   "fieldtype": "Section Break",
+   "collapsible": true
+  },
+  {
+   "fieldname": "is_internal_supplier",
+   "label": "Is Internal Supplier",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "represents_company",
+   "label": "Represents Company",
+   "fieldtype": "Link",
+   "options": "Company",
+   "dependsOn": "is_internal_supplier"
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "companies",
+   "label": "Allowed To Transact With",
+   "fieldtype": "Table",
+   "options": "Allowed To Transact With",
+   "dependsOn": "represents_company"
+  },
+  {
+   "fieldname": "column_break2",
+   "label": "More Information",
+   "fieldtype": "Section Break",
+   "collapsible": true,
+   "collapsibleDependsOn": "supplier_details"
+  },
+  {
+   "fieldname": "supplier_details",
+   "label": "Supplier Details",
+   "fieldtype": "Text",
+   "description": "Statutory info and other general information about your Supplier"
+  },
+  {
+   "fieldname": "column_break_30",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "website",
+   "label": "Website",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "language",
+   "label": "Print Language",
+   "fieldtype": "Link",
+   "options": "Language"
+  },
+  {
+   "fieldname": "dashboard_tab",
+   "label": "Dashboard",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "tax_tab",
+   "label": "Tax",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "tax_id",
+   "label": "Tax ID",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "column_break_27",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_category",
+   "label": "Tax Category",
+   "fieldtype": "Link",
+   "options": "Tax Category"
+  },
+  {
+   "fieldname": "tax_withholding_category",
+   "label": "Tax Withholding Category",
+   "fieldtype": "Link",
+   "options": "Tax Withholding Category"
+  },
+  {
+   "fieldname": "tax_details_section",
+   "label": "Tax Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "gstin",
+   "label": "GSTIN / UIN",
+   "fieldtype": "Autocomplete"
+  },
+  {
+   "fieldname": "pan",
+   "label": "PAN",
+   "fieldtype": "Data",
+   "readOnlyDependsOn": "eval: doc.gstin"
+  },
+  {
+   "fieldname": "tax_details_column_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_category",
+   "label": "GST Category",
+   "fieldtype": "Select",
+   "options": "Registered Regular\nRegistered Composition\nUnregistered\nSEZ\nOverseas\nDeemed Export\nUIN Holders\nTax Deductor\nTax Collector",
+   "reqd": true,
+   "default": "Unregistered"
+  },
+  {
+   "fieldname": "gst_transporter_id",
+   "label": "GST Transporter ID",
+   "fieldtype": "Data",
+   "dependsOn": "eval:doc.is_transporter"
+  },
+  {
+   "fieldname": "is_reverse_charge_applicable",
+   "label": "Reverse Charge Applicable",
+   "fieldtype": "Check",
+   "dependsOn": "eval:in_list([\"Registered Regular\", \"Overseas\", \"Unregistered\"], doc.gst_category)",
+   "printHide": true
+  },
+  {
+   "fieldname": "contact_and_address_tab",
+   "label": "Address & Contact",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "address_contacts",
+   "label": "Address and Contacts",
+   "fieldtype": "Section Break",
+   "options": "fa fa-map-marker",
+   "dependsOn": "eval:!doc.__islocal"
+  },
+  {
+   "fieldname": "address_html",
+   "label": "Address HTML",
+   "fieldtype": "HTML",
+   "readOnly": true
+  },
+  {
+   "fieldname": "column_break1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_html",
+   "label": "Contact HTML",
+   "fieldtype": "HTML",
+   "readOnly": true
+  },
+  {
+   "fieldname": "primary_address_and_contact_detail_section",
+   "label": "Primary Address and Contact",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "supplier_primary_contact",
+   "label": "Supplier Primary Contact",
+   "fieldtype": "Link",
+   "options": "Contact",
+   "description": "Reselect, if the chosen contact is edited after save"
+  },
+  {
+   "fieldname": "mobile_no",
+   "label": "Mobile No",
+   "fieldtype": "Read Only",
+   "fetchFrom": "supplier_primary_contact.mobile_no"
+  },
+  {
+   "fieldname": "email_id",
+   "label": "Email Id",
+   "fieldtype": "Read Only",
+   "fetchFrom": "supplier_primary_contact.email_id"
+  },
+  {
+   "fieldname": "column_break_44",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "supplier_primary_address",
+   "label": "Supplier Primary Address",
+   "fieldtype": "Link",
+   "options": "Address",
+   "description": "Reselect, if the chosen address is edited after save"
+  },
+  {
+   "fieldname": "primary_address",
+   "label": "Primary Address",
+   "fieldtype": "Text",
+   "readOnly": true
+  },
+  {
+   "fieldname": "accounting_tab",
+   "label": "Accounting",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "accounts",
+   "label": "Accounts",
+   "fieldtype": "Table",
+   "options": "Party Account",
+   "description": "Mention if non-standard payable account"
+  },
+  {
+   "fieldname": "settings_tab",
+   "label": "Settings",
+   "fieldtype": "Tab Break"
+  },
+  {
+   "fieldname": "allow_purchase_invoice_creation_without_purchase_order",
+   "label": "Allow Purchase Invoice Creation Without Purchase Order",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "allow_purchase_invoice_creation_without_purchase_receipt",
+   "label": "Allow Purchase Invoice Creation Without Purchase Receipt",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "column_break_54",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "is_frozen",
+   "label": "Is Frozen",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "disabled",
+   "label": "Disabled",
+   "fieldtype": "Check",
+   "bold": true
+  },
+  {
+   "fieldname": "warn_rfqs",
+   "label": "Warn RFQs",
+   "fieldtype": "Check",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "warn_pos",
+   "label": "Warn POs",
+   "fieldtype": "Check",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "prevent_rfqs",
+   "label": "Prevent RFQs",
+   "fieldtype": "Check",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "prevent_pos",
+   "label": "Prevent POs",
+   "fieldtype": "Check",
+   "hidden": true,
+   "readOnly": true
+  },
+  {
+   "fieldname": "block_supplier_section",
+   "label": "Block Supplier",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "on_hold",
+   "label": "Block Supplier",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "hold_type",
+   "label": "Hold Type",
+   "fieldtype": "Select",
+   "options": "\nAll\nInvoices\nPayments",
+   "dependsOn": "eval:doc.on_hold"
+  },
+  {
+   "fieldname": "column_break_59",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "release_date",
+   "label": "Release Date",
+   "fieldtype": "Date",
+   "dependsOn": "eval:doc.on_hold",
+   "description": "Leave blank if the Supplier is blocked indefinitely"
+  }
+ ]
+}

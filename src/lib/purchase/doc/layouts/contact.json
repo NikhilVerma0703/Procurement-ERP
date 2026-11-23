@@ -1,0 +1,206 @@
+{
+ "doctype": "Contact",
+ "module": "Contacts",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": null,
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "ASC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "contact_section",
+   "fieldtype": "Section Break",
+   "options": "fa fa-user"
+  },
+  {
+   "fieldname": "first_name",
+   "label": "First Name",
+   "fieldtype": "Data",
+   "reqd": true
+  },
+  {
+   "fieldname": "middle_name",
+   "label": "Middle Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "last_name",
+   "label": "Last Name",
+   "fieldtype": "Data",
+   "bold": true
+  },
+  {
+   "fieldname": "email_id",
+   "label": "Email Address",
+   "fieldtype": "Data",
+   "options": "Email",
+   "readOnly": true,
+   "bold": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "user",
+   "label": "User Id",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "fieldname": "address",
+   "label": "Address",
+   "fieldtype": "Link",
+   "options": "Address"
+  },
+  {
+   "fieldname": "sync_with_google_contacts",
+   "label": "Sync with Google Contacts",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "cb00",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "label": "Status",
+   "fieldtype": "Select",
+   "options": "Passive\nOpen\nReplied",
+   "inListView": true,
+   "inStandardFilter": true,
+   "default": "Passive"
+  },
+  {
+   "fieldname": "salutation",
+   "label": "Salutation",
+   "fieldtype": "Link",
+   "options": "Salutation"
+  },
+  {
+   "fieldname": "designation",
+   "label": "Designation",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "gender",
+   "label": "Gender",
+   "fieldtype": "Link",
+   "options": "Gender"
+  },
+  {
+   "fieldname": "phone",
+   "label": "Phone",
+   "fieldtype": "Data",
+   "options": "Phone",
+   "readOnly": true,
+   "bold": true,
+   "inListView": true
+  },
+  {
+   "fieldname": "mobile_no",
+   "label": "Mobile No",
+   "fieldtype": "Data",
+   "options": "Phone",
+   "readOnly": true
+  },
+  {
+   "fieldname": "company_name",
+   "label": "Company Name",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "image",
+   "label": "Image",
+   "fieldtype": "Attach Image",
+   "hidden": true,
+   "printHide": true
+  },
+  {
+   "fieldname": "sb_00",
+   "label": "Google Contacts",
+   "fieldtype": "Section Break",
+   "dependsOn": "eval:doc.sync_with_google_contacts || doc.pulled_from_google_contacts",
+   "collapsible": true
+  },
+  {
+   "fieldname": "google_contacts",
+   "label": "Google Contacts",
+   "fieldtype": "Link",
+   "options": "Google Contacts"
+  },
+  {
+   "fieldname": "google_contacts_id",
+   "label": "Google Contacts Id",
+   "fieldtype": "Data",
+   "readOnly": true
+  },
+  {
+   "fieldname": "cb_00",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pulled_from_google_contacts",
+   "label": "Pulled from Google Contacts",
+   "fieldtype": "Check",
+   "readOnly": true
+  },
+  {
+   "fieldname": "sb_01",
+   "label": "Contact Details",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "email_ids",
+   "label": "Email IDs",
+   "fieldtype": "Table",
+   "options": "Contact Email"
+  },
+  {
+   "fieldname": "phone_nos",
+   "label": "Contact Numbers",
+   "fieldtype": "Table",
+   "options": "Contact Phone"
+  },
+  {
+   "fieldname": "contact_details",
+   "label": "Reference",
+   "fieldtype": "Section Break",
+   "options": "fa fa-pushpin"
+  },
+  {
+   "fieldname": "links",
+   "label": "Links",
+   "fieldtype": "Table",
+   "options": "Dynamic Link"
+  },
+  {
+   "fieldname": "is_primary_contact",
+   "label": "Is Primary Contact",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "is_billing_contact",
+   "label": "Is Billing Contact",
+   "fieldtype": "Check"
+  },
+  {
+   "fieldname": "more_info",
+   "label": "More Information",
+   "fieldtype": "Section Break",
+   "options": "fa fa-file-text"
+  },
+  {
+   "fieldname": "department",
+   "label": "Department",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "unsubscribed",
+   "label": "Unsubscribed",
+   "fieldtype": "Check"
+  }
+ ]
+}

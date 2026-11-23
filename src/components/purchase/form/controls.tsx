@@ -39,7 +39,8 @@ export function Field({ label, required, error, children, description, className
 }) {
   const id = useId();
   return (
-    <div className={cn("min-w-0", className)} data-invalid={error ? "true" : undefined}>
+    // data-po-field: the field's label, for ⋯ › Jump to field (form/JumpToField.tsx).
+    <div className={cn("min-w-0", className)} data-invalid={error ? "true" : undefined} data-po-field={typeof label === "string" ? label : undefined}>
       {label && <Label required={required} htmlFor={id}>{label}</Label>}
       <FieldName.Provider value={{ id, label: typeof label === "string" ? label : undefined }}>{children}</FieldName.Provider>
       {description && !error && <p className="mt-1 text-[11px] text-gray-500">{description}</p>}
@@ -460,7 +461,13 @@ export function LinkInput({ type, value, onChange, params, disabled, error, plac
   );
 }
 
-/** A form section: a top rule, its title (collapsible ones with a chevron), then its fields. */
+/** The event that opens a collapsed section from outside it (⋯ › Jump to field opens the field's section). */
+export const OPEN_SECTION_EVENT = "po-open-section";
+
+/**
+ * A form section: a top rule, its title (collapsible ones with a chevron), then its fields. A collapsed
+ * section keeps its fields in the page, hidden, so Jump to field can find and open them.
+ */
 export function Section({ title, collapsible, defaultOpen = true, children, className }: {
   title?: string;
   collapsible?: boolean;
@@ -469,9 +476,17 @@ export function Section({ title, collapsible, defaultOpen = true, children, clas
   className?: string;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !collapsible) return;
+    const onOpen = () => setOpen(true);
+    el.addEventListener(OPEN_SECTION_EVENT, onOpen);
+    return () => el.removeEventListener(OPEN_SECTION_EVENT, onOpen);
+  }, [collapsible]);
   const shown = !collapsible || open;
   return (
-    <section className={cn("border-t border-gray-200 px-4 py-4 first:border-t-0 sm:px-5", className)}>
+    <section ref={ref} data-po-section={title} className={cn("border-t border-gray-200 px-4 py-4 first:border-t-0 sm:px-5", className)}>
       {title &&
         (collapsible ? (
           <button type="button" className="flex items-center gap-1.5 text-[14px] font-semibold text-gray-900" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
@@ -481,7 +496,9 @@ export function Section({ title, collapsible, defaultOpen = true, children, clas
         ) : (
           <h3 className="text-[14px] font-semibold text-gray-900">{title}</h3>
         ))}
-      {shown && <div className={cn(title && "mt-3")}>{children}</div>}
+      <div className={cn(title && "mt-3")} hidden={!shown}>
+        {children}
+      </div>
     </section>
   );
 }

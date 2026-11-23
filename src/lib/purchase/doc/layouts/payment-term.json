@@ -1,0 +1,104 @@
+{
+ "doctype": "Payment Term",
+ "module": "Accounts",
+ "istable": false,
+ "issingle": false,
+ "isSubmittable": false,
+ "autoname": "field:payment_term_name",
+ "showTitleFieldInLink": false,
+ "titleField": null,
+ "sortField": "modified",
+ "sortOrder": "DESC",
+ "searchFields": null,
+ "defaultPrintFormat": null,
+ "fields": [
+  {
+   "fieldname": "payment_term_name",
+   "label": "Payment Term Name",
+   "fieldtype": "Data",
+   "bold": true
+  },
+  {
+   "fieldname": "invoice_portion",
+   "label": "Invoice Portion (%)",
+   "fieldtype": "Float",
+   "bold": true
+  },
+  {
+   "fieldname": "mode_of_payment",
+   "label": "Mode of Payment",
+   "fieldtype": "Link",
+   "options": "Mode of Payment"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "due_date_based_on",
+   "label": "Due Date Based On",
+   "fieldtype": "Select",
+   "options": "Day(s) after invoice date\nDay(s) after the end of the invoice month\nMonth(s) after the end of the invoice month",
+   "bold": true
+  },
+  {
+   "fieldname": "credit_days",
+   "label": "Credit Days",
+   "fieldtype": "Int",
+   "dependsOn": "eval:in_list(['Day(s) after invoice date', 'Day(s) after the end of the invoice month'], doc.due_date_based_on)",
+   "bold": true
+  },
+  {
+   "fieldname": "credit_months",
+   "label": "Credit Months",
+   "fieldtype": "Int",
+   "dependsOn": "eval:doc.due_date_based_on=='Month(s) after the end of the invoice month'"
+  },
+  {
+   "fieldname": "section_break_8",
+   "label": "Discount Settings",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "discount_type",
+   "label": "Discount Type",
+   "fieldtype": "Select",
+   "options": "Percentage\nAmount",
+   "default": "Percentage"
+  },
+  {
+   "fieldname": "discount",
+   "label": "Discount",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discount_validity_based_on",
+   "label": "Discount Validity Based On",
+   "fieldtype": "Select",
+   "options": "Day(s) after invoice date\nDay(s) after the end of the invoice month\nMonth(s) after the end of the invoice month",
+   "dependsOn": "discount",
+   "default": "Day(s) after invoice date"
+  },
+  {
+   "fieldname": "discount_validity",
+   "label": "Discount Validity",
+   "fieldtype": "Int",
+   "dependsOn": "discount",
+   "mandatoryDependsOn": "discount"
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "description",
+   "label": "Description",
+   "fieldtype": "Small Text",
+   "bold": true
+  }
+ ]
+}
