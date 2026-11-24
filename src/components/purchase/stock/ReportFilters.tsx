@@ -11,7 +11,11 @@ import { DateInput, Field, LinkInput, TextInput } from "@/components/purchase/fo
 export type ReportFilterField =
   | { name: string; label: string; kind: "link"; lookup: string; required?: boolean; params?: Record<string, string> }
   | { name: string; label: string; kind: "date"; required?: boolean }
-  | { name: string; label: string; kind: "data" };
+  | { name: string; label: string; kind: "data" }
+  /** A whole number (Stock Ageing's ranges). */
+  | { name: string; label: string; kind: "int"; required?: boolean }
+  /** A Check: "1" when ticked. */
+  | { name: string; label: string; kind: "check" };
 
 export function ReportFilters({ fields, values }: { fields: readonly ReportFilterField[]; values: Record<string, string | null> }) {
   const router = useRouter();
@@ -33,6 +37,16 @@ export function ReportFilters({ fields, values }: { fields: readonly ReportFilte
             <LinkInput type={f.lookup} value={values[f.name]} params={f.params} placeholder={f.label} onChange={(v) => set(f.name, v)} />
           ) : f.kind === "date" ? (
             <DateInput value={values[f.name]} onChange={(v) => v && set(f.name, v)} />
+          ) : f.kind === "check" ? (
+            <input
+              type="checkbox"
+              className="mt-1.5 h-4 w-4 rounded border-gray-300"
+              checked={values[f.name] === "1"}
+              aria-label={f.label}
+              onChange={(e) => set(f.name, e.target.checked ? "1" : null)}
+            />
+          ) : f.kind === "int" ? (
+            <DataFilter value={values[f.name]} placeholder={f.label} onCommit={(v) => set(f.name, v && /^-?\d+$/.test(v) ? v : null)} />
           ) : (
             <DataFilter value={values[f.name]} placeholder={f.label} onCommit={(v) => set(f.name, v)} />
           )}

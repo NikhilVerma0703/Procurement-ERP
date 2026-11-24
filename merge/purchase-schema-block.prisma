@@ -742,6 +742,9 @@ model PurchaseItemGroup {
   code       String  @unique
   parentCode String? @map("parent_code")
   isGroup    Boolean @default(false) @map("is_group")
+  /// The old row whole (its HSN code, description, image, dates…), as every Stock table keeps it;
+  /// the Item Group screen edits it (doc/screens.ts, owner 24-11-2026).
+  legacy     Json?
 
   items PurchaseItem[]
 

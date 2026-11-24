@@ -772,6 +772,9 @@ model PurchaseItemGroup {
   code       String  @unique
   parentCode String? @map("parent_code")
   isGroup    Boolean @default(false) @map("is_group")
+  /// The old row whole (its HSN code, description, image, dates…), as every Stock table keeps it;
+  /// the Item Group screen edits it (doc/screens.ts, owner 24-11-2026).
+  legacy     Json?
 
   items PurchaseItem[]
 
@@ -2766,4 +2769,25 @@ model PurchaseLogin {
   updatedAt    DateTime          @updatedAt @map("updated_at")
 
   @@map("purchase_logins")
+}
+
+/// A record of a Stock DocType the old site never used — Product Bundle, Shipping Rule, Pricing Rule,
+/// Item Alternative, Item Manufacturer, Customs Tariff Number, Pick List, Delivery Trip (owner,
+/// 24-11-2026: "make all these remainings"): the record and its child rows as the old row would
+/// have held them, in `legacy` (doc/screens.ts, doc/doc-save.ts). Each DocType keeps its own names.
+model PurchaseDocument {
+  id          String   @id @default(cuid())
+  doctype     String
+  /// The record's ERPNext name (its DocType's naming: a field, a series or a hash).
+  erpnextName String   @map("erpnext_name")
+  /// Frappe's docstatus: 0 draft, 1 submitted, 2 cancelled.
+  docStatus   Int      @default(0) @map("doc_status")
+  legacy      Json
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdBy   String?  @map("created_by")
+  updatedBy   String?  @map("updated_by")
+
+  @@unique([doctype, erpnextName])
+  @@map("purchase_documents")
 }

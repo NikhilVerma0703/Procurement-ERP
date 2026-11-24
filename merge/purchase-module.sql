@@ -13,7 +13,7 @@
 --
 -- WHAT.
 --   "Role" gains 'PURCHASE' (ADD VALUE IF NOT EXISTS, before BEGIN — see below).
---   9 enum types, 81 tables, 1534 columns, 153 indexes, 146 foreign keys, all
+--   9 enum types, 81 tables, 1535 columns, 153 indexes, 146 foreign keys, all
 --   named purchase_*. The tables are the module's final shape (its migrations through
 --   20261118204039_item_variants_and_hsn), less the standalone sign-in (purchase_logins), which
 --   the ERP's users and roles replace.
@@ -71,7 +71,7 @@
 --     -- 81
 --   SELECT count(*) FROM information_schema.columns
 --    WHERE table_schema = current_schema() AND table_name LIKE 'purchase\_%';
---     -- 1534
+--     -- 1535
 --   SELECT count(*) FROM pg_indexes
 --    WHERE schemaname = current_schema() AND tablename LIKE 'purchase\_%' AND indexname NOT LIKE '%\_pkey';
 --     -- 153
@@ -796,6 +796,7 @@ CREATE TABLE IF NOT EXISTS "purchase_item_groups" (
     "code" TEXT NOT NULL,
     "parent_code" TEXT,
     "is_group" BOOLEAN NOT NULL DEFAULT false,
+    "legacy" JSONB,
 
     CONSTRAINT "purchase_item_groups_pkey" PRIMARY KEY ("id")
 );

@@ -1,82 +1,12 @@
-// Gate Entries: the list, one entry as its form holds it, and the PO lines a new entry lists
-// (owner, 23-11-2026; the rules are stock/gate-entry-meta.ts). Server-side; takes the database
-// client the page passes (server/db's).
-//
-// The list is the old one as Thiru R had it (captured 23-11-2026): ID, Status and Po No (the old
-// list's four-column limit left Inward No, Supplier and Inward Date out), newest created first
-// (his own sort: Created On), the ID filter, 20 / 100 / 500 / 2500 a page and "Load More", and the
-// count as Frappe gave it ("20 of 1,000+").
+// Gate Entries: one entry as its form holds it, the entries around it, and the PO lines a new entry
+// lists (owner, 23-11-2026; the rules are stock/gate-entry-meta.ts). Server-side; takes the database
+// client the page passes (server/db's). The list is the old list view of every DocType since
+// 24-11-2026 (doc/list-view.ts, doc/screens.ts GATE_ENTRY_SCREEN).
 
 import { Prisma, type PrismaClient } from "@prisma/client";
 import { LAYOUTS } from "../doc/layouts";
 import { typedDoc } from "../doc/values";
-import { GATE_ENTRY, GATE_ENTRY_ITEM, poItemsOf, type GateEntryDocStatus, type PoItemRow } from "./gate-entry-meta";
-
-export const GATE_ENTRY_PAGE_SIZES = [20, 100, 500, 2500] as const;
-
-export interface GateEntryListQuery {
-  /** The ID filter (Frappe's "name like %…%"). */
-  name: string | null;
-  pageLength: number;
-  /** Rows shown: a page, plus a page for each Load More. */
-  limit: number;
-}
-
-type Params = Record<string, string | string[] | undefined>;
-const one = (v: string | string[] | undefined) => {
-  const s = (Array.isArray(v) ? v[0] : v)?.trim();
-  return s ? s.slice(0, 140) : null;
-};
-
-export function parseGateEntryListQuery(sp: Params): GateEntryListQuery {
-  const size = Number(one(sp.page_length));
-  const pageLength = (GATE_ENTRY_PAGE_SIZES as readonly number[]).includes(size) ? size : 20;
-  const limit = Number(one(sp.limit));
-  return { name: one(sp.name), pageLength, limit: Number.isInteger(limit) && limit >= pageLength ? Math.min(limit, 10_000) : pageLength };
-}
-
-export function gateEntryListParams(q: GateEntryListQuery, over: Partial<GateEntryListQuery> = {}): URLSearchParams {
-  const m = { ...q, ...over };
-  const p = new URLSearchParams();
-  if (m.name) p.set("name", m.name);
-  if (m.pageLength !== 20) p.set("page_length", String(m.pageLength));
-  if (m.limit !== m.pageLength) p.set("limit", String(m.limit));
-  return p;
-}
-
-export interface GateEntryListRow {
-  id: string;
-  number: string;
-  docStatus: GateEntryDocStatus;
-  orderNumber: string;
-  orderId: string | null;
-  supplierCode: string;
-  receiptNumber: string | null;
-  updatedAt: Date;
-}
-
-const like = (s: string) => `%${s.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
-const DOC_STATUS = { Draft: "DRAFT", Submitted: "SUBMITTED", Cancelled: "CANCELLED" } as const;
-
-export async function listGateEntries(db: PrismaClient, q: GateEntryListQuery): Promise<{ rows: GateEntryListRow[]; total: number }> {
-  const where = q.name ? Prisma.sql`g.number ILIKE ${like(q.name)}` : Prisma.sql`TRUE`;
-  const [{ n }] = await db.$queryRaw<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM purchase_gate_entries g WHERE ${where}`;
-  const rows = await db.$queryRaw<
-    { id: string; number: string; doc_status: string; order_number: string; order_id: string | null; supplier_code: string; receipt_number: string | null; updated_at: Date }[]
-  >`
-    SELECT g.id, g.number, g.doc_status::text AS doc_status, g.order_number, g.order_id, g.supplier_code, g.receipt_number, g.updated_at
-    FROM purchase_gate_entries g
-    WHERE ${where}
-    ORDER BY g.created_at DESC, g.number DESC
-    LIMIT ${q.limit}`;
-  return {
-    total: n,
-    rows: rows.map((r) => ({
-      id: r.id, number: r.number, docStatus: DOC_STATUS[r.doc_status as keyof typeof DOC_STATUS] ?? "DRAFT", orderNumber: r.order_number,
-      orderId: r.order_id, supplierCode: r.supplier_code, receiptNumber: r.receipt_number, updatedAt: r.updated_at,
-    })),
-  };
-}
+import { GATE_ENTRY, GATE_ENTRY_ITEM, poItemsOf, type PoItemRow } from "./gate-entry-meta";
 
 /** One gate entry as its form held it (typed by the captured layouts), with what its links open here. */
 export async function loadGateEntryDoc(db: PrismaClient, id: string) {

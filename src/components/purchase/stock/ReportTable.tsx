@@ -18,6 +18,8 @@ export interface ReportColumn {
   tone?: "in" | "out";
   /** The value names a record with a page here: the row's item (row.itemHref) or voucher (row.voucherHref). */
   link?: "item" | "voucher";
+  /** A tree report's first column: indented by the row's depth (row.indent). */
+  tree?: boolean;
 }
 
 /** The page a linked value opens (worked out on the server, by record ID); null where there is none yet. */
@@ -75,7 +77,11 @@ export function ReportTable({ columns, rows, total, empty = "Nothing to show" }:
                   const text = show(c, r[c.key]);
                   const href = hrefOf(c, r);
                   return (
-                    <td key={c.key} className={`whitespace-nowrap px-2 py-1.5 ${right(c) ? "text-right tabular-nums" : ""} ${tone(c, r[c.key])}`}>
+                    <td
+                      key={c.key}
+                      className={`whitespace-nowrap px-2 py-1.5 ${right(c) ? "text-right tabular-nums" : ""} ${tone(c, r[c.key])} ${c.tree && r.isGroup ? "font-semibold" : ""}`}
+                      style={c.tree ? { paddingLeft: 8 + 20 * (Number(r.indent) || 0) } : undefined}
+                    >
                       {href && text ? <Link href={href} className="hover:underline">{text}</Link> : text}
                     </td>
                   );

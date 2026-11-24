@@ -28,7 +28,37 @@ export const PURCHASE_PATHS = {
   stockBalance: "/purchase/stock-balance",
   // Thiru R's Gate Entry (the add-on's DocType; owner, 23-11-2026).
   gateEntries: "/purchase/gate-entries",
+  // The rest of Stock › Masters & Reports (owner, 24-11-2026: "make all these remainings"): the
+  // screens drawn from the old site's own definitions (doc/screens.ts) …
+  itemGroups: "/purchase/item-groups",
+  productBundles: "/purchase/product-bundles",
+  priceLists: "/purchase/price-lists",
+  itemPrices: "/purchase/item-prices",
+  shippingRules: "/purchase/shipping-rules",
+  pricingRules: "/purchase/pricing-rules",
+  itemAlternatives: "/purchase/item-alternatives",
+  itemManufacturers: "/purchase/item-manufacturers",
+  customsTariffNumbers: "/purchase/customs-tariff-numbers",
+  materialRequests: "/purchase/material-requests",
+  stockEntries: "/purchase/stock-entries",
+  deliveryNotes: "/purchase/delivery-notes",
+  pickLists: "/purchase/pick-lists",
+  deliveryTrips: "/purchase/delivery-trips",
+  // … and the five reports (stock/reports-more.ts).
+  stockProjectedQty: "/purchase/stock-projected-qty",
+  stockSummary: "/purchase/stock-summary",
+  stockAgeing: "/purchase/stock-ageing",
+  itemPriceStock: "/purchase/item-price-stock",
+  warehouseWiseStockBalance: "/purchase/warehouse-wise-stock-balance",
 } as const;
+
+/** A record of a screen drawn from its definition (doc/screens.ts): `base` is its list's path. */
+export const docRecordPath = (base: string, id: string) => `${base}/${encodeURIComponent(id)}`;
+/** A new record there, with values to start from (Frappe's route options). */
+export const docNewPath = (base: string, prefill: Record<string, string> = {}) => {
+  const s = new URLSearchParams(prefill).toString();
+  return `${base}/new${s ? `?${s}` : ""}`;
+};
 
 /** One Gate Entry's page. */
 export const gateEntryPath = (id: string) => `${PURCHASE_PATHS.gateEntries}/${encodeURIComponent(id)}`;
@@ -113,9 +143,10 @@ export interface PurchaseNavRow {
 /**
  * THE SIDEBAR'S MODULES (Phase II, owner 21-11-2026: "make Buying the main section"). As the old
  * site's workspaces: a module heading, then its cards in the old order — Buying's nine sections
- * (Althaf's), and Stock › Masters & Reports' three cards (Thiru R's; docs/12 §3). A card lists only
- * the sections built so far, and is not drawn while it has none; who sees a module is nav.ts.
- * Item is in both, as on the old site: one screen, two menus.
+ * (Althaf's), and Stock › Masters & Reports' three cards (Thiru R's; docs/12 §3), every link of
+ * each card in the order the old Stock workspace listed them (captured 23-11-2026; all built since
+ * 24-11-2026). Who sees a module is nav.ts. Item is in both, as on the old site: one screen, two
+ * menus.
  */
 export interface PurchaseNavModule {
   readonly key: "buying" | "stock";
@@ -129,14 +160,33 @@ export const PURCHASE_MODULES: readonly PurchaseNavModule[] = [
     key: "stock",
     label: "Stock",
     groups: [
-      { label: "Items and Pricing", rows: [{ href: PURCHASE_PATHS.items, label: "Item" }] },
+      {
+        label: "Items and Pricing",
+        rows: [
+          { href: PURCHASE_PATHS.items, label: "Item" },
+          { href: PURCHASE_PATHS.itemGroups, label: "Item Group" },
+          { href: PURCHASE_PATHS.productBundles, label: "Product Bundle" },
+          { href: PURCHASE_PATHS.priceLists, label: "Price List" },
+          { href: PURCHASE_PATHS.itemPrices, label: "Item Price" },
+          { href: PURCHASE_PATHS.shippingRules, label: "Shipping Rule" },
+          { href: PURCHASE_PATHS.pricingRules, label: "Pricing Rule" },
+          { href: PURCHASE_PATHS.itemAlternatives, label: "Item Alternative" },
+          { href: PURCHASE_PATHS.itemManufacturers, label: "Item Manufacturer" },
+          { href: PURCHASE_PATHS.customsTariffNumbers, label: "Customs Tariff Number" },
+        ],
+      },
       // Gate Entry was the add-on's own DocType, reached by the search box ("Gate Entry List"); here it
       // stands next to the receipt it leads to (PO → Gate Entry → Purchase Receipt, docs/12 §4).
       {
         label: "Stock Transactions",
         rows: [
+          { href: PURCHASE_PATHS.materialRequests, label: "Material Request" },
+          { href: PURCHASE_PATHS.stockEntries, label: "Stock Entry" },
+          { href: PURCHASE_PATHS.deliveryNotes, label: "Delivery Note" },
           { href: PURCHASE_PATHS.gateEntries, label: "Gate Entry" },
           { href: PURCHASE_PATHS.receipts, label: "Purchase Receipt" },
+          { href: PURCHASE_PATHS.pickLists, label: "Pick List" },
+          { href: PURCHASE_PATHS.deliveryTrips, label: "Delivery Trip" },
         ],
       },
       {
@@ -144,6 +194,11 @@ export const PURCHASE_MODULES: readonly PurchaseNavModule[] = [
         rows: [
           { href: PURCHASE_PATHS.stockLedger, label: "Stock Ledger" },
           { href: PURCHASE_PATHS.stockBalance, label: "Stock Balance" },
+          { href: PURCHASE_PATHS.stockProjectedQty, label: "Stock Projected Qty" },
+          { href: PURCHASE_PATHS.stockSummary, label: "Stock Summary" },
+          { href: PURCHASE_PATHS.stockAgeing, label: "Stock Ageing" },
+          { href: PURCHASE_PATHS.itemPriceStock, label: "Item Price Stock" },
+          { href: PURCHASE_PATHS.warehouseWiseStockBalance, label: "Warehouse Wise Stock Balance" },
         ],
       },
     ],

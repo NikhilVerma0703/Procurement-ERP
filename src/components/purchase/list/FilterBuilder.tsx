@@ -4,12 +4,13 @@ import { useState } from "react";
 import { Filter, Plus, X } from "lucide-react";
 import { cn } from "@/lib/purchase/cn";
 import {
-  IS_VALUES, LIST_FIELDS, OPERATORS, OPERATORS_BY_TYPE, fieldByKey, normaliseFilter, type ListFilter, type Operator,
+  IS_VALUES, LIST_FIELDS, OPERATORS, OPERATORS_BY_TYPE, normaliseFilter, type ListField, type ListFilter, type Operator,
 } from "@/lib/purchase/orders/list";
 import { usePopover } from "../ui/usePopover";
 
 // The old list's filter builder ("Filter" / "N filters"): any field, ERPNext's
-// operators, a value; conditions are edited here and applied together.
+// operators, a value; conditions are edited here and applied together. The PO
+// list's fields by default; another list passes its own (doc/list-view.ts).
 
 interface Draft {
   field: string;
@@ -18,7 +19,7 @@ interface Draft {
   value2: string;
 }
 
-const defaultOp = (field: string): Operator => (fieldByKey(field)?.type === "data" ? "like" : "=");
+const defaultOp = (fields: readonly ListField[], field: string): Operator => (fields.find((f) => f.key === field)?.type === "data" ? "like" : "=");
 const blank = (): Draft => ({ field: "name", op: "like", value: "", value2: "" });
 
 function toDraft(f: ListFilter): Draft {
@@ -30,15 +31,14 @@ function toDraft(f: ListFilter): Draft {
   return { field: f.field, op: f.op, value: plain, value2: "" };
 }
 
-function fromDraft(d: Draft): ListFilter | null {
-  if (d.op === "between") return normaliseFilter(d.field, d.op, [d.value, d.value2]);
+function fromDraft(d: Draft, fields: readonly ListField[]): ListFilter | null {
+  if (d.op === "between") return normaliseFilter(d.field, d.op, [d.value, d.value2], fields);
   // As ERPNext does: a "like" without a wildcard matches anywhere.
   const value = (d.op === "like" || d.op === "not like") && d.value && !d.value.includes("%") ? `%${d.value}%` : d.value;
-  return normaliseFilter(d.field, d.op, value);
+  return normaliseFilter(d.field, d.op, value, fields);
 }
 
-function ValueInput({ draft, onChange }: { draft: Draft; onChange: (d: Draft) => void }) {
-  const f = fieldByKey(draft.field)!;
+function ValueInput({ f, draft, onChange }: { f: ListField; draft: Draft; onChange: (d: Draft) => void }) {
   const input = "po-field-input py-1.5";
   if (draft.op === "is") {
     return (
@@ -85,7 +85,13 @@ function ValueInput({ draft, onChange }: { draft: Draft; onChange: (d: Draft) =>
   );
 }
 
-export function FilterBuilder({ filters, onApply }: { filters: ListFilter[]; onApply: (filters: ListFilter[]) => void }) {
+export function FilterBuilder({ filters, onApply, fields = LIST_FIELDS }: {
+  filters: ListFilter[];
+  onApply: (filters: ListFilter[]) => void;
+  /** The fields offered (the PO list's when absent). */
+  fields?: readonly ListField[];
+}) {
+  const byKey = (key: string) => fields.find((f) => f.key === key) ?? fields[0];
   const { open, setOpen, ref } = usePopover<HTMLDivElement>();
   const [drafts, setDrafts] = useState<Draft[]>([]);
 
@@ -95,7 +101,7 @@ export function FilterBuilder({ filters, onApply }: { filters: ListFilter[]; onA
   };
   const set = (i: number, d: Draft) => setDrafts((all) => all.map((x, j) => (j === i ? d : x)));
   const apply = (list: Draft[]) => {
-    onApply(list.map(fromDraft).filter((f): f is ListFilter => f !== null));
+    onApply(list.map((d) => fromDraft(d, fields)).filter((f): f is ListFilter => f !== null));
     setOpen(false);
   };
   const label = filters.length ? `${filters.length} filter${filters.length === 1 ? "" : "s"}` : "Filter";
@@ -115,16 +121,16 @@ export function FilterBuilder({ filters, onApply }: { filters: ListFilter[]; onA
         <div className="absolute right-0 z-20 mt-2 w-[min(92vw,640px)] rounded-xl border border-gray-200 bg-white p-3 shadow-lg">
           <div className="space-y-2">
             {drafts.map((d, i) => {
-              const type = fieldByKey(d.field)!.type;
+              const type = byKey(d.field).type;
               return (
                 <div key={i} className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,0.9fr)_minmax(0,1.3fr)_auto] items-center gap-2">
                   <select
                     className="po-field-input py-1.5"
                     value={d.field}
                     aria-label="Field"
-                    onChange={(e) => set(i, { field: e.target.value, op: defaultOp(e.target.value), value: "", value2: "" })}
+                    onChange={(e) => set(i, { field: e.target.value, op: defaultOp(fields, e.target.value), value: "", value2: "" })}
                   >
-                    {LIST_FIELDS.map((f) => (
+                    {fields.map((f) => (
                       <option key={f.key} value={f.key}>
                         {f.label}
                       </option>
@@ -142,7 +148,7 @@ export function FilterBuilder({ filters, onApply }: { filters: ListFilter[]; onA
                       </option>
                     ))}
                   </select>
-                  <ValueInput draft={d} onChange={(nd) => set(i, nd)} />
+                  <ValueInput f={byKey(d.field)} draft={d} onChange={(nd) => set(i, nd)} />
                   <button
                     type="button"
                     onClick={() => setDrafts((all) => all.filter((_, j) => j !== i))}

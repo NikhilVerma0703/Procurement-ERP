@@ -154,8 +154,8 @@ const get = (p: ParamSource, key: string): string | undefined => {
 const clean = (v: unknown) => String(v ?? "").trim().slice(0, MAX_VALUE);
 
 /** A condition as the builder or the address bar gave it, checked; null if it cannot apply. */
-export function normaliseFilter(field: string, op: string, raw: unknown): ListFilter | null {
-  const f = fieldByKey(field);
+export function normaliseFilter(field: string, op: string, raw: unknown, fields: readonly ListField[] = LIST_FIELDS): ListFilter | null {
+  const f = fields.find((x) => x.key === field);
   if (!f || !(OPERATORS_BY_TYPE[f.type] as readonly string[]).includes(op)) return null;
   const o = op as Operator;
   if (o === "in" || o === "not in") {

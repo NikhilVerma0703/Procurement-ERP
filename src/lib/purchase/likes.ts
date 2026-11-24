@@ -12,6 +12,8 @@ import type { PurchaseUser } from "./server/current-user";
 import { db } from "./server/db";
 import { recordOrderEvent } from "./server/audit";
 import { LIKE_DOCTYPE, likedByCondition, NO_LIKES, type LikeInfo, type LikeKind } from "./like-rules";
+import { DOC_SCREENS } from "./doc/screens";
+import { docRecordExists } from "./doc/list-data";
 
 export { LIKE_DOCTYPE, NO_LIKES, isLikeKind, type LikeInfo, type LikeKind } from "./like-rules";
 
@@ -72,6 +74,14 @@ async function recordExists(kind: LikeKind, id: string): Promise<{ id?: string; 
       return db.purchasePaymentTerm.findUnique(where);
     case "terms":
       return db.purchaseTermsTemplate.findUnique(where);
+    case "gateEntries":
+      return db.purchaseGateEntry.findUnique(where);
+    default: {
+      // The Stock screens drawn from their definitions (doc/screens.ts): their own table, or the
+      // generic one.
+      const screen = DOC_SCREENS.find((s) => s.key === kind);
+      return screen ? ((await docRecordExists(screen, id)) ? { id } : null) : null;
+    }
   }
 }
 

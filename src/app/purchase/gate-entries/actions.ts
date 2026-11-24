@@ -8,6 +8,10 @@ import { gateEntryPath, PURCHASE_PATHS } from "@/lib/purchase/routes";
 import { purchaseGate, purchaseRefusal } from "@/lib/purchase/server/gate";
 import { cancelGateEntry, deleteGateEntry, gateEntryFromPo, saveGateEntry, submitGateEntry } from "@/lib/purchase/stock/gate-entry-save";
 import type { Doc } from "@/lib/purchase/doc/store";
+import { deleteInRounds, type BulkOutcome } from "@/lib/purchase/bulk-delete";
+import { parseSelectedIds } from "@/lib/purchase/orders/selection";
+import { db } from "@/lib/purchase/server/db";
+import { purchaseWrite } from "@/lib/purchase/server/write";
 
 type Saved = ActionResult<{ id: string; number: string; modified: string }>;
 
@@ -51,6 +55,29 @@ export async function deleteGateEntryAction(req: { id: string }): Promise<Action
   const r = await deleteGateEntry(g.user, { id: String(req.id) });
   if (r.ok) refresh();
   return r;
+}
+
+/**
+ * The list's Actions › Delete over ticked gate entries (frappe.desk.reportview.delete_bulk): each
+ * through the entry's own Delete, so a submitted one, or one a receipt names, stays with the reason.
+ */
+export async function bulkDeleteGateEntriesAction(ids: unknown): Promise<ActionResult<BulkOutcome>> {
+  const g = await purchaseGate("stock");
+  if (!g.ok || !g.user) return { ok: false, error: purchaseRefusal(g) };
+  const user = g.user;
+  const list = parseSelectedIds(ids);
+  const found = await db.purchaseGateEntry.findMany({ where: { id: { in: list } }, select: { id: true, number: true } });
+  const names = new Map(found.map((e) => [e.id, e.number]));
+  const w = await purchaseWrite(user, () =>
+    deleteInRounds(list.map((id) => ({ id, name: names.get(id) ?? "" })), async (row) => {
+      if (!names.has(row.id)) return "This Gate Entry no longer exists.";
+      const r = await deleteGateEntry(user, { id: row.id });
+      return r.ok ? null : r.error;
+    }),
+  );
+  if (!w.done) return { ok: false, error: w.refusal };
+  refresh();
+  return { ok: true, value: w.value };
 }
 
 /** The form's Po No trigger: the PO's supplier and date and its lines still to receive. */

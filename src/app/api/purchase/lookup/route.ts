@@ -28,6 +28,8 @@ interface Args {
   customer: string | null;
   item: string | null;
   attribute: string | null;
+  /** Any other parameter of the request (a set_query's filters). */
+  extra: (key: string) => string | null;
 }
 
 const has = (q: string) => ({ contains: q, mode: "insensitive" as const });
@@ -277,6 +279,71 @@ const LOOKUPS: Record<string, (a: Args) => Promise<Row[]>> = {
       take: 60,
     })).map((o) => ({ value: o.number, description: [o.supplierName, o.transactionDate.toISOString().slice(0, 10)].join(", ") })),
 
+  // --- The Stock screens drawn from their definitions (owner, 24-11-2026): Frappe's own search over a
+  // DocType (enabled records), narrowed by each form script's set_query. ---
+  // Any item (search_link over Item); "variants=0" leaves out templates (item_price.js).
+  stdItem: async ({ q, extra }) =>
+    (await db.purchaseItem.findMany({
+      where: { disabled: false, ...(extra("variants") === "0" ? { hasVariants: false } : {}), ...(q ? { OR: [{ code: has(q) }, { itemName: has(q) }, { description: has(q) }] } : {}) },
+      select: { code: true, itemName: true, itemGroup: { select: { code: true } } },
+      take: 60,
+      orderBy: { code: "asc" },
+    })).map((i) => ({ value: i.code, description: [i.itemName !== i.code ? i.itemName : null, i.itemGroup?.code].filter(Boolean).join(", ") })),
+
+  // item_alternative.js: items that allow an alternative.
+  alternativeItem: async ({ q }) =>
+    (await db.$queryRaw<{ code: string; item_name: string }[]>`
+      SELECT code, item_name FROM purchase_items
+      WHERE disabled = false AND legacy->>'allow_alternative_item' = '1'
+        AND (${q} = '' OR code ILIKE ${`%${q}%`} OR item_name ILIKE ${`%${q}%`})
+      ORDER BY code LIMIT 60`).map((i) => ({ value: i.code, description: i.item_name !== i.code ? i.item_name : null })),
+
+  // product_bundle.py get_new_item_code: items not kept in stock, not fixed assets, not bundles already.
+  bundleItem: async ({ q }) => {
+    const bundled = (await db.purchaseDocument.findMany({ where: { doctype: "Product Bundle" }, select: { erpnextName: true } })).map((b) => b.erpnextName);
+    return (await db.purchaseItem.findMany({
+      where: { disabled: false, isStockItem: false, isFixedAsset: false, code: { notIn: bundled }, ...(q ? { OR: [{ code: has(q) }, { itemName: has(q) }] } : {}) },
+      select: { code: true, itemName: true },
+      take: 60,
+      orderBy: { code: "asc" },
+    })).map((i) => ({ value: i.code, description: i.itemName !== i.code ? i.itemName : null }));
+  },
+
+  // Any enabled price list; pricing_rule.js narrows it to the rule's selling, buying and currency.
+  anyPriceList: async ({ q, extra }) =>
+    (await db.purchasePriceList.findMany({
+      where: {
+        enabled: true,
+        ...(extra("buying") === "1" ? { buying: true } : {}),
+        ...(extra("selling") === "1" ? { selling: true } : {}),
+        ...(extra("currency") ? { currency: extra("currency")! } : {}),
+        ...(q ? { code: has(q) } : {}),
+      },
+      select: { code: true, currency: true },
+      take: 60,
+      orderBy: { code: "asc" },
+    })).map((p) => ({ value: p.code, description: p.currency })),
+
+  // item_group.js: a parent is a group, and not the group itself.
+  parentItemGroup: async ({ q, extra }) =>
+    (await db.purchaseItemGroup.findMany({
+      where: { isGroup: true, ...(extra("exclude") ? { code: { not: extra("exclude")! } } : {}), ...(q ? { AND: [{ code: has(q) }] } : {}) },
+      select: { code: true },
+      take: 60,
+      orderBy: { code: "asc" },
+    })).map((g) => ({ value: g.code })),
+
+  stockEntryType: async ({ q }) =>
+    (await db.purchaseStockEntryType.findMany({ where: q ? { code: has(q) } : {}, select: { code: true }, take: 60, orderBy: { code: "asc" } })).map((t) => ({ value: t.code })),
+
+  // An Account (search_link): the company's, not groups.
+  account: async ({ q, company }) =>
+    (await db.purchaseAccount.findMany({
+      where: { disabled: false, isGroup: false, ...companyFilter(company), ...(q ? { OR: [{ code: has(q) }, { accountName: has(q) }] } : {}) },
+      select: { code: true },
+      take: 60,
+    })).map((a) => ({ value: a.code })),
+
   // get_item_uom_query: the item's stock UOM and the UOMs of its conversion table.
   uom: async ({ q, item }) => {
     if (!item) {
@@ -320,6 +387,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unknown lookup" }, { status: 400 });
   }
   const q = (sp.get("q") ?? "").trim().slice(0, 140);
-  const rows = await lookup({ q, company: sp.get("company"), supplier: sp.get("supplier"), customer: sp.get("customer"), item: sp.get("item"), attribute: sp.get("attribute") });
+  const rows = await lookup({
+    q, company: sp.get("company"), supplier: sp.get("supplier"), customer: sp.get("customer"), item: sp.get("item"), attribute: sp.get("attribute"),
+    extra: (key) => (sp.get(key) ?? "").slice(0, 140) || null,
+  });
   return NextResponse.json({ results: rank(rows, q) });
 }

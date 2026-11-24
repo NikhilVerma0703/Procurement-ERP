@@ -450,7 +450,10 @@ export function build(tables: Map<string, DumpTable>): Built {
 
   // Items -------------------------------------------------------------------
   const itemGroupIds = idMap("tabItem Group", "ig");
-  out.itemGroups = rows("tabItem Group").map((r) => ({ id: itemGroupIds.get(r.name!)!, code: r.name!, parentCode: text(r.parent_item_group), isGroup: bool(r.is_group) }));
+  // The whole row too since 24-11-2026: the Item Group screen shows and edits it (doc/screens.ts).
+  out.itemGroups = rows("tabItem Group").map((r) => ({
+    id: itemGroupIds.get(r.name!)!, code: r.name!, parentCode: text(r.parent_item_group), isGroup: bool(r.is_group), legacy: legacyOf(r),
+  }));
 
   const itemIds = idMap("tabItem", "it");
   // Templates before their variants: a variant's FK must find its template.

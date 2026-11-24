@@ -22,6 +22,22 @@ export const LIKE_DOCTYPE = {
   paymentTermsTemplates: "Payment Terms Template",
   paymentTerms: "Payment Term",
   terms: "Terms and Conditions",
+  // Stock (owner, 24-11-2026): the old lists had the ♥ on every DocType.
+  gateEntries: "Gate Entry",
+  itemGroups: "Item Group",
+  productBundles: "Product Bundle",
+  priceLists: "Price List",
+  itemPrices: "Item Price",
+  shippingRules: "Shipping Rule",
+  pricingRules: "Pricing Rule",
+  itemAlternatives: "Item Alternative",
+  itemManufacturers: "Item Manufacturer",
+  customsTariffNumbers: "Customs Tariff Number",
+  materialRequests: "Material Request",
+  stockEntries: "Stock Entry",
+  deliveryNotes: "Delivery Note",
+  pickLists: "Pick List",
+  deliveryTrips: "Delivery Trip",
 } as const;
 export type LikeKind = keyof typeof LIKE_DOCTYPE;
 export const isLikeKind = (k: string): k is LikeKind => Object.prototype.hasOwnProperty.call(LIKE_DOCTYPE, k);
