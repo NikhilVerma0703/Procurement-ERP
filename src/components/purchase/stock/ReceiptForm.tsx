@@ -25,7 +25,8 @@ import {
   accountFetch, addressFetch, companyFetch, contactFetch, exchangeRateFetch, itemFetch, overheadTaxFetch, serviceItemFetch,
   supplierAddressFetch, supplierFetch, taxCategoryFetch, taxRowsFetch, termsFetch, uomFactorFetch,
 } from "@/app/purchase/orders/fetches";
-import { saveReceiptAction } from "@/app/purchase/receipts/actions";
+import { saveReceiptAction, submitReceiptAction } from "@/app/purchase/receipts/actions";
+import { ConfirmDialog } from "@/components/purchase/form/Grid";
 import { DocumentForm, type FormBinding, type LookupSpec } from "@/components/purchase/doc/DocumentForm";
 import { pricedRate } from "@/components/purchase/form/rows";
 import { dependsOn } from "@/lib/purchase/doc/depends-on";
@@ -124,6 +125,7 @@ export function ReceiptForm({ id, initial, modified, layout, childLayouts, maste
   const [dirty, setDirty] = useState(!id);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, startSaving] = useTransition();
+  const [confirming, setConfirming] = useState(false);
   const modifiedRef = useRef(modified);
 
   /** Apply a change to the latest document, then recompute every figure (the form's calculate_taxes_and_totals). */
@@ -408,6 +410,21 @@ export function ReceiptForm({ id, initial, modified, layout, childLayouts, maste
       else router.refresh();
     });
 
+  // Submit (a saved draft, nothing changed since): "Permanently Submit …?", then saved again with every
+  // check and posted — the stock ledger, the PO's received quantities, the gate entry's Inward No.
+  const submit = () =>
+    startSaving(async () => {
+      const r = await submitReceiptAction({ id: id!, doc: docRef.current, modified: modifiedRef.current });
+      if (!r.ok) {
+        setErrors(r.fieldErrors ?? {});
+        toast.error(r.error);
+        return;
+      }
+      setErrors({});
+      toast.success("Submitted");
+      router.refresh();
+    });
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
@@ -432,9 +449,15 @@ export function ReceiptForm({ id, initial, modified, layout, childLayouts, maste
         <span className={dirty ? "rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-medium text-orange-700" : "rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700"}>
           {dirty ? "Not Saved" : "Draft"}
         </span>
-        <button type="button" className="po-btn-primary px-4 py-1.5 text-[13px]" disabled={saving} onClick={save} title="Save (Ctrl+S)">
-          {saving ? "Saving…" : "Save"}
-        </button>
+        {id && !dirty ? (
+          <button type="button" className="po-btn-primary px-4 py-1.5 text-[13px]" disabled={saving} onClick={() => setConfirming(true)}>
+            {saving ? "Submitting…" : "Submit"}
+          </button>
+        ) : (
+          <button type="button" className="po-btn-primary px-4 py-1.5 text-[13px]" disabled={saving} onClick={save} title="Save (Ctrl+S)">
+            {saving ? "Saving…" : "Save"}
+          </button>
+        )}
       </div>
       <DocumentForm
         layout={layout}
@@ -443,6 +466,17 @@ export function ReceiptForm({ id, initial, modified, layout, childLayouts, maste
         binding={binding}
         options={{ currency: str(doc.currency) || companyCurrency, label: labels.label, hidden: labels.hidden }}
       />
+      {confirming && (
+        <ConfirmDialog
+          message={`Permanently Submit ${str(doc.name)}?`}
+          busy={saving}
+          onNo={() => setConfirming(false)}
+          onYes={() => {
+            setConfirming(false);
+            submit();
+          }}
+        />
+      )}
     </section>
   );
 }

@@ -117,6 +117,55 @@ const stamps = (r: Row) => ({
 });
 const byCreation = (rows: Row[]) => [...rows].sort((a, b) => (a.creation ?? "").localeCompare(b.creation ?? ""));
 
+/** A Stock Ledger Entry row's columns (the importer's, and an entry a receipt posts here: stock/receipt-submit.ts). */
+export function stockLedgerColumns(r: Row, refs: { itemId: string | null; warehouseId: string | null }) {
+  const at = localDateTime(r.posting_datetime) ?? localDateTime(`${r.posting_date} ${(r.posting_time ?? "00:00:00").slice(0, 15)}`);
+  return {
+    erpnextName: r.name!, itemCode: r.item_code ?? "", itemId: refs.itemId,
+    warehouseCode: r.warehouse ?? "", warehouseId: refs.warehouseId, postingDate: dateOnly(r.posting_date)!,
+    postingTime: r.posting_time ?? "00:00:00", postingDateTime: at!, voucherType: r.voucher_type ?? "", voucherNo: r.voucher_no ?? "",
+    voucherDetailNo: text(r.voucher_detail_no), dependantSleVoucherDetailNo: text(r.dependant_sle_voucher_detail_no),
+    recalculateRate: bool(r.recalculate_rate), actualQty: dec(r.actual_qty), qtyAfterTransaction: dec(r.qty_after_transaction),
+    incomingRate: dec(r.incoming_rate), outgoingRate: dec(r.outgoing_rate), valuationRate: dec(r.valuation_rate),
+    stockValue: dec(r.stock_value), stockValueDifference: dec(r.stock_value_difference), stockQueue: text(r.stock_queue),
+    companyCode: r.company ?? "", stockUom: text(r.stock_uom), batchNo: text(r.batch_no), serialNo: text(r.serial_no),
+    fiscalYear: text(r.fiscal_year), isCancelled: bool(r.is_cancelled), docStatus: docStatusOf(r), legacy: legacyOf(r),
+    createdAt: localDateTime(r.creation) ?? undefined, updatedAt: localDateTime(r.modified) ?? undefined, createdBy: text(r.owner),
+  };
+}
+
+/** A Bin row's columns (the importer's and stock/receipt-submit.ts's). */
+export function binColumns(r: Row, refs: { itemId: string | null; warehouseId: string | null }) {
+  return {
+    erpnextName: r.name!, itemCode: r.item_code ?? "", itemId: refs.itemId,
+    warehouseCode: r.warehouse ?? "", warehouseId: refs.warehouseId, actualQty: dec(r.actual_qty),
+    plannedQty: dec(r.planned_qty), indentedQty: dec(r.indented_qty), orderedQty: dec(r.ordered_qty), reservedQty: dec(r.reserved_qty),
+    reservedQtyForProduction: dec(r.reserved_qty_for_production), reservedQtyForProductionPlan: dec(r.reserved_qty_for_production_plan),
+    reservedQtyForSubContract: dec(r.reserved_qty_for_sub_contract), projectedQty: dec(r.projected_qty), stockUom: text(r.stock_uom),
+    valuationRate: dec(r.valuation_rate), stockValue: dec(r.stock_value), legacy: legacyOf(r),
+  };
+}
+
+/** A Gate Entry row's columns (the importer's, and a gate entry saved here: stock/gate-entry-save.ts). */
+export function gateEntryColumns(r: Row, refs: { orderId: string | null; supplierId: string | null; amendedFromId: string | null }) {
+  return {
+    number: r.name!, namingSeries: r.naming_series ?? "", docStatus: docStatusOf(r), amendedFromId: refs.amendedFromId,
+    location: text(r.location), orderNumber: r.po_no ?? "", orderId: refs.orderId, orderDate: dateOnly(r.po_date),
+    supplierCode: r.supplier ?? "", supplierId: refs.supplierId, invoiceNo: text(r.invoice_no), invoiceDate: dateOnly(r.invoice_date),
+    gateEntryDate: dateOnly(r.gate_entry_date), receiptNumber: text(r.inward_no), inwardDate: dateOnly(r.inward_date),
+    financialYear: text(r.financial_year), vehicleNo: text(r.vehicle_no), legacy: legacyOf(r), ...stamps(r),
+  };
+}
+
+/** A Gate Entry Item row's columns (the importer's and gate-entry-save.ts's). */
+export function gateEntryItemColumns(r: Row, refs: { orderId: string | null; itemId: string | null; orderItemId: string | null }) {
+  return {
+    erpnextName: r.name!, idx: int(r.idx), orderNumber: text(r.po_no), orderId: refs.orderId, orderDate: dateOnly(r.po_date),
+    itemCode: r.item_code ?? "", itemId: refs.itemId, itemDescription: text(r.item_description), uom: text(r.uom), poQty: dec(r.po_qty),
+    itemQty: dec(r.item_qty), balQty: dec(r.bal_qty), orderItemName: text(r.po_item_name), orderItemId: refs.orderItemId, legacy: legacyOf(r),
+  };
+}
+
 /** A Purchase Receipt row's columns (the importer's, and a receipt saved here: stock/receipt-save.ts). */
 export function receiptColumns(r: Row, refs: { supplierId: string | null; amendedFromId: string | null; gateEntryId: string | null }) {
   return {
@@ -249,23 +298,19 @@ export function buildStock(tables: Map<string, DumpTable>, known: KnownMasters):
   out.gateEntries = byCreation(rows("tabGate Entry")).map((r) => {
     const where = `Gate Entry ${r.name}`;
     return {
-      id: gateIds.get(r.name!)!, number: r.name!, namingSeries: r.naming_series ?? "", docStatus: docStatusOf(r),
-      amendedFromId: self(gateIds, r.amended_from, where, "amended from"), location: text(r.location),
-      orderNumber: r.po_no ?? "", orderId: order(r.po_no, where), orderDate: dateOnly(r.po_date),
-      supplierCode: r.supplier ?? "", supplierId: supplier(r.supplier, where), invoiceNo: text(r.invoice_no),
-      invoiceDate: dateOnly(r.invoice_date), gateEntryDate: dateOnly(r.gate_entry_date), receiptNumber: text(r.inward_no),
-      inwardDate: dateOnly(r.inward_date), financialYear: text(r.financial_year), vehicleNo: text(r.vehicle_no),
-      legacy: legacyOf(r), ...stamps(r),
+      id: gateIds.get(r.name!)!,
+      // (the links in the order the importer always looked them up, so its report reads the same)
+      ...gateEntryColumns(r, {
+        amendedFromId: self(gateIds, r.amended_from, where, "amended from"),
+        orderId: order(r.po_no, where), supplierId: supplier(r.supplier, where),
+      }),
     };
   });
   out.gateEntryItems = children("tabGate Entry Item", gateIds, "Gate Entry row").map((r) => {
     const where = `Gate Entry ${r.parent} row ${r.idx}`;
     return {
-      id: importId("gei", r.name!), erpnextName: r.name!, gateEntryId: gateIds.get(r.parent!)!, idx: int(r.idx),
-      orderNumber: text(r.po_no), orderId: order(r.po_no, where), orderDate: dateOnly(r.po_date), itemCode: r.item_code ?? "",
-      itemId: item(r.item_code, where), itemDescription: text(r.item_description), uom: text(r.uom), poQty: dec(r.po_qty),
-      itemQty: dec(r.item_qty), balQty: dec(r.bal_qty), orderItemName: text(r.po_item_name),
-      orderItemId: orderItem(r.po_item_name, where), legacy: legacyOf(r),
+      id: importId("gei", r.name!), gateEntryId: gateIds.get(r.parent!)!,
+      ...gateEntryItemColumns(r, { orderId: order(r.po_no, where), itemId: item(r.item_code, where), orderItemId: orderItem(r.po_item_name, where) }),
     };
   });
 
@@ -513,30 +558,11 @@ export function buildStock(tables: Map<string, DumpTable>, known: KnownMasters):
   // The stock books ---------------------------------------------------------------
   out.stockLedgerEntries = rows("tabStock Ledger Entry").map((r) => {
     const where = `Stock Ledger Entry ${r.name}`;
-    const at = localDateTime(r.posting_datetime) ?? localDateTime(`${r.posting_date} ${(r.posting_time ?? "00:00:00").slice(0, 15)}`);
-    return {
-      id: importId("sle", r.name!), erpnextName: r.name!, itemCode: r.item_code ?? "", itemId: item(r.item_code, where),
-      warehouseCode: r.warehouse ?? "", warehouseId: warehouse(r.warehouse, where), postingDate: dateOnly(r.posting_date)!,
-      postingTime: r.posting_time ?? "00:00:00", postingDateTime: at!, voucherType: r.voucher_type ?? "", voucherNo: r.voucher_no ?? "",
-      voucherDetailNo: text(r.voucher_detail_no), dependantSleVoucherDetailNo: text(r.dependant_sle_voucher_detail_no),
-      recalculateRate: bool(r.recalculate_rate), actualQty: dec(r.actual_qty), qtyAfterTransaction: dec(r.qty_after_transaction),
-      incomingRate: dec(r.incoming_rate), outgoingRate: dec(r.outgoing_rate), valuationRate: dec(r.valuation_rate),
-      stockValue: dec(r.stock_value), stockValueDifference: dec(r.stock_value_difference), stockQueue: text(r.stock_queue),
-      companyCode: r.company ?? "", stockUom: text(r.stock_uom), batchNo: text(r.batch_no), serialNo: text(r.serial_no),
-      fiscalYear: text(r.fiscal_year), isCancelled: bool(r.is_cancelled), docStatus: docStatusOf(r), legacy: legacyOf(r),
-      createdAt: localDateTime(r.creation) ?? undefined, updatedAt: localDateTime(r.modified) ?? undefined, createdBy: text(r.owner),
-    };
+    return { id: importId("sle", r.name!), ...stockLedgerColumns(r, { itemId: item(r.item_code, where), warehouseId: warehouse(r.warehouse, where) }) };
   });
   out.bins = rows("tabBin").map((r) => {
     const where = `Bin ${r.name}`;
-    return {
-      id: importId("bin", r.name!), erpnextName: r.name!, itemCode: r.item_code ?? "", itemId: item(r.item_code, where),
-      warehouseCode: r.warehouse ?? "", warehouseId: warehouse(r.warehouse, where), actualQty: dec(r.actual_qty),
-      plannedQty: dec(r.planned_qty), indentedQty: dec(r.indented_qty), orderedQty: dec(r.ordered_qty), reservedQty: dec(r.reserved_qty),
-      reservedQtyForProduction: dec(r.reserved_qty_for_production), reservedQtyForProductionPlan: dec(r.reserved_qty_for_production_plan),
-      reservedQtyForSubContract: dec(r.reserved_qty_for_sub_contract), projectedQty: dec(r.projected_qty), stockUom: text(r.stock_uom),
-      valuationRate: dec(r.valuation_rate), stockValue: dec(r.stock_value), legacy: legacyOf(r),
-    };
+    return { id: importId("bin", r.name!), ...binColumns(r, { itemId: item(r.item_code, where), warehouseId: warehouse(r.warehouse, where) }) };
   });
   out.itemPrices = rows("tabItem Price").map((r) => {
     const where = `Item Price ${r.name}`;

@@ -23,7 +23,8 @@
     "golden:ledger": "tsx scripts/golden-ledger.ts",
     "golden:receipts": "tsx scripts/golden-receipts.ts",
     "merge:sql": "tsx scripts/make-merge-sql.ts",
-    "users": "tsx scripts/purchase-users.ts"
+    "users": "tsx scripts/purchase-users.ts",
+    "export:data": "tsx scripts/export-data.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "5.9.1",

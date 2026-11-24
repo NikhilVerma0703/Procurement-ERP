@@ -14,6 +14,8 @@ import { COUNTRIES } from "@/lib/purchase/countries";
 import { siteToday } from "@/lib/purchase/format";
 import { purchaseGate, purchaseRefusal } from "@/lib/purchase/server/gate";
 import { db } from "@/lib/purchase/server/db";
+import { labelOf, PO_STATUS_KEYS } from "@/lib/purchase/orders/labels";
+import { financialYears } from "@/lib/purchase/stock/gate-entry-meta";
 
 export const dynamic = "force-dynamic";
 
@@ -242,6 +244,26 @@ const LOOKUPS: Record<string, (a: Args) => Promise<Row[]>> = {
       orderBy: { number: "desc" },
       take: 60,
     })).map((g) => ({ value: g.number, description: [g.orderNumber, g.supplierCode].filter(Boolean).join(", ") })),
+
+  // The Gate Entry's Po No (the add-on's set_query): submitted, not Closed, less than 99 % received.
+  // Its description as the old picker showed it (the PO's search fields): supplier, status, date and
+  // grand total as Python printed them ("298890.0").
+  gateEntryOrder: async ({ q }) =>
+    (await db.purchaseOrder.findMany({
+      where: { docStatus: "SUBMITTED", status: { not: "CLOSED" }, perReceived: { lt: 99 }, ...(q ? { OR: [{ number: has(q) }, { supplierName: has(q) }, { supplier: { code: has(q) } }] } : {}) },
+      select: { number: true, status: true, transactionDate: true, grandTotal: true, supplier: { select: { code: true } } },
+      orderBy: { number: "asc" },
+      take: 60,
+    })).map((o) => {
+      const total = Number(o.grandTotal);
+      return {
+        value: o.number,
+        description: [o.supplier.code, labelOf(PO_STATUS_KEYS, o.status), o.transactionDate.toISOString().slice(0, 10), Number.isInteger(total) ? total.toFixed(1) : String(total)].join(", "),
+      };
+    }),
+
+  // The Gate Entry's Financial Year (the company's April-to-March years).
+  fiscalYear: async ({ q }) => financialYears(siteToday()).filter((y) => !q || y.includes(q)).map((y) => ({ value: y })),
 
   // A Purchase Order to receive against: submitted, of the supplier, not closed or fully received.
   purchaseOrder: async ({ q, supplier }) =>

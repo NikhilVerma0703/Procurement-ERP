@@ -36,7 +36,9 @@ import { fieldErrorsOf, type ActionResult } from "../orders/form-schema";
 import { versionDiff } from "../orders/version";
 import type { PurchaseUser } from "../server/current-user";
 import { db } from "../server/db";
-import { computeReceipt, num, rowsOf, type DocRow } from "./receipt-doc";
+import { computeReceipt, num, receiptValuation, rowsOf, type DocRow } from "./receipt-doc";
+import { applyReceiptCancellation, applyReceiptSubmission } from "./receipt-submit";
+import { StockPostingError } from "./stock-post";
 import { DEFAULT_RECEIPT_SERIES, RECEIPT, RECEIPT_CHILDREN, RECEIPT_TABLES, seriesKey } from "./receipt-meta";
 
 type Tx = Prisma.TransactionClient;
@@ -113,6 +115,11 @@ interface SaveRequest {
   doc: unknown;
   /** The stored receipt's "modified" when the form opened it (Frappe's check that nobody saved since). */
   modified: string | null;
+  /**
+   * Submit it (the form's Submit, on a saved draft): validated and computed again as a save, then
+   * stored as submitted and posted — the stock ledger, the PO, the gate entry (stock/receipt-submit.ts).
+   */
+  submit?: boolean;
 }
 
 export async function saveReceipt(user: PurchaseUser, req: SaveRequest): Promise<ActionResult<{ id: string; number: string; modified: string }>> {
@@ -124,6 +131,7 @@ export async function saveReceipt(user: PurchaseUser, req: SaveRequest): Promise
       const stored = req.id ? await storedReceiptDoc(req.id) : null;
       if (req.id && !stored) throw new UserError("This Purchase Receipt no longer exists.");
       if (stored && stored.docStatus !== "DRAFT") throw new UserError(`Cannot edit a ${stored.docStatus === "SUBMITTED" ? "submitted" : "cancelled"} Purchase Receipt; only a draft can be changed.`);
+      if (req.submit && !stored) throw new UserError("Save the Purchase Receipt before submitting it.");
       if (stored && req.modified && String(stored.doc.modified ?? "") !== req.modified) {
         throw new UserError(`Document has been modified after you have opened it (${req.modified}, ${String(stored.doc.modified)}). Please refresh to get the latest document.`);
       }
@@ -255,12 +263,34 @@ export async function saveReceipt(user: PurchaseUser, req: SaveRequest): Promise
       const missing = missingFields(layout, RECEIPT_CHILDREN, computed);
       if (missing.summary) throw new UserError(missing.summary, missing.errors);
 
+      // Valuation (update_valuation_rate, every save) — what a submission posts to the ledger.
+      const isStock = (code: string) => Boolean(masters.get(code)?.isStockItem);
+      Object.assign(computed, receiptValuation(computed, isStock, SITE_PRECISION.currency));
+      // A submitted receipt with nothing billed is "To Bill" (one of value 0: "Completed").
+      const docstatus = req.submit ? "1" : "0";
+      if (req.submit) {
+        // Batches and serial numbers (StockLedgerEntry.validate_item, serial_no.validate_serial_no): the
+        // old site refused a batch item without its batch and a serialised one without its numbers. No
+        // receipt since 01-01-2026 received either (3,349 rows), so receiving into them is not built here.
+        rowsOf(computed.items).forEach((r, i) => {
+          const item = masters.get(str(r.item_code));
+          if (!item?.isStockItem || !num(r.qty)) return;
+          const named = item.itemName && item.itemName !== item.code ? `${item.code}:${item.itemName}` : item.code;
+          if (item.hasBatchNo) {
+            refuse(str(r.batch_no) ? `Row #${i + 1}: receiving into batches (Item ${named}) is not available in this ERP yet` : `Batch number is mandatory for Item ${named}`, `items.${i}.batch_no`);
+          }
+          if (item.hasSerialNo) refuse(`Serial Nos Required for Serialized Item ${item.code}`, `items.${i}.serial_no`);
+        });
+        computed.docstatus = 1;
+        computed.status = num(computed.grand_total) ? "To Bill" : "Completed";
+      }
+
       // --- write -------------------------------------------------------------------------------------
       const number = stored ? String(stored.doc.name) : await nextNumber(tx, str(computed.naming_series));
       const creation = stored ? String(stored.doc.creation ?? stamp) : stamp;
       const owner = stored ? String(stored.doc.owner ?? user.email) : user.email;
       computed.name = number;
-      const header = legacyRow(layout, computed, { name: number, owner, creation, modified: stamp, modified_by: user.email, docstatus: "0", idx: "0" });
+      const header = legacyRow(layout, computed, { name: number, owner, creation, modified: stamp, modified_by: user.email, docstatus, idx: "0" });
       const gate = str(computed.gate_entry) ? await tx.purchaseGateEntry.findUnique({ where: { number: str(computed.gate_entry) }, select: { id: true } }) : null;
       const id = req.id ?? importId("pr", number);
       const columns = receiptColumns(header, { supplierId: supplier!.id, amendedFromId: null, gateEntryId: gate?.id ?? null });
@@ -271,7 +301,7 @@ export async function saveReceipt(user: PurchaseUser, req: SaveRequest): Promise
       const orderIds = new Map((await tx.purchaseOrder.findMany({ where: { number: { in: [...new Set(rowsOf(computed.items).map((r) => str(r.purchase_order)).filter(Boolean))] } }, select: { number: true, id: true } })).map((x) => [x.number, x.id]));
       const orderItemIds = new Map([...poItems].map(([k, p]) => [k, p.id]));
       const childStandard = (table: string, doctype: string, r: DocRow, i: number) => ({
-        name: str(r.name), parent: number, parentfield: table, parenttype: RECEIPT, idx: String(i + 1), docstatus: "0",
+        name: str(r.name), parent: number, parentfield: table, parenttype: RECEIPT, idx: String(i + 1), docstatus,
         owner, creation, modified: stamp, modified_by: user.email,
       });
       const rowId = (kind: string, name: string) => stored?.rowIds.get(name) ?? importId(kind, name);
@@ -293,6 +323,9 @@ export async function saveReceipt(user: PurchaseUser, req: SaveRequest): Promise
       if (taxes_.length) await tx.purchaseReceiptTax.createMany({ data: taxes_.map((r) => ({ id: rowId("prt", r.name!), receiptId: id, ...receiptTaxColumns(r) })) });
       if (services_.length) await tx.purchaseReceiptServiceItem.createMany({ data: services_.map((r) => ({ id: rowId("prsi", r.name!), receiptId: id, ...receiptServiceColumns(r) })) });
 
+      // --- submission: the stock ledger, the PO, the gate entry, the item's last purchase rate ------------
+      if (req.submit) await applyReceiptSubmission(tx, computed, isStock, { email: user.email, now, stamp });
+
       // --- timeline ----------------------------------------------------------------------------------
       if (stored) {
         const diff = versionDiff(docSnapshot(layout, RECEIPT_CHILDREN, stored.doc, companyCurrency), docSnapshot(layout, RECEIPT_CHILDREN, computed, companyCurrency));
@@ -307,6 +340,55 @@ export async function saveReceipt(user: PurchaseUser, req: SaveRequest): Promise
     return { ok: true, value: out };
   } catch (e) {
     if (e instanceof UserError) return { ok: false, error: e.message, fieldErrors: e.fieldErrors };
+    if (e instanceof StockPostingError) return { ok: false, error: e.message };
+    throw e;
+  }
+}
+
+/**
+ * Cancel a submitted receipt (its Cancel, "Permanently Cancel …?"): refused while a submitted Landed
+ * Cost Voucher holds it (Frappe's linked-document check); otherwise stored as cancelled, its ledger
+ * entries reversed and later ones valued again, its POs' received quantities and its gate entry's
+ * Inward No undone (stock/receipt-submit.ts). The timeline records it as Frappe's Version did.
+ */
+export async function cancelReceipt(user: PurchaseUser, req: { id: string; modified: string | null }): Promise<ActionResult<{ id: string; number: string; modified: string }>> {
+  try {
+    const out = await db.$transaction(async (tx) => {
+      const stored = await storedReceiptDoc(req.id);
+      if (!stored) throw new UserError("This Purchase Receipt no longer exists.");
+      if (stored.docStatus !== "SUBMITTED") throw new UserError("Only a submitted Purchase Receipt can be cancelled.");
+      if (req.modified && String(stored.doc.modified ?? "") !== req.modified) {
+        throw new UserError("Document has been modified after you have opened it. Please refresh to get the latest document.");
+      }
+      const number = String(stored.doc.name);
+      const lcv = await tx.purchaseLandedCostReceipt.findFirst({ where: { receiptDocument: number, voucher: { docStatus: "SUBMITTED" } }, select: { voucher: { select: { number: true } } } });
+      if (lcv) throw new UserError(`Cannot cancel because submitted Landed Cost Voucher ${lcv.voucher.number} is linked with Purchase Receipt ${number}`);
+      const now = new Date();
+      const stamp = siteDateTime(now);
+      const r = await tx.purchaseReceipt.findUniqueOrThrow({ where: { id: req.id }, select: { legacy: true } });
+      await tx.purchaseReceipt.update({
+        where: { id: req.id },
+        data: {
+          docStatus: "CANCELLED", status: "Cancelled", updatedBy: user.email,
+          legacy: { ...((r.legacy ?? {}) as Record<string, unknown>), docstatus: "2", status: "Cancelled", modified: stamp, modified_by: user.email } as Prisma.InputJsonObject,
+        },
+      });
+      for (const it of await tx.purchaseReceiptItem.findMany({ where: { receiptId: req.id }, select: { id: true, legacy: true } })) {
+        await tx.purchaseReceiptItem.update({ where: { id: it.id }, data: { legacy: { ...((it.legacy ?? {}) as Record<string, unknown>), docstatus: "2", modified: stamp } as Prisma.InputJsonObject } });
+      }
+      await applyReceiptCancellation(tx, stored.doc, { email: user.email, now, stamp });
+      await tx.purchaseDocEvent.create({
+        data: {
+          source: "app", doctype: RECEIPT, docName: number, kind: "VERSION", at: now, byEmail: user.email,
+          data: { added: [], changed: [["docstatus", 1, 2]], removed: [], row_changed: [], data_import: null, updater_reference: null } as unknown as Prisma.InputJsonValue,
+        },
+      });
+      return { id: req.id, number, modified: stamp };
+    });
+    return { ok: true, value: out };
+  } catch (e) {
+    if (e instanceof UserError) return { ok: false, error: e.message, fieldErrors: e.fieldErrors };
+    if (e instanceof StockPostingError) return { ok: false, error: e.message };
     throw e;
   }
 }

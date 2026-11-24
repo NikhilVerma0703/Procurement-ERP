@@ -7,12 +7,13 @@ import { engineMasters } from "@/lib/purchase/orders/save";
 import { PURCHASE_PATHS } from "@/lib/purchase/routes";
 import { db } from "@/lib/purchase/server/db";
 import { purchasePageGate } from "@/lib/purchase/server/page";
-import { blankReceipt, receiptFromOrder } from "@/lib/purchase/stock/receipt-map";
+import { blankReceipt, receiptFromGateEntry, receiptFromOrder } from "@/lib/purchase/stock/receipt-map";
 import { RECEIPT_CHILDREN } from "@/lib/purchase/stock/receipt-meta";
 
-// A new Purchase Receipt (Phase II, owner 21-11-2026): blank (the list's Add Purchase Receipt), or
-// made from a submitted PO (its Create › Purchase Receipt: ?purchase_order=<PO id>), as ERPNext's
-// make_purchase_receipt made it. Nothing is stored until Save.
+// A new Purchase Receipt (Phase II, owner 21-11-2026): blank (the list's Add Purchase Receipt), made
+// from a submitted PO (its Create › Purchase Receipt: ?purchase_order=<PO id>), as ERPNext's
+// make_purchase_receipt made it, or from a submitted Gate Entry (its Create › Purchase Receipt:
+// ?gate_entry=<id>, owner 23-11-2026). Nothing is stored until Save.
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "New Purchase Receipt" };
@@ -21,7 +22,8 @@ export default async function NewPurchaseReceiptPage({ searchParams }: { searchP
   await purchasePageGate("stock");
   const sp = await searchParams;
   const fromOrder = typeof sp.purchase_order === "string" ? sp.purchase_order : null;
-  const made = fromOrder ? await receiptFromOrder(fromOrder) : null;
+  const fromGate = typeof sp.gate_entry === "string" ? sp.gate_entry : null;
+  const made = fromGate ? await receiptFromGateEntry(fromGate) : fromOrder ? await receiptFromOrder(fromOrder) : null;
   const initial = made?.ok ? made.doc : await blankReceipt();
   const company = await db.purchaseCompany.findFirst({ where: { code: String(initial.company ?? "") }, select: { defaultCurrency: true } });
   const companyCurrency = company?.defaultCurrency ?? "INR";

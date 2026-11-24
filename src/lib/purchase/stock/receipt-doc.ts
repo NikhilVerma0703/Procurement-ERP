@@ -13,6 +13,7 @@ import type { CalcCurrency } from "../calc";
 import { flt } from "../calc/pymath";
 import { GST_TAX_TYPES, SITE_PRECISION } from "../calc/settings";
 import type { AddDeduct, ApplyDiscountOn, ChargeType, TaxCategory } from "../calc/totals";
+import type { PostEntry } from "./ledger-format";
 import { calculateReceipt, type ReceiptCalcInput, type ReceiptCalcResult } from "./receipt-calc";
 
 export type Doc = Record<string, unknown>;
@@ -103,6 +104,50 @@ export function receiptQuantities(it: DocRow): DocRow {
   const received = num(it.received_qty) || flt(qty + rejected, fp);
   const cf = num(it.conversion_factor) || 1;
   return { ...it, received_qty: received, received_stock_qty: flt(received * cf, fp) };
+}
+
+/**
+ * Each row's Item Tax Amount and Valuation Rate (ERPNext 14 BuyingController.update_valuation_rate,
+ * run on every save): the taxes counted in valuation (category Valuation or Valuation and Total) are
+ * spread over the stock rows by their net amount — the last stock row takes what is left — and a
+ * row's valuation rate is (net amount + its tax share + landed cost) per stock unit. A row that is
+ * not a stock item is valued 0. The old site's GST taxes were "Total", so its rates are the net rates
+ * (PR/25-26/MM-03457: 280.000000). Stored to the field's precision, 6.
+ */
+export function receiptValuation(doc: Doc, isStock: (itemCode: string) => boolean, currencyPrecision: number): Doc {
+  const items = rowsOf(doc.items);
+  let stockQty = 0;
+  let stockAmount = 0;
+  let lastStock = -1;
+  items.forEach((it, i) => {
+    const code = str(it.item_code);
+    if (code && isStock(code)) {
+      stockQty += num(it.qty);
+      stockAmount += num(it.base_net_amount);
+      lastStock = i;
+    }
+  });
+  const totalValuation = rowsOf(doc.taxes)
+    .filter((t) => t.category === "Valuation" || t.category === "Valuation and Total")
+    .reduce((s, t) => s + num(t.base_tax_amount_after_discount_amount), 0);
+  let left = totalValuation;
+  return {
+    ...doc,
+    items: items.map((it, i) => {
+      const code = str(it.item_code);
+      if (!code || !num(it.qty) || !isStock(code)) return { ...it, item_tax_amount: 0, valuation_rate: 0 };
+      const share = stockAmount ? num(it.base_net_amount) / stockAmount : num(it.qty) / stockQty;
+      let itemTax: number;
+      if (i === lastStock) itemTax = flt(left, currencyPrecision);
+      else {
+        itemTax = flt(share * totalValuation, currencyPrecision);
+        left -= itemTax;
+      }
+      const stockUnits = flt(num(it.qty) * (num(it.conversion_factor) || 1));
+      const rate = stockUnits ? (num(it.base_net_amount) + itemTax + num(it.landed_cost_voucher_amount)) / stockUnits : 0;
+      return { ...it, item_tax_amount: itemTax, valuation_rate: flt(rate, 6) };
+    }),
+  };
 }
 
 /** The document with every computed figure filled in, as the old site stored them. */
@@ -196,3 +241,27 @@ export function computeReceipt(doc: Doc, m: ReceiptMasters): { doc: Doc; result:
     },
   };
 }
+
+/** update_stock_ledger's entries for a receipt (accepted, then rejected, row by row). */
+export function receiptStockEntries(doc: Doc, isStock: (itemCode: string) => boolean): PostEntry[] {
+  const str = (v: unknown) => (typeof v === "string" ? v.trim() : v === null || v === undefined ? "" : String(v));
+  const out: PostEntry[] = [];
+  const base = {
+    company: str(doc.company), voucherType: "Purchase Receipt", voucherNo: str(doc.name), postingDate: str(doc.posting_date), postingTime: str(doc.posting_time),
+  };
+  for (const r of rowsOf(doc.items)) {
+    const code = str(r.item_code);
+    if (!code || !isStock(code)) continue;
+    const cf = num(r.conversion_factor) || 1;
+    const accepted = flt(num(r.qty) * cf, 3);
+    if (accepted && str(r.warehouse)) {
+      out.push({ ...base, itemCode: code, warehouse: str(r.warehouse), stockUom: str(r.stock_uom) || null, actualQty: accepted, incomingRate: flt(num(r.valuation_rate), 6), voucherDetailNo: str(r.name) || null });
+    }
+    const rejected = flt(num(r.rejected_qty) * cf, 3);
+    if (rejected && str(r.rejected_warehouse)) {
+      out.push({ ...base, itemCode: code, warehouse: str(r.rejected_warehouse), stockUom: str(r.stock_uom) || null, actualQty: rejected, incomingRate: 0, voucherDetailNo: str(r.name) || null });
+    }
+  }
+  return out;
+}
+

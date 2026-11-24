@@ -95,6 +95,10 @@ body {
 .purchase-root .po-html .tax-break-up th { background: #f9fafb; font-weight: 500; color: #4b5563; }
 .purchase-root .po-html .tax-break-up .text-right { text-align: right; }
 .purchase-root .po-html .tax-break-up .text-left { text-align: left; }
+/* The top search box (search/UniversalSearch.tsx): the letters a result matched, highlighted as the
+ * old box's <mark>; "Search for … ↵" carries its key. */
+.purchase-root .po-search mark { background: #fff3c4; color: inherit; padding: 0; border-radius: 1px; }
+.purchase-root .po-search kbd { font-family: inherit; font-size: 11px; border: 1px solid #d1d5db; border-radius: 4px; padding: 0 5px; color: #6b7280; background: #f9fafb; }
 /* ⋯ › Jump to field: the field it lands on flashes once (form/JumpToField.tsx). */
 .purchase-root .po-jump-highlight { animation: po-jump 1.5s ease-out; border-radius: 0.375rem; }
 @keyframes po-jump { 0%, 40% { background: #fef3c7; box-shadow: 0 0 0 4px #fef3c7; } 100% { background: transparent; box-shadow: 0 0 0 4px transparent; } }

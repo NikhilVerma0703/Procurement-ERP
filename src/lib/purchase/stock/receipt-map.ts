@@ -50,6 +50,42 @@ export async function blankReceipt(): Promise<Doc> {
   };
 }
 
+/**
+ * A receipt from a submitted Gate Entry — its Create › Purchase Receipt (the add-on's
+ * gate_entry.create_purchase_receipt, whose code was never obtainable: the rule is the old site's own
+ * data, 9,092 gate-entry rows against their receipts, 23-11-2026): the receipt of the entry's PO
+ * (make_purchase_receipt above), keeping only the PO lines the entry received — rows with an Item Qty
+ * above 0 (9,057 carried, 35 not; of rows at 0, 4,026 left out) — each for that Item Qty (9,010 of
+ * 9,076), in the PO's order; then the form set the receipt's Gate Entry, and its Bill No and Bill Date
+ * to the entry's Invoice No and Date (4,381 and 4,418 of 4,460). A gate entry that has its Inward No
+ * already has its receipt.
+ */
+export async function receiptFromGateEntry(gateEntryId: string): Promise<{ ok: true; doc: Doc } | { ok: false; error: string }> {
+  const g = await db.purchaseGateEntry.findUnique({
+    where: { id: gateEntryId },
+    select: { number: true, docStatus: true, orderId: true, orderNumber: true, receiptNumber: true, invoiceNo: true, invoiceDate: true, items: { select: { orderItemName: true, itemQty: true } } },
+  });
+  if (!g) return { ok: false, error: "This Gate Entry no longer exists." };
+  if (g.docStatus !== "SUBMITTED") return { ok: false, error: `Gate Entry ${g.number} is not submitted` };
+  if (g.receiptNumber) return { ok: false, error: `Gate Entry ${g.number} already has its Purchase Receipt ${g.receiptNumber}` };
+  if (!g.orderId) return { ok: false, error: `Could not find Purchase Order: ${g.orderNumber}` };
+  const made = await receiptFromOrder(g.orderId);
+  if (!made.ok) return made;
+  const received = new Map(g.items.filter((i) => n(i.itemQty) > 0 && i.orderItemName).map((i) => [i.orderItemName!, n(i.itemQty)]));
+  const fp = SITE_PRECISION.float;
+  const items = (made.doc.items as Doc[])
+    .filter((r) => received.has(String(r.purchase_order_item)))
+    .map((r, k) => {
+      const qty = received.get(String(r.purchase_order_item))!;
+      const cf = Number(r.conversion_factor) || 1;
+      return { ...r, idx: k + 1, qty, received_qty: qty, rejected_qty: 0, stock_qty: flt(qty * cf, fp), received_stock_qty: flt(qty * cf, fp) };
+    });
+  if (!items.length) return { ok: false, error: `Gate Entry ${g.number} has no Item Qty to receive` };
+  const doc: Doc = { ...made.doc, items, gate_entry: g.number, bill_no: g.invoiceNo ?? "", bill_date: ymd(g.invoiceDate) };
+  const company = await db.purchaseCompany.findUnique({ where: { code: String(doc.company) }, select: { defaultCurrency: true } });
+  return { ok: true, doc: computeReceipt(doc, await engineMasters(company?.defaultCurrency ?? "INR")).doc };
+}
+
 export async function receiptFromOrder(orderId: string): Promise<{ ok: true; doc: Doc } | { ok: false; error: string }> {
   const o = await db.purchaseOrder.findUnique({ where: { id: orderId }, include: ORDER_INCLUDE });
   if (!o) return { ok: false, error: "This Purchase Order no longer exists." };

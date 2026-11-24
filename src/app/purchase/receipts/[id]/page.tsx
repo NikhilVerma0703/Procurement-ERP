@@ -10,13 +10,14 @@ import { IndicatorPill } from "@/components/purchase/doc/IndicatorPill";
 import { PageHeader } from "@/components/purchase/layout/PageHeader";
 import { LAYOUTS } from "@/lib/purchase/doc/layouts";
 import { transactionLabels } from "@/lib/purchase/doc/transaction";
-import { masterPath, orderPath, receiptPath } from "@/lib/purchase/routes";
+import { gateEntryPath, masterPath, orderPath, receiptPath } from "@/lib/purchase/routes";
 import { db } from "@/lib/purchase/server/db";
 import { purchasePageGate } from "@/lib/purchase/server/page";
 import { receiptIndicator } from "@/lib/purchase/stock/receipt-status";
 import { receiptConnections } from "@/lib/purchase/stock/connections";
 import { adjacentReceipts, loadReceiptDoc } from "@/lib/purchase/stock/receipts";
 import { ReceiptForm } from "@/components/purchase/stock/ReceiptForm";
+import { ReceiptCancelButton } from "@/components/purchase/stock/ReceiptCancelButton";
 import { engineMasters } from "@/lib/purchase/orders/save";
 import { RECEIPT_CHILDREN } from "@/lib/purchase/stock/receipt-meta";
 import { storedReceiptDoc } from "@/lib/purchase/stock/receipt-save";
@@ -93,7 +94,12 @@ export default async function PurchaseReceiptPage({ params }: { params: Promise<
         crumbs={["Stock", "Purchase Receipt", receipt.number]}
         title={receipt.title ?? receipt.number}
         badge={<IndicatorPill label={ind.label} colour={ind.colour} />}
-        actions={navigation}
+        actions={
+          <>
+            {navigation}
+            {receipt.docStatus === "SUBMITTED" && <ReceiptCancelButton id={receipt.id} number={receipt.number} modified={String(doc.modified ?? "")} />}
+          </>
+        }
       />
       <section className="po-card">
         <DocumentView
@@ -109,6 +115,7 @@ export default async function PurchaseReceiptPage({ params }: { params: Promise<
               if (table === null && f.fieldname === "supplier") return ids.supplier ? masterPath("suppliers", ids.supplier) : null;
               if (f.fieldname === "item_code") { const i = ids.items.get(value); return i ? masterPath("items", i) : null; }
               if (f.fieldname === "purchase_order") { const o = ids.orders.get(value); return o ? orderPath(o) : null; }
+              if (table === null && f.fieldname === "gate_entry") return receipt.gateEntryId ? gateEntryPath(receipt.gateEntryId) : null;
               return null;
             },
           }}

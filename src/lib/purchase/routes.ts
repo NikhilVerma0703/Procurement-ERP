@@ -26,7 +26,19 @@ export const PURCHASE_PATHS = {
   receipts: "/purchase/receipts",
   stockLedger: "/purchase/stock-ledger",
   stockBalance: "/purchase/stock-balance",
+  // Thiru R's Gate Entry (the add-on's DocType; owner, 23-11-2026).
+  gateEntries: "/purchase/gate-entries",
 } as const;
+
+/** One Gate Entry's page. */
+export const gateEntryPath = (id: string) => `${PURCHASE_PATHS.gateEntries}/${encodeURIComponent(id)}`;
+/** A new Gate Entry; `amend` amends a cancelled one. */
+export const gateEntryNewPath = (opts: { amend?: string } = {}) =>
+  `${PURCHASE_PATHS.gateEntries}/new${opts.amend ? `?amend=${encodeURIComponent(opts.amend)}` : ""}`;
+/** A Gate Entry's print view (the old "GATE ENTRY PRINT"). */
+export const gateEntryPrintPath = (id: string) => `${gateEntryPath(id)}/print`;
+/** A receipt made from a submitted Gate Entry (its Create › Purchase Receipt). */
+export const receiptFromGateEntryPath = (gateEntryId: string) => `${PURCHASE_PATHS.receipts}/new?gate_entry=${encodeURIComponent(gateEntryId)}`;
 
 /** One Purchase Order's page. */
 export const orderPath = (id: string) => `${PURCHASE_PATHS.orders}/${encodeURIComponent(id)}`;
@@ -51,6 +63,8 @@ export const PURCHASE_API_PATHS = {
   ordersPrint: "/api/purchase/orders/print",
   /** The PO form's link fields search here (Frappe's search_link). */
   lookup: "/api/purchase/lookup",
+  /** The search box's "Search for …" (Frappe's global search). */
+  search: "/api/purchase/search",
 } as const;
 
 /** A PO's print view (layout choice, PDF, Print). */
@@ -116,7 +130,15 @@ export const PURCHASE_MODULES: readonly PurchaseNavModule[] = [
     label: "Stock",
     groups: [
       { label: "Items and Pricing", rows: [{ href: PURCHASE_PATHS.items, label: "Item" }] },
-      { label: "Stock Transactions", rows: [{ href: PURCHASE_PATHS.receipts, label: "Purchase Receipt" }] },
+      // Gate Entry was the add-on's own DocType, reached by the search box ("Gate Entry List"); here it
+      // stands next to the receipt it leads to (PO → Gate Entry → Purchase Receipt, docs/12 §4).
+      {
+        label: "Stock Transactions",
+        rows: [
+          { href: PURCHASE_PATHS.gateEntries, label: "Gate Entry" },
+          { href: PURCHASE_PATHS.receipts, label: "Purchase Receipt" },
+        ],
+      },
       {
         label: "Stock Reports",
         rows: [

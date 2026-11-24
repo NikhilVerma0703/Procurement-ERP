@@ -21,6 +21,7 @@ npm run golden:ledger # the FIFO valuation engine replays every entry of the old
 npm run import:erpnext  # load the newest backup in data/erpnext-backup (another machine's DB: --target <host>)
 npm run verify:erpnext  # read-only: does the database still equal the backup?
 npm run merge:sql  # rebuild merge/ for the Main ERP after any schema change
+npm run export:data -- --out "<folder>"  # every record as readable Excel, by the old menus (company data: outside the repo)
 ```
 
 ## Rules of this codebase
@@ -74,4 +75,5 @@ npm run merge:sql  # rebuild merge/ for the Main ERP after any schema change
 | Merge into the Main ERP: what moves, seams, SQL script, cut-over | `docs/10-merge-guide.md` (files: `merge/`, made by `scripts/make-merge-sql.ts`) |
 | Acceptance checklist, sign-off, every open owner decision | `docs/11-acceptance.md` |
 | Phase II (Buying + Stock, Thiru R): who uses what, the 23 Stock sections, data secured, build order, owner decisions | `docs/12-phase-2-buying-and-stock.md` (setup: `docs/reference/erpnext-setup/stock/`; add-on scripts: `docs/reference/live-capture/stock/`; importer: `src/lib/purchase/migrate/stock-build.ts`; forms drawn from the old site's captured definitions: `src/lib/purchase/doc/`) |
+| The top search box; Gate Entry; a receipt's Submit / Cancel (stock ledger, POs, gate entry) | `docs/13-search-gate-entry-receipt.md` (code: `src/lib/purchase/search/`, `src/lib/purchase/stock/{gate-entry-*,gate-entries,receipt-submit,stock-post,ledger-format}.ts`) |
 | Main ERP conventions | `C:\Users\User\Desktop\Pacific-ERP-payment-tracking` (read `origin/main` through git; don't modify that checkout) |

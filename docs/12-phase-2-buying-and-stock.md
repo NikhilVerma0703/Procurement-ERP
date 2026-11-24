@@ -1,7 +1,7 @@
 # Phase II — the Buying module and the Stock module
 
-**Status:** discovery done, data secured and imported (all 27 Stock tables + 3,227 POs, 125 checks equal), navigation and access done, Stock Ledger and Stock Balance built and equal to the old site's own answers; the other screens next.
-**Date:** 21-11-2026
+**Status:** discovery done, data secured and imported (final backup of 24-11-2026: 3,229 POs, 4,693 gate entries, 5,604 receipts), navigation and access done, Stock Ledger and Stock Balance equal to the old site's own answers; the top search box, Gate Entry, and the receipt's submission and cancellation built (24-11-2026, docs/13); the other screens next.
+**Date:** 21-11-2026 (updated 24-11-2026)
 **Asked by the owner (21-11-2026):** Phase I replicated the part of the old site that **Althaf** uses (Buying →
 Purchase Order and the masters a PO links to). Phase II adds what **Thiru R** (Storekeeper) uses as well:
 the old site's **Stock → Masters & Reports** (Items and Pricing, Stock Transactions, Stock Reports), his
@@ -89,8 +89,8 @@ Stock Settings: **FIFO** valuation, no negative stock, default warehouse *Stores
   (`Purchase Receipt.gate_entry`). Two email notifications (saved, submitted); print format *GATE ENTRY PRINT*.
 * **Purchase Receipt** receives the PO's items into a warehouse, raises Quality Inspections and Serial Nos /
   Batches, writes the Stock Ledger, and is the base of Landed Cost Vouchers.
-* **The owner will explain the Gate Entry workflow separately.** Until then it is not built; its 4,682 records are
-  imported unchanged (with their 13,919 rows), so nothing is lost.
+* **Built 24-11-2026** (owner, 23-11-2026: "build this entire gate entry list and the Receipt section"): the list,
+  the form, its states and Create › Purchase Receipt, with every old entry (docs/13 §2).
 * **What its form did** (the add-on's script, captured 21-11 — reference for when the owner explains it, not a design):
   the PO picker offered submitted POs not Closed and less than 99 % received; choosing the PO filled the rows from the
   PO's items (PO qty, balance = PO qty) and rows could not be added by hand; typing the received Item Qty set Bal Qty =
@@ -158,8 +158,10 @@ Ordered by what the two users do **today**, so the switch-over loses no daily wo
      reconciliations of serialised slabs that took the reconciliation's own rate. Since 23-12-2024 every entry
      replays exactly — the settings new receipts post under. ERPNext's valuation counted the entry cancelled only
      by its docstatus (MAT-RECO-2024-00247); its reports skip it.
-   * Next: entering and editing drafts (1,215 on the old site), submit / cancel posting the stock ledger with this
-     engine, the four print formats (default "QR Codes"), then Landed Cost Voucher.
+   * ✅ (23–24-11) **Entering and editing drafts, Submit and Cancel**: posting the stock ledger with this engine, the
+     bins, the POs' received quantities and status, the gate entry's Inward No (docs/13 §3). Batch / serial items
+     are refused (none received since 01-01-2026).
+   * Next: the four print formats (default "QR Codes"), then Landed Cost Voucher.
 4. **Stock Reports** — each checked against the captured live answers (`npm run golden:stock`):
    * ✅ **Stock Ledger** and **Stock Balance** (21-11): `lib/purchase/stock/reports.ts` (ERPNext 14.92's arithmetic,
      Python floats, Banker's Rounding (legacy) at precision 3), pages `/purchase/stock-ledger`, `/purchase/stock-balance`.
@@ -174,7 +176,7 @@ Ordered by what the two users do **today**, so the switch-over loses no daily wo
    Tariff Number).
 6. **Stock Transactions:** Material Request, Stock Entry (with the add-on's transfer and serial-no behaviour),
    Delivery Note, Pick List, Delivery Trip.
-7. **Gate Entry**, once the owner has explained it.
+7. ✅ **Gate Entry** (24-11-2026, docs/13 §2), and the top search box (docs/13 §1).
 8. **Access** for the two logins, the acceptance checklist extended, the merge script regenerated.
 
 ## 8. Owner decisions
@@ -191,5 +193,6 @@ Ordered by what the two users do **today**, so the switch-over loses no daily wo
 5. **At the merge:** the Main ERP already has a Store (Add Bag, Resin Intake, RM Invoices, RM Assignment) and an
    Inventory module. Material Request and Stock Entry stopped on the old site in 10-2025 / 03-2026 — perhaps moved
    there. Confirm which stock screens the store will use after the merge, so stock is not kept twice.
-6. **Gate Entry workflow** — to be explained by the owner.
+6. **Gate Entry workflow** — built from the old site's own script, probes and records (docs/13 §2); its two
+   notifications are not sent (as the PO's). Confirm.
 7. **The final backup** — the day and hour the old site stops taking entries.
