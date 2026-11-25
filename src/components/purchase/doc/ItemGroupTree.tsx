@@ -5,7 +5,7 @@
 // the root "All Item Groups" open, groups as folders, leaves as files, children in name order. A
 // click selects a node and shows its buttons: Edit, Add Child (groups only), Delete. Add Child and New
 // ask for the new group's name and whether it is a group ("Group Node"), as the old dialog did.
-// Rename is not offered here (docs/14 §2).
+// Rename is not offered here (docs/14 §3).
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";

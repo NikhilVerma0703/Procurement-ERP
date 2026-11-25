@@ -88,6 +88,17 @@ Pick POs you know from the old site.
 | H8 | ⋯ › Rename a test supplier, then try to Delete a supplier with POs. | The new name is everywhere it was used. The delete is refused ("Cannot delete or cancel because …"). | |
 | H9 | On any master list: tick rows, Actions › Export; then tick a record in use and Actions › Delete. Like a row and use the heading's ♡. | A `.csv` of the ticked rows downloads. The delete is refused with the record's link. The heading's heart shows only what you liked. | |
 
+## H2. Stock › Masters & Reports (docs/14, as the storekeeper)
+
+| # | Do | Expect | ✓ / ✗ |
+|---|---|---|---|
+| S1 | Open the sidebar's Stock module. | Items and Pricing (10), Stock Transactions (7, Gate Entry with them) and Stock Reports (7), in the old workspace's order; every link opens. | |
+| S2 | Gate Entry: widen the window past 1,920 px, then narrow it below 1,366 px. Click "1,000+". | ID, Status, Po No, Inward No, Supplier, Inward Date when wide; ID, Status, Po No when narrow. "20 of 4,693". | |
+| S3 | Item Group: Add Child "Test" under All Item Groups, then Delete it; try to delete "Steel". | Made and deleted; "Steel" is refused (items use it). | |
+| S4 | Item Price: add one for a test item on Standard Buying; add the same again. | Saved with the list's currency; the second is refused ("Item Price appears multiple times …"). Delete the test price. | |
+| S5 | Open a Material Request, a Stock Entry and a Delivery Note. | The old form, read-only, with its rows and history; no Add button (docs/12 §8, decision 5). | |
+| S6 | Run Stock Ageing, Stock Projected Qty, Item Price Stock, Warehouse Wise Stock Balance, Stock Summary. | The old figures (`npm run golden:stock` holds them equal row for row); Stock Ageing's chart of the ten oldest items. | |
+
 ## I. On production, after the merge
 
 | # | Do | Expect | ✓ / ✗ |

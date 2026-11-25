@@ -24,7 +24,8 @@
     "golden:receipts": "tsx scripts/golden-receipts.ts",
     "merge:sql": "tsx scripts/make-merge-sql.ts",
     "users": "tsx scripts/purchase-users.ts",
-    "export:data": "tsx scripts/export-data.ts"
+    "export:data": "tsx scripts/export-data.ts",
+    "check:stock-forms": "tsx --conditions=react-server scripts/check-stock-forms.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "5.9.1",

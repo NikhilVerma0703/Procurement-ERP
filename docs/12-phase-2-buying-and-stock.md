@@ -129,8 +129,8 @@ The PO screens are one shared set: Thiru R raises POs exactly as Althaf does (89
 
 Ordered by what the two users do **today**, so the switch-over loses no daily work:
 
-1. ✅ **Navigation** (21-11): Buying is the module heading over its nine sections; Stock shows its three cards'
-   built sections (Item so far); each module by role (`lib/purchase/nav.ts`, `tests/purchase/nav.test.ts`).
+1. ✅ **Navigation** (21-11; complete 24-11): Buying is the module heading over its nine sections; Stock shows its
+   three cards with every link of the old workspace; each module by role (`lib/purchase/nav.ts`).
 2. ✅ **Data layer** (21-11): 27 tables (`docs/02` Phase II), `stock-build.ts` in the importer, every count and the
    stock sums reconciled with the backup, `verify:erpnext` covering them (`docs/03`, re-run on 21-11).
 3. **Purchase Receipt** (list, form, print formats, submit/cancel writing the Stock Ledger with FIFO valuation,
@@ -170,12 +170,16 @@ Ordered by what the two users do **today**, so the switch-over loses no daily wo
      entry (MAT-RECO-2024-00247) cancelled only by its docstatus — the reports skip it, as ERPNext's did.
      Filters not yet built: Warehouse Type, Valuation Field Type, Include UOM, Show Variant Attributes, Show Stock
      Ageing Data (Balance); Brand, Project, Include UOM (Ledger); the ledger's Balance Serial No column.
-   * Stock Projected Qty, Stock Summary, Stock Ageing, Item Price Stock, Warehouse Wise Stock Balance — next.
-5. **Items and Pricing:** Item Group, Price List, Item Price (and its automatic insert from PO / PR), then the
-   five unused masters (Product Bundle, Shipping Rule, Pricing Rule, Item Alternative, Item Manufacturer, Customs
-   Tariff Number).
-6. **Stock Transactions:** Material Request, Stock Entry (with the add-on's transfer and serial-no behaviour),
-   Delivery Note, Pick List, Delivery Trip.
+   * ✅ (24-11) **Stock Projected Qty, Stock Summary, Stock Ageing, Item Price Stock, Warehouse Wise Stock Balance**
+     (`lib/purchase/stock/reports-more.ts`, docs/14 §5): equal to the old site's answers of 24-11-2026 on every
+     row, in its order (the old database's collation ported, `stock/collation.ts`).
+5. ✅ (24-11) **Items and Pricing:** Item Group (tree), Price List, Item Price, and the six unused masters (Product
+   Bundle, Shipping Rule, Pricing Rule, Item Alternative, Item Manufacturer, Customs Tariff Number), entered here
+   with ERPNext 14's rules (docs/14 §3; `npm run check:stock-forms`). Still to build: Item Price's automatic
+   insert from a PO / receipt rate.
+6. ✅ (24-11) **Stock Transactions, read-only:** Material Request, Stock Entry, Delivery Note (every old record),
+   Pick List, Delivery Trip (docs/14 §4). Entering them (Stock Entry with the add-on's transfer and serial-no
+   behaviour) waits for decision 5.
 7. ✅ **Gate Entry** (24-11-2026, docs/13 §2), and the top search box (docs/13 §1).
 8. **Access** for the two logins, the acceptance checklist extended, the merge script regenerated.
 

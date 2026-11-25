@@ -41,8 +41,11 @@ Code: `lib/purchase/stock/gate-entry-meta.ts` (pure rules), `gate-entries.ts` (l
 `gate-entry-save.ts` (save, submit, cancel, delete, amend), `components/purchase/stock/GateEntryForm.tsx`, pages
 `app/purchase/gate-entries/` (list, `new`, `[id]`, `[id]/print`). Sidebar: Stock › Stock Transactions › Gate Entry.
 
-* **The list** as Thiru R had it: ID, Status, Po No; newest created first; the ID filter; "+ Add Gate Entry";
-  20 / 100 / 500 / 2500 and Load More; "20 of 1,000+".
+* **The list** is the old list view (docs/14 §2, since 24-11-2026): ☐ ♥ ID, Status, Po No, and from a wider
+  window Inward No, Supplier (≥ 1,367 px) and Inward Date (≥ 1,920 px), as the old list chose its columns by the
+  window's width; the "assigned to" dash, when each changed, comments; newest created first (Thiru R's setting);
+  the ID filter, Filter, sort; "+ Add Gate Entry"; 20 / 100 / 500 / 2500 and Load More; "20 of 1,000+", a click
+  giving the exact count. Actions › Delete goes through the entry's own Delete.
 * **The form** from its captured layout. New: Naming Series (GE-25-26-.##### or GE-.{financial_year}.-.#####),
   Location Hosur, Invoice Date and Gate Entry Date today. Po No's picker offers submitted POs, not Closed, under
   99 % received, described "supplier, status, date, grand total". Choosing the PO fills Supplier, Po Date and the
