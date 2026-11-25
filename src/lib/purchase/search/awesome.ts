@@ -27,6 +27,12 @@ export interface SearchDoctype {
   create?: string;
   /** The list's address-bar parameter for "Find <text> in …" (its ID / title search). */
   find: string;
+  /**
+   * The list is the old list view (doc/DocList), which takes Frappe's route options: "Find <text> in
+   * <DocType>" sets name like %text%, and the list on screen its title field (or name) like %text%
+   * (awesome_bar.js make_search_in_list / make_search_in_current, captured 23-11-2026).
+   */
+  routeOptions?: { title: string | null };
 }
 
 export interface SearchReport {
@@ -41,17 +47,17 @@ export interface SearchReport {
  * Entry 472) — equal scores keep that order. `action` is who may open it; `createAction` who may add one.
  */
 const DOCTYPES: readonly (SearchDoctype & { action: "view" | "stock"; createAction: "save" | "masters" | "stock" })[] = [
-  { doctype: "Terms and Conditions", list: PURCHASE_PATHS.terms, create: `${PURCHASE_PATHS.terms}/new`, find: "q", action: "view", createAction: "masters" },
-  { doctype: "Supplier", list: PURCHASE_PATHS.suppliers, create: `${PURCHASE_PATHS.suppliers}/new`, find: "q", action: "view", createAction: "masters" },
-  { doctype: "Address", list: PURCHASE_PATHS.addresses, create: `${PURCHASE_PATHS.addresses}/new`, find: "q", action: "view", createAction: "masters" },
-  { doctype: "Payment Terms Template", list: PURCHASE_PATHS.paymentTermsTemplates, create: `${PURCHASE_PATHS.paymentTermsTemplates}/new`, find: "q", action: "view", createAction: "masters" },
-  { doctype: "Contact", list: PURCHASE_PATHS.contacts, create: `${PURCHASE_PATHS.contacts}/new`, find: "q", action: "view", createAction: "masters" },
+  { doctype: "Terms and Conditions", list: PURCHASE_PATHS.terms, create: `${PURCHASE_PATHS.terms}/new`, find: "name", routeOptions: { title: null }, action: "view", createAction: "masters" },
+  { doctype: "Supplier", list: PURCHASE_PATHS.suppliers, create: `${PURCHASE_PATHS.suppliers}/new`, find: "name", routeOptions: { title: "supplier_name" }, action: "view", createAction: "masters" },
+  { doctype: "Address", list: PURCHASE_PATHS.addresses, create: `${PURCHASE_PATHS.addresses}/new`, find: "name", routeOptions: { title: null }, action: "view", createAction: "masters" },
+  { doctype: "Payment Terms Template", list: PURCHASE_PATHS.paymentTermsTemplates, create: `${PURCHASE_PATHS.paymentTermsTemplates}/new`, find: "name", routeOptions: { title: null }, action: "view", createAction: "masters" },
+  { doctype: "Contact", list: PURCHASE_PATHS.contacts, create: `${PURCHASE_PATHS.contacts}/new`, find: "name", routeOptions: { title: null }, action: "view", createAction: "masters" },
   { doctype: "Purchase Order", list: PURCHASE_PATHS.orders, create: PURCHASE_PATHS.orderNew, find: "name", action: "view", createAction: "save" },
-  { doctype: "Item", list: PURCHASE_PATHS.items, create: `${PURCHASE_PATHS.items}/new`, find: "q", action: "view", createAction: "masters" },
+  { doctype: "Item", list: PURCHASE_PATHS.items, create: `${PURCHASE_PATHS.items}/new`, find: "name", routeOptions: { title: "item_name" }, action: "view", createAction: "masters" },
   { doctype: "Purchase Receipt", list: PURCHASE_PATHS.receipts, create: `${PURCHASE_PATHS.receipts}/new`, find: "name", action: "stock", createAction: "stock" },
-  { doctype: "Purchase Taxes and Charges Template", list: PURCHASE_PATHS.taxTemplates, create: `${PURCHASE_PATHS.taxTemplates}/new`, find: "q", action: "view", createAction: "masters" },
-  { doctype: "Payment Term", list: PURCHASE_PATHS.paymentTerms, create: `${PURCHASE_PATHS.paymentTerms}/new`, find: "q", action: "view", createAction: "masters" },
-  { doctype: "Gate Entry", list: PURCHASE_PATHS.gateEntries, create: `${PURCHASE_PATHS.gateEntries}/new`, find: "name", action: "stock", createAction: "stock" },
+  { doctype: "Purchase Taxes and Charges Template", list: PURCHASE_PATHS.taxTemplates, create: `${PURCHASE_PATHS.taxTemplates}/new`, find: "name", routeOptions: { title: "title" }, action: "view", createAction: "masters" },
+  { doctype: "Payment Term", list: PURCHASE_PATHS.paymentTerms, create: `${PURCHASE_PATHS.paymentTerms}/new`, find: "name", routeOptions: { title: null }, action: "view", createAction: "masters" },
+  { doctype: "Gate Entry", list: PURCHASE_PATHS.gateEntries, create: `${PURCHASE_PATHS.gateEntries}/new`, find: "name", routeOptions: { title: null }, action: "stock", createAction: "stock" },
 ];
 
 const REPORTS: readonly (SearchReport & { action: "stock" })[] = [
@@ -63,7 +69,7 @@ const REPORTS: readonly (SearchReport & { action: "stock" })[] = [
 export function searchScope(user: unknown): { doctypes: SearchDoctype[]; reports: SearchReport[] } {
   return {
     doctypes: DOCTYPES.filter((d) => purchaseCan(user, d.action)).map((d) => ({
-      doctype: d.doctype, list: d.list, find: d.find, ...(d.create && purchaseCan(user, d.createAction) ? { create: d.create } : {}),
+      doctype: d.doctype, list: d.list, find: d.find, ...(d.routeOptions ? { routeOptions: d.routeOptions } : {}), ...(d.create && purchaseCan(user, d.createAction) ? { create: d.create } : {}),
     })),
     reports: REPORTS.filter((r) => purchaseCan(user, r.action)).map(({ report, href }) => ({ report, href })),
   };
@@ -125,8 +131,11 @@ export interface SearchContext {
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const bold = (s: string) => `<b>${s}</b>`;
 
-/** A list's address with "<field> like %text%" as its own search parameter. */
-const findHref = (d: SearchDoctype, text: string) => `${d.list}?${new URLSearchParams({ [d.find]: text })}`;
+/** A list's address with "<field> like %text%": route options, or the list's own search parameter. */
+const findHref = (d: SearchDoctype, text: string, current = false) =>
+  d.routeOptions
+    ? `${d.list}?${new URLSearchParams({ [(current && d.routeOptions.title) || "name"]: JSON.stringify(["like", `%${text}%`]) })}`
+    : `${d.list}?${new URLSearchParams({ [d.find]: text })}`;
 
 /** get_route_label / the recent-pages labels. */
 function pageLabel(p: VisitedPage, html: boolean): string {
@@ -238,7 +247,7 @@ function defaults(txt: string, ctx: SearchContext): SearchOption[] {
   if (ctx.currentList && txt.indexOf(" in") === -1) {
     out.push({
       type: "Current", label: `Find ${bold(esc(txt))} in ${bold(esc(ctx.currentList.doctype))}`, value: `Find ${txt} in ${ctx.currentList.doctype}`, index: 90,
-      href: findHref(ctx.currentList, txt),
+      href: findHref(ctx.currentList, txt, true),
     });
   }
   const first = txt.substr(0, 1);

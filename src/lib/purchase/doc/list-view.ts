@@ -21,7 +21,7 @@
 // Pure: the page (server), the list (browser) and the tests share it.
 
 import { flt } from "../calc/pymath";
-import { formatNumber } from "../format";
+import { formatNumber, siteToday } from "../format";
 import { LAYOUT_TYPES, type DoctypeLayout, type LayoutField } from "./layout";
 
 /** Field types that hold no value (frappe.model.no_value_type). */
@@ -59,6 +59,16 @@ const FLOAT_PRECISION = 3;
 
 /** Each DocType's own listview_settings.get_indicator (ERPNext 14.92, as the old site served them). */
 const LIST_INDICATORS: Record<string, (doc: Doc) => Indicator | null> = {
+  // item_list.js: Disabled, Expired (past its end of life), Template, Variant; else Enabled (its "disabled").
+  Item: (doc) => {
+    if (num(doc.disabled)) return { label: "Disabled", colour: "gray", filter: "disabled,=,1" };
+    if (doc.end_of_life && str(doc.end_of_life) < siteToday()) return { label: "Expired", colour: "gray", filter: `end_of_life,<,${siteToday()}` };
+    if (num(doc.has_variants)) return { label: "Template", colour: "orange", filter: "has_variants,=,1" };
+    if (doc.variant_of) return { label: "Variant", colour: "green", filter: `variant_of,=,${str(doc.variant_of)}` };
+    return null;
+  },
+  // supplier_list.js: On Hold; else Enabled / Disabled.
+  Supplier: (doc) => (num(doc.on_hold) ? { label: "On Hold", colour: "red" } : null),
   "Material Request": (doc) => {
     const ds = num(doc.docstatus);
     const ordered = flt(num(doc.per_ordered), FLOAT_PRECISION);

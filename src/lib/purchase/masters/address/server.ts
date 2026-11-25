@@ -1,4 +1,4 @@
-// The Address master on the server: its list, one address's form values,
+// The Address master on the server (its list is the old list view, doc/screens.ts): one address's form values,
 // and its save and delete. A save re-checks the form and sets what Frappe
 // and India Compliance set: the name of a new address ("{title}-{type}"), the
 // links' titles, the preferred-address flags taken from the party's other
@@ -8,65 +8,15 @@ import type { Prisma } from "@prisma/client";
 import { isCountry } from "../../countries";
 import { addressGst } from "../../gstin";
 import type { ActionResult } from "../../orders/form-schema";
-import { masterPath } from "../../routes";
 import type { PurchaseUser } from "../../server/current-user";
 import { db } from "../../server/db";
 import { assertFresh, MasterError, masterResult, refuseIf, stampsOf, syncRows, type Stamp } from "../kit";
-import type { ListPage, ListShape, MasterListQuery } from "../list-query";
 import { assertAddressUnused, dedupeLinks, insertAddress, linkKey, resolveLink, takePreferredFlags, type ResolvedLink } from "../parties";
 import type { Row, Values } from "../spec";
 import { cleanValues, flag, mandatoryErrors, rowsOf, rstr, str } from "../values";
 import { addressIndicator, addressSpec } from "./spec";
 
 type Tx = Prisma.TransactionClient;
-
-// The list ----------------------------------------------------------------------------------------
-
-/** Address list: Address Type and Country are its standard filters; the latest change first. */
-export const ADDRESS_LIST: ListShape = { filters: ["address_type", "country"], sorts: ["modified", "creation", "name"], defaultSort: "modified", defaultOrder: "desc" };
-
-const ORDER: Record<string, (o: "asc" | "desc") => Prisma.PurchaseAddressOrderByWithRelationInput> = {
-  modified: (o) => ({ updatedAt: o }),
-  creation: (o) => ({ createdAt: o }),
-  name: (o) => ({ code: o }),
-};
-
-export async function listAddresses(q: MasterListQuery): Promise<ListPage> {
-  const has = (s: string) => ({ contains: s, mode: "insensitive" as const });
-  const base: Prisma.PurchaseAddressWhereInput = {
-    // The search covers the name and the doctype's search fields (country, state), and the party.
-    ...(q.q ? { OR: [{ code: has(q.q) }, { addressTitle: has(q.q) }, { city: has(q.q) }, { state: has(q.q) }, { links: { some: { linkName: has(q.q) } } }] } : {}),
-    ...(q.filters.address_type ? { addressType: q.filters.address_type } : {}),
-    ...(q.filters.country ? { country: q.filters.country } : {}),
-  };
-  const where: Prisma.PurchaseAddressWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
-  const [rows, total] = await Promise.all([
-    db.purchaseAddress.findMany({
-      where,
-      orderBy: [(ORDER[q.sort] ?? ORDER.modified)(q.order), { code: "asc" }],
-      take: q.limit,
-      select: { id: true, code: true, addressType: true, city: true, disabled: true, updatedAt: true },
-    }),
-    db.purchaseAddress.count({ where }),
-  ]);
-  return {
-    total,
-    rows: rows.map((a) => ({
-      id: a.id,
-      href: masterPath("addresses", a.id),
-      title: a.code,
-      name: a.code,
-      pill: addressIndicator(a),
-      cells: { address_type: a.addressType, city: a.city },
-      updatedAt: a.updatedAt.toISOString(),
-    })),
-  };
-}
-
-/** The Country filter's options: the countries addresses are in. */
-export async function addressCountries(): Promise<string[]> {
-  return (await db.purchaseAddress.findMany({ select: { country: true }, distinct: ["country"], orderBy: { country: "asc" } })).map((a) => a.country);
-}
 
 // One address -------------------------------------------------------------------------------------
 

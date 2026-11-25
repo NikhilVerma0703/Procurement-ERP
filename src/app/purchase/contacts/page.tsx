@@ -1,46 +1,13 @@
 import type { Metadata } from "next";
-import { MasterList } from "@/components/purchase/masters/MasterList";
-import { masterListPage } from "@/lib/purchase/masters/list-likes";
-import { purchaseCan } from "@/lib/purchase/access";
-import { CONTACT_STATUSES } from "@/lib/purchase/masters/contact/spec";
-import { CONTACT_LIST, listContacts } from "@/lib/purchase/masters/contact/server";
-import { parseMasterQuery } from "@/lib/purchase/masters/list-query";
-import { masterNewPath } from "@/lib/purchase/routes";
-import { purchasePageGate } from "@/lib/purchase/server/page";
+import { DocListPage } from "@/components/purchase/doc/DocPages";
+import { masterScreen } from "@/lib/purchase/doc/screens";
 
 export const metadata: Metadata = { title: "Contact" };
 export const dynamic = "force-dynamic";
 
-// Contact: the list as Frappe showed it (the name, its Status, Email Address, Phone), with Status
-// as its standard filter.
+// Contact: the old list view (owner, 25-11-2026: "should look exactly same as website"), as every
+// Stock screen's list: its title, status and "in list view" columns, standard filters and sort
+// (doc/screens.ts MASTER_SCREENS). A record opens in its own form (docs/09).
 export default async function ContactListPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const gate = await purchasePageGate();
-  const query = parseMasterQuery(await searchParams, CONTACT_LIST);
-  const page = await masterListPage("contacts", query, gate.user!.email, listContacts);
-  return (
-    <MasterList
-      kind="contacts"
-      viewer={gate.user!.email}
-      canLike={purchaseCan(gate.user, "like")}
-      canDelete={purchaseCan(gate.user, "masters")}
-      title="Contact"
-      titleLabel="ID"
-      rows={page.rows}
-      total={page.total}
-      query={query}
-      shape={CONTACT_LIST}
-      filters={[{ key: "status", label: "Status", options: CONTACT_STATUSES }]}
-      columns={[
-        { key: "email_id", label: "Email Address" },
-        { key: "phone", label: "Phone", wide: true },
-      ]}
-      sorts={[
-        { key: "modified", label: "Last Updated On" },
-        { key: "creation", label: "Created On" },
-        { key: "name", label: "ID" },
-      ]}
-      newHref={purchaseCan(gate.user, "masters") ? masterNewPath("contacts") : undefined}
-      now={new Date().toISOString()}
-    />
-  );
+  return <DocListPage screen={masterScreen("contacts")} searchParams={await searchParams} />;
 }

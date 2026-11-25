@@ -1,30 +1,26 @@
 // The templates on the server: Purchase Taxes and Charges Template, Payment
-// Terms Template, Payment Term and Terms and Conditions — their lists, a
+// Terms Template, Payment Term and Terms and Conditions — a
 // record's form values, and their save and delete, with ERPNext 14's rules
 // (valdiate_taxes_and_charges_template, PaymentTermsTemplate.validate,
 // TermsandConditions.validate) and names (title - company abbreviation; the
 // name typed).
+// Their lists are the old list view (doc/screens.ts MASTER_SCREENS).
 import "server-only";
 import type { Prisma } from "@prisma/client";
 import { gstAccountTypes } from "../../orders/masters";
 import { ADD_DEDUCT_KEYS, CHARGE_TYPE_KEYS, labelOf, TAX_CATEGORY_KEYS } from "../../orders/labels";
 import type { ActionResult } from "../../orders/form-schema";
 import { sanitizeHtml } from "../../html";
-import { masterPath, type MasterKey } from "../../routes";
 import type { PurchaseUser } from "../../server/current-user";
 import { db } from "../../server/db";
 import type { SaveMasterRequest } from "../address/server";
 import { assertFresh, MasterError, masterResult, refuseIf, stampsOf, syncRows, type Stamp } from "../kit";
-import type { ListPage, ListShape, MasterListQuery } from "../list-query";
 import type { MasterSpec, Row, Values } from "../spec";
 import { checkNewName, cleanValues, flag, mandatoryErrors, num, rflag, rnum, rowsOf, rstr, str } from "../values";
 import { enabledIndicator, paymentTermSpec, paymentTermsTemplateSpec, taxTemplateSpec, termsSpec } from "./spec";
 
 type Tx = Prisma.TransactionClient;
 const fieldError = (field: string, message: string) => new MasterError(message, { [field]: message });
-const has = (s: string) => ({ contains: s, mode: "insensitive" as const });
-const ORDER_KEYS = ["modified", "creation", "name"] as const;
-const orderOf = (sort: string, o: "asc" | "desc") => (sort === "creation" ? { createdAt: o } : sort === "name" ? { code: o } : { updatedAt: o });
 
 export interface TemplateDoc {
   id: string;
@@ -47,36 +43,7 @@ function cleaned(spec: MasterSpec, raw: unknown, isNew: boolean): Values {
   return c.values;
 }
 
-const row = (master: MasterKey, r: { id: string; code: string; title?: string; updatedAt: Date; disabled?: boolean }, cells: Record<string, string | null> = {}) => ({
-  id: r.id,
-  href: masterPath(master, r.id),
-  title: r.title ?? r.code,
-  name: r.code,
-  pill: r.disabled === undefined ? null : enabledIndicator({ disabled: r.disabled }),
-  cells,
-  updatedAt: r.updatedAt.toISOString(),
-});
-
 // Purchase Taxes and Charges Template ------------------------------------------------------------
-
-export const TAX_TEMPLATE_LIST: ListShape = { filters: ["company"], sorts: [...ORDER_KEYS], defaultSort: "modified", defaultOrder: "desc" };
-
-export async function listTaxTemplates(q: MasterListQuery): Promise<ListPage> {
-  const base: Prisma.PurchaseTaxTemplateWhereInput = {
-    ...(q.q ? { OR: [{ code: has(q.q) }, { title: has(q.q) }] } : {}),
-    ...(q.filters.company ? { company: { code: q.filters.company } } : {}),
-  };
-  const where: Prisma.PurchaseTaxTemplateWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
-  const [rows, total] = await Promise.all([
-    db.purchaseTaxTemplate.findMany({ where, orderBy: [orderOf(q.sort, q.order), { code: "asc" }], take: q.limit, include: { company: { select: { code: true } } } }),
-    db.purchaseTaxTemplate.count({ where }),
-  ]);
-  return { total, rows: rows.map((t) => row("taxTemplates", t, { is_default: t.isDefault ? "Yes" : "No", company: t.company?.code ?? null })) };
-}
-
-export async function companyNames(): Promise<string[]> {
-  return (await db.purchaseCompany.findMany({ select: { code: true }, orderBy: { code: "asc" } })).map((c) => c.code);
-}
 
 export async function loadTaxTemplate(id: string): Promise<TemplateDoc | null> {
   const t = await db.purchaseTaxTemplate.findUnique({
@@ -225,18 +192,6 @@ export function deleteTaxTemplate(_user: PurchaseUser, id: string): Promise<Acti
 
 // Payment Terms Template --------------------------------------------------------------------------
 
-export const PAYMENT_TERMS_TEMPLATE_LIST: ListShape = { filters: [], sorts: [...ORDER_KEYS], defaultSort: "modified", defaultOrder: "desc" };
-
-export async function listPaymentTermsTemplates(q: MasterListQuery): Promise<ListPage> {
-  const base: Prisma.PurchasePaymentTermsTemplateWhereInput = q.q ? { code: has(q.q) } : {};
-  const where: Prisma.PurchasePaymentTermsTemplateWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
-  const [rows, total] = await Promise.all([
-    db.purchasePaymentTermsTemplate.findMany({ where, orderBy: [orderOf(q.sort, q.order), { code: "asc" }], take: q.limit }),
-    db.purchasePaymentTermsTemplate.count({ where }),
-  ]);
-  return { total, rows: rows.map((t) => row("paymentTermsTemplates", t)) };
-}
-
 export async function loadPaymentTermsTemplate(id: string): Promise<TemplateDoc | null> {
   const t = await db.purchasePaymentTermsTemplate.findUnique({ where: { id }, include: { rows: { orderBy: { idx: "asc" }, include: { paymentTerm: { select: { code: true } } } } } });
   if (!t) return null;
@@ -353,18 +308,6 @@ export function deletePaymentTermsTemplate(_user: PurchaseUser, id: string): Pro
 
 // Payment Term ------------------------------------------------------------------------------------
 
-export const PAYMENT_TERM_LIST: ListShape = { filters: [], sorts: [...ORDER_KEYS], defaultSort: "modified", defaultOrder: "desc" };
-
-export async function listPaymentTerms(q: MasterListQuery): Promise<ListPage> {
-  const base: Prisma.PurchasePaymentTermWhereInput = q.q ? { OR: [{ code: has(q.q) }, { description: has(q.q) }] } : {};
-  const where: Prisma.PurchasePaymentTermWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
-  const [rows, total] = await Promise.all([
-    db.purchasePaymentTerm.findMany({ where, orderBy: [orderOf(q.sort, q.order), { code: "asc" }], take: q.limit }),
-    db.purchasePaymentTerm.count({ where }),
-  ]);
-  return { total, rows: rows.map((t) => row("paymentTerms", t)) };
-}
-
 export async function loadPaymentTerm(id: string): Promise<TemplateDoc | null> {
   const t = await db.purchasePaymentTerm.findUnique({ where: { id } });
   if (!t) return null;
@@ -432,19 +375,6 @@ export function deletePaymentTerm(_user: PurchaseUser, id: string): Promise<Acti
 }
 
 // Terms and Conditions ----------------------------------------------------------------------------
-
-/** Terms and Conditions list: sorted as the doctype said (modified, ascending). */
-export const TERMS_LIST: ListShape = { filters: [], sorts: [...ORDER_KEYS], defaultSort: "modified", defaultOrder: "asc" };
-
-export async function listTerms(q: MasterListQuery): Promise<ListPage> {
-  const base: Prisma.PurchaseTermsTemplateWhereInput = q.q ? { OR: [{ code: has(q.q) }, { title: has(q.q) }] } : {};
-  const where: Prisma.PurchaseTermsTemplateWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
-  const [rows, total] = await Promise.all([
-    db.purchaseTermsTemplate.findMany({ where, orderBy: [orderOf(q.sort, q.order), { code: "asc" }], take: q.limit }),
-    db.purchaseTermsTemplate.count({ where }),
-  ]);
-  return { total, rows: rows.map((t) => row("terms", t, { selling: t.selling ? "Yes" : "No", buying: t.buying ? "Yes" : "No" })) };
-}
 
 export async function loadTerms(id: string): Promise<TemplateDoc | null> {
   const t = await db.purchaseTermsTemplate.findUnique({ where: { id } });

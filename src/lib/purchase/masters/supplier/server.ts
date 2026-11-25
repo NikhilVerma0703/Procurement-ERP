@@ -1,4 +1,4 @@
-// The Supplier master on the server: its list, one supplier's form values
+// The Supplier master on the server (its list is the old list view, doc/screens.ts): one supplier's form values
 // with what its screen shows beside them (its addresses, contacts and
 // Purchase Orders), and its save and delete. A save re-checks everything the
 // form checked and sets every derived field itself (CLAUDE.md, server
@@ -11,68 +11,15 @@ import { addressDisplay } from "../../address";
 import { isCountry } from "../../countries";
 import { addressGst, partyGst } from "../../gstin";
 import type { ActionResult } from "../../orders/form-schema";
-import { masterPath } from "../../routes";
 import type { PurchaseUser } from "../../server/current-user";
 import { db } from "../../server/db";
 import { assertFresh, dateOf, linkId, MasterError, masterResult, refuseIf, stampsOf, ymd, type Stamp } from "../kit";
-import type { ListPage, ListShape, MasterListQuery } from "../list-query";
 import { deleteContactAndAddress, insertAddress, insertContact, partyCards, type AddressCard, type ContactCard } from "../parties";
 import type { Values } from "../spec";
 import { checkNewName, cleanValues, flag, mandatoryErrors, parseFullName, str } from "../values";
 import { supplierIndicator, supplierQuickSpec, supplierSpec } from "./spec";
 
 type Tx = Prisma.TransactionClient;
-
-// The list ----------------------------------------------------------------------------------------
-
-/** Supplier list: Supplier Group is its standard filter; sorted as the doctype said (modified, ascending). */
-export const SUPPLIER_LIST: ListShape = {
-  filters: ["supplier_group"],
-  sorts: ["modified", "creation", "name", "supplier_name"],
-  defaultSort: "modified",
-  defaultOrder: "asc",
-};
-
-const ORDER: Record<string, (o: "asc" | "desc") => Prisma.PurchaseSupplierOrderByWithRelationInput> = {
-  modified: (o) => ({ updatedAt: o }),
-  creation: (o) => ({ createdAt: o }),
-  name: (o) => ({ code: o }),
-  supplier_name: (o) => ({ supplierName: o }),
-};
-
-export async function listSuppliers(q: MasterListQuery): Promise<ListPage> {
-  const base: Prisma.PurchaseSupplierWhereInput = {
-    ...(q.q ? { OR: [{ code: { contains: q.q, mode: "insensitive" } }, { supplierName: { contains: q.q, mode: "insensitive" } }] } : {}),
-    ...(q.filters.supplier_group ? { supplierGroup: { code: q.filters.supplier_group } } : {}),
-  };
-  const where: Prisma.PurchaseSupplierWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
-  const [rows, total] = await Promise.all([
-    db.purchaseSupplier.findMany({
-      where,
-      orderBy: [(ORDER[q.sort] ?? ORDER.modified)(q.order), { code: "asc" }],
-      take: q.limit,
-      select: { id: true, code: true, supplierName: true, onHold: true, disabled: true, updatedAt: true, supplierGroup: { select: { code: true } } },
-    }),
-    db.purchaseSupplier.count({ where }),
-  ]);
-  return {
-    total,
-    rows: rows.map((s) => ({
-      id: s.id,
-      href: masterPath("suppliers", s.id),
-      title: s.supplierName,
-      name: s.code,
-      pill: supplierIndicator(s),
-      cells: { supplier_group: s.supplierGroup?.code ?? null },
-      updatedAt: s.updatedAt.toISOString(),
-    })),
-  };
-}
-
-/** The Supplier Group filter's options. */
-export async function supplierGroupNames(): Promise<string[]> {
-  return (await db.purchaseSupplierGroup.findMany({ select: { code: true }, orderBy: { code: "asc" } })).map((g) => g.code);
-}
 
 // One supplier ------------------------------------------------------------------------------------
 

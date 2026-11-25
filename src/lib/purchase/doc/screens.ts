@@ -11,11 +11,12 @@
 // merge (docs/12 §8, decision 5); entering them waits for that answer.
 // Pure.
 
+import type { PurchaseAction } from "../access";
 import type { DoctypeLayout } from "./layout";
 import { LAYOUTS } from "./layouts";
-import { PURCHASE_PATHS } from "../routes";
+import { PURCHASE_PATHS, type MasterKey } from "../routes";
 
-export type DocCard = "Items and Pricing" | "Stock Transactions";
+export type DocCard = "Items and Pricing" | "Stock Transactions" | "Buying";
 
 /** A table of its own (purchase_*), each record's old row in `legacy`, its child rows in child tables. */
 export interface TableStore {
@@ -30,10 +31,19 @@ export interface GenericStore {
   kind: "generic";
 }
 
+/**
+ * A master kept in typed columns (Step 8: saving one does not rewrite its old row): a query giving
+ * each record's id and its old row overlaid with the current column values, under the old fieldnames.
+ */
+export interface OverlayStore {
+  kind: "overlay";
+  sql: string;
+}
+
 export type DocScreenKey =
   | "itemGroups" | "productBundles" | "priceLists" | "itemPrices" | "shippingRules" | "pricingRules" | "itemAlternatives"
   | "itemManufacturers" | "customsTariffNumbers" | "materialRequests" | "stockEntries" | "deliveryNotes" | "pickLists" | "deliveryTrips"
-  | "gateEntries";
+  | "gateEntries" | MasterKey;
 
 export interface DocScreen {
   /** Its name in routes.ts, and its likes' kind (like-rules.ts). */
@@ -42,7 +52,7 @@ export interface DocScreen {
   /** The list's path (routes.ts). */
   path: string;
   card: DocCard;
-  store: TableStore | GenericStore;
+  store: TableStore | GenericStore | OverlayStore;
   /** The list's sort on the old site. */
   sort: { field: string; order: "asc" | "desc" };
   /** listview_settings.hide_name_column. */
@@ -52,6 +62,11 @@ export interface DocScreen {
   ownForm?: boolean;
   /** A tree DocType: its menu link opened the tree view (frappe.utils.generate_route). */
   tree?: boolean;
+  /** Who may open the list (its page gate; "stock" when absent) and who may add or delete. */
+  gate?: PurchaseAction;
+  write?: PurchaseAction;
+  /** "+ Add" opens the quick entry dialog (Frappe's quick entry), as on the old Supplier list. */
+  quickEntry?: MasterKey;
 }
 
 const table = (name: string, children: TableStore["children"] = {}): TableStore => ({ kind: "table", table: name, children });
@@ -105,6 +120,73 @@ export const GATE_ENTRY_SCREEN: DocScreen = {
   // Thiru R's list setting on the old site (21-11-2026): newest created first.
   sort: { field: "creation", order: "desc" }, editable: false, ownForm: true,
 };
+
+// ---------------------------------------------------------------------------------------------
+// The Buying masters in the same list view (owner, 25-11-2026: "the Item section … should look
+// exactly same as website. Similarly all these built sections"). Their records live in typed columns,
+// so each list reads the old row overlaid with the current values (OverlayStore); their forms stay
+// their own (app/purchase/<master>/[id], docs/09). Sorts as Thiru R had them on the old site (Item:
+// Default Unit of Measure, ascending, as on the owner's screenshot of 25-11-2026).
+
+/** A timestamp column as the old site wrote one ("2026-11-17 17:06:13.516000", Asia/Kolkata). */
+const stamp = (col: string) => `to_char((${col} AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Kolkata', 'YYYY-MM-DD HH24:MI:SS.US')`;
+const check = (col: string) => `CASE WHEN ${col} THEN '1' ELSE '0' END`;
+const std = (t: string) =>
+  `'name', ${t}.code, 'creation', ${stamp(`${t}.created_at`)}, 'modified', ${stamp(`${t}.updated_at`)}, 'owner', COALESCE(${t}.created_by, ${t}.legacy->>'owner'), 'modified_by', COALESCE(${t}.updated_by, ${t}.legacy->>'modified_by')`;
+const overlay = (sql: string): OverlayStore => ({ kind: "overlay", sql });
+const master = (key: MasterKey, doctype: string, sql: string, sort: DocScreen["sort"], extra: Partial<DocScreen> = {}): DocScreen => ({
+  key, doctype, path: PURCHASE_PATHS[key], card: "Buying", store: overlay(sql), sort, editable: false, ownForm: true, gate: "view", write: "masters", ...extra,
+});
+
+export const MASTER_SCREENS: readonly DocScreen[] = [
+  master("items", "Item", `
+    SELECT i.id, COALESCE(i.legacy, '{}'::jsonb) || jsonb_build_object(${std("i")}, 'item_code', i.code, 'item_name', i.item_name,
+      'item_group', g.code, 'stock_uom', i.stock_uom, 'description', i.description, 'brand', i.brand, 'disabled', ${check("i.disabled")},
+      'is_stock_item', ${check("i.is_stock_item")}, 'has_variants', ${check("i.has_variants")}, 'variant_of', v.code,
+      'end_of_life', to_char(i.end_of_life, 'YYYY-MM-DD'), 'gst_hsn_code', i.gst_hsn_code, 'standard_rate', i.standard_rate::text) AS legacy
+    FROM purchase_items i LEFT JOIN purchase_item_groups g ON g.id = i.item_group_id LEFT JOIN purchase_items v ON v.id = i.variant_of_id`,
+    { field: "stock_uom", order: "asc" }),
+  master("suppliers", "Supplier", `
+    SELECT s.id, COALESCE(s.legacy, '{}'::jsonb) || jsonb_build_object(${std("s")}, 'supplier_name', s.supplier_name, 'supplier_group', g.code,
+      'supplier_type', s.supplier_type, 'gst_category', s.gst_category, 'gstin', s.gstin, 'country', s.country, 'disabled', ${check("s.disabled")},
+      'on_hold', ${check("s.on_hold")}, 'mobile_no', s.mobile_no, 'email_id', s.email_id) AS legacy
+    FROM purchase_suppliers s LEFT JOIN purchase_supplier_groups g ON g.id = s.supplier_group_id`,
+    { field: "modified", order: "asc" }, { quickEntry: "suppliers" }),
+  master("addresses", "Address", `
+    SELECT a.id, COALESCE(a.legacy, '{}'::jsonb) || jsonb_build_object(${std("a")}, 'address_title', a.address_title, 'address_type', a.address_type,
+      'address_line1', a.address_line1, 'city', a.city, 'state', a.state, 'country', a.country, 'pincode', a.pincode, 'gstin', a.gstin,
+      'gst_category', a.gst_category, 'disabled', ${check("a.disabled")}) AS legacy
+    FROM purchase_addresses a`,
+    { field: "modified", order: "desc" }),
+  master("contacts", "Contact", `
+    SELECT c.id, COALESCE(c.legacy, '{}'::jsonb) || jsonb_build_object(${std("c")}, 'first_name', c.first_name, 'last_name', c.last_name,
+      'email_id', c.email_id, 'phone', c.phone, 'mobile_no', c.mobile_no, 'status', c.status, 'company_name', c.company_name) AS legacy
+    FROM purchase_contacts c`,
+    { field: "modified", order: "asc" }),
+  master("taxTemplates", "Purchase Taxes and Charges Template", `
+    SELECT t.id, COALESCE(t.legacy, '{}'::jsonb) || jsonb_build_object(${std("t")}, 'title', t.title, 'is_default', ${check("t.is_default")},
+      'disabled', ${check("t.disabled")}, 'company', co.code) AS legacy
+    FROM purchase_tax_templates t LEFT JOIN purchase_companies co ON co.id = t.company_id`,
+    { field: "modified", order: "desc" }),
+  master("paymentTermsTemplates", "Payment Terms Template", `
+    SELECT p.id, COALESCE(p.legacy, '{}'::jsonb) || jsonb_build_object(${std("p")}, 'template_name', p.code,
+      'allocate_payment_based_on_payment_terms', ${check("p.allocate_payment_based_on_payment_terms")}) AS legacy
+    FROM purchase_payment_terms_templates p`,
+    { field: "modified", order: "desc" }),
+  master("paymentTerms", "Payment Term", `
+    SELECT p.id, COALESCE(p.legacy, '{}'::jsonb) || jsonb_build_object(${std("p")}, 'payment_term_name', p.code, 'invoice_portion', p.invoice_portion::text,
+      'due_date_based_on', p.due_date_based_on, 'credit_days', p.credit_days::text, 'description', p.description) AS legacy
+    FROM purchase_payment_terms p`,
+    { field: "modified", order: "desc" }),
+  master("terms", "Terms and Conditions", `
+    SELECT t.id, jsonb_build_object('name', t.code, 'creation', ${stamp("t.created_at")}, 'modified', ${stamp("t.updated_at")}, 'owner', t.created_by,
+      'modified_by', t.updated_by, 'title', t.title, 'terms', t.terms, 'disabled', ${check("t.disabled")}, 'buying', ${check("t.buying")},
+      'selling', ${check("t.selling")}) AS legacy
+    FROM purchase_terms_templates t`,
+    { field: "modified", order: "asc" }),
+];
+
+export const masterScreen = (key: MasterKey): DocScreen => MASTER_SCREENS.find((s) => s.key === key)!;
 
 /** The screen whose list is at this path segment ("material-requests"); undefined for any other. */
 export function screenBySegment(segment: string): DocScreen | undefined {

@@ -5,7 +5,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currencyOfField, listDocs } from "@/lib/purchase/doc/list-data";
 import { docIndicator, isValueField, parseDocListQuery } from "@/lib/purchase/doc/list-view";
-import { DOC_SCREENS, layoutOf } from "@/lib/purchase/doc/screens";
+import { DOC_SCREENS, GATE_ENTRY_SCREEN, layoutOf, MASTER_SCREENS } from "@/lib/purchase/doc/screens";
 import { displayValue } from "@/lib/purchase/doc/values";
 import { purchaseGate, purchaseRefusal } from "@/lib/purchase/server/gate";
 
@@ -20,11 +20,15 @@ function cell(v: string): string {
   return /[",\n\r]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
 }
 
+/** Every list drawn as the old list view: the Stock screens, Gate Entry and the Buying masters. */
+const SCREENS = [...DOC_SCREENS, GATE_ENTRY_SCREEN, ...MASTER_SCREENS];
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ key: string }> }) {
-  const g = await purchaseGate("stock");
-  if (!g.ok) return NextResponse.json({ error: purchaseRefusal(g) }, { status: g.status });
   const { key } = await params;
-  const s = DOC_SCREENS.find((x) => x.key === key);
+  const s = SCREENS.find((x) => x.key === key);
+  // Gated as its list is (a Buying master: anyone signed in; the rest: Stock).
+  const g = await purchaseGate(s?.gate ?? "stock");
+  if (!g.ok) return NextResponse.json({ error: purchaseRefusal(g) }, { status: g.status });
   if (!s) return NextResponse.json({ error: "Unknown list" }, { status: 404 });
   const l = layoutOf(s);
   const q = parseDocListQuery(l, req.nextUrl.searchParams, { sort: s.sort.field, order: s.sort.order });

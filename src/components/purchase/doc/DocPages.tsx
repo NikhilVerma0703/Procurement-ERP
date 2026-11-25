@@ -1,7 +1,8 @@
 // The pages of a Stock screen drawn from its definition (owner, 24-11-2026: "make all these
 // remainings"): its list (doc/DocList, the old list view), one record (the old form: editable for
 // the masters of Items and Pricing, read-only for the transactions), and a new record. Server
-// components; each starts with purchasePageGate("stock") (CLAUDE.md, seams).
+// components; each starts with purchasePageGate("stock") (CLAUDE.md, seams). The Buying masters'
+// lists are drawn here too (screens.ts MASTER_SCREENS, owner 25-11-2026), behind their own gate.
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -74,8 +75,10 @@ function commentCount(doc: Doc): number {
 
 /** The list (the old list view) of a screen. */
 export async function DocListPage({ screen, searchParams, views }: { screen: DocScreen; searchParams: Params; views?: { label: string; href: string; active: boolean }[] }) {
-  const gate = await purchasePageGate("stock");
+  const gate = await purchasePageGate(screen.gate ?? "stock");
   const user = gate.user!;
+  const canWrite = (screen.editable || !!screen.ownForm) && purchaseCan(user, screen.write ?? "stock");
+  const quickEntry = canWrite ? screen.quickEntry : undefined;
   const l = layoutOf(screen);
   const defaults = { sort: screen.sort.field, order: screen.sort.order };
   const q = parseDocListQuery(l, searchParams, defaults);
@@ -110,13 +113,15 @@ export async function DocListPage({ screen, searchParams, views }: { screen: Doc
   return (
     <DocList
       doctype={screen.doctype}
-      crumbs={["Stock", screen.card]}
+      crumbs={screen.card === "Buying" ? ["Buying"] : ["Stock", screen.card]}
       basePath={screen.path}
       likeKind={screen.key}
       viewer={user.email}
       canLike={purchaseCan(user, "like")}
-      canDelete={(screen.editable || !!screen.ownForm) && purchaseCan(user, "stock")}
-      newHref={(screen.editable || screen.ownForm) && purchaseCan(user, "stock") ? `${screen.path}/new` : null}
+      canDelete={canWrite}
+      newHref={canWrite && !quickEntry ? `${screen.path}/new` : null}
+      quickEntry={quickEntry}
+      openQuickEntry={Boolean(quickEntry) && searchParams.new === "1"}
       columns={columnView}
       rows={view}
       total={total}

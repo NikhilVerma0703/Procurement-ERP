@@ -10,7 +10,7 @@ import {
   standardFilters, withFilters,
 } from "@/lib/purchase/doc/list-view";
 import { afterChange, effectiveLayout, fetchesFor, formRules, lookupFor, mayType } from "@/lib/purchase/doc/master-form";
-import { DOC_SCREENS, GATE_ENTRY_SCREEN, screenBySegment } from "@/lib/purchase/doc/screens";
+import { DOC_SCREENS, GATE_ENTRY_SCREEN, MASTER_SCREENS, masterScreen, screenBySegment } from "@/lib/purchase/doc/screens";
 import { PURCHASE_MODULES, PURCHASE_PATHS } from "@/lib/purchase/routes";
 import { oldDbCompare } from "@/lib/purchase/stock/collation";
 import {
@@ -278,5 +278,43 @@ describe("the old database's text order (utf8mb4_unicode_ci)", () => {
   it("reads ½ as 1⁄2 and skips invisible characters", () => {
     expect(['½” RATCHAT', '0.1 mm', '2 x'].sort(oldDbCompare)).toEqual(['0.1 mm', '½” RATCHAT', '2 x']);
     expect(['⁠Sticker', 'Rubber', 'Tape'].sort(oldDbCompare)).toEqual(['Rubber', '⁠Sticker', 'Tape']);
+  });
+});
+
+// The Buying masters in the old list view (owner, 25-11-2026: "the Item section … should look exactly
+// same as website"). Read from the old site's own lists at 1,280 px the same day (the Tag column hidden).
+describe("the Buying masters' lists", () => {
+  const OLD: Record<string, { columns: string[]; filters: string[] }> = {
+    Item: { columns: ["Item Name", "Status", "Item Group", "ID"], filters: ["name", "item_name", "item_group", "has_variants", "variant_of"] },
+    Supplier: { columns: ["Supplier Name", "Status", "Supplier Group", "ID"], filters: ["name", "supplier_name", "supplier_group"] },
+    Address: { columns: ["ID", "Status", "Address Type"], filters: ["name", "address_type", "country"] },
+    Contact: { columns: ["ID", "Email Address", "Status"], filters: ["name", "status"] },
+    "Purchase Taxes and Charges Template": { columns: ["Title", "Status", "Default", "ID"], filters: ["name", "title", "company"] },
+    "Payment Terms Template": { columns: ["ID"], filters: ["name"] },
+    "Payment Term": { columns: ["ID"], filters: ["name"] },
+    "Terms and Conditions": { columns: ["ID", "Status", "Selling"], filters: ["name"] },
+  };
+
+  it.each(Object.entries(OLD))("draws %s as the old list did", (doctype, old) => {
+    const s = MASTER_SCREENS.find((x) => x.doctype === doctype)!;
+    expect(s.card).toBe("Buying");
+    expect(listColumns(L(doctype)).filter((c) => c.from === 0).map((c) => c.label)).toEqual(old.columns);
+    expect(standardFilters(L(doctype)).map((f) => f.fieldname)).toEqual(old.filters);
+  });
+
+  it("sorts as Thiru R's lists did (Item: Default Unit of Measure, ascending)", () => {
+    expect(masterScreen("items").sort).toEqual({ field: "stock_uom", order: "asc" });
+    expect(sortOptions(L("Item")).some((o) => o.field === "stock_uom" && o.label === "Default Unit of Measure")).toBe(true);
+  });
+
+  it("shows Item's and Supplier's own status (item_list.js, supplier_list.js)", () => {
+    const item = L("Item");
+    expect(docIndicator(item, { disabled: 1 })).toMatchObject({ label: "Disabled", colour: "gray", filter: "disabled,=,1" });
+    expect(docIndicator(item, { end_of_life: "2000-01-01" })).toMatchObject({ label: "Expired", colour: "gray" });
+    expect(docIndicator(item, { has_variants: 1 })).toMatchObject({ label: "Template", colour: "orange" });
+    expect(docIndicator(item, { variant_of: "TPL01" })).toMatchObject({ label: "Variant", colour: "green", filter: "variant_of,=,TPL01" });
+    expect(docIndicator(item, { disabled: 0 })).toMatchObject({ label: "Enabled", colour: "blue" });
+    expect(docIndicator(L("Supplier"), { on_hold: 1 })).toMatchObject({ label: "On Hold", colour: "red" });
+    expect(docIndicator(L("Supplier"), { disabled: 0 })).toMatchObject({ label: "Enabled", colour: "blue" });
   });
 });

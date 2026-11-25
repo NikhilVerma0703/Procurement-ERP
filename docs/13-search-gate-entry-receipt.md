@@ -20,7 +20,8 @@ UniversalSearch.tsx`, `api/purchase/search`; mounted in `app/purchase/layout.tsx
   to real searches ("gate entry" → Gate Entry List 370.05, New Gate Entry 370.015, "Search for gate entry ↵" 100, Help).
 * **What it lists:** "<DocType> List" and "New <DocType>" for the screens this login may open (Buying for a buyer,
   Buying and Stock for the storekeeper), in the old boot's order; "new …" ranks the New entries; "<text> in
-  <DocType>" finds the text in that list; "Report Stock Ledger / Stock Balance"; "Find <text> in <the list on screen>";
+  <DocType>" finds the text in that list (ID like %text%); "Report Stock Ledger / Stock Balance"; "Find <text> in <the
+  list on screen>" (its title field like %text%, else the ID — the old route options, captured);
   a calculator; "Generate Random Password"; with nothing typed, the five pages visited most and the recent ones;
   "Help on Search" (the old table). ↑ ↓ Enter (Ctrl+Enter: new tab), Esc, Ctrl+G from anywhere.
 * **"Search for … ↵"** opens the global search: every match by DocType, the old "Field : value ||| …" snippets,

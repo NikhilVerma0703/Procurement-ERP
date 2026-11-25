@@ -31,7 +31,7 @@ Code: `lib/purchase/doc/screens.ts` (one entry per screen: where its records are
 records are entered here), pages `app/purchase/[doctype]/` (list, `[id]`, `new`) and `app/purchase/item-groups/`;
 components `components/purchase/doc/{DocList,DocPages,DocEditor,ItemGroupTree}.tsx`.
 
-## 2. The list view (every Stock list, and the Gate Entry List)
+## 2. The list view (every Stock list, the Gate Entry List and the Buying masters' lists)
 
 `lib/purchase/doc/list-view.ts` is Frappe 14.101's list view, read from the old site's own list bundle and held
 to every captured list (`tests/purchase/stock-screens.test.ts`):

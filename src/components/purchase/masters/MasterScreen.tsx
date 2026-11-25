@@ -6,7 +6,6 @@
 // record can be renamed (⋯ → Rename), as every one of these doctypes could.
 import { useState, type ReactNode } from "react";
 import type { ActionResult } from "@/lib/purchase/orders/form-schema";
-import type { PillColour } from "@/lib/purchase/masters/list-query";
 import type { Values } from "@/lib/purchase/masters/spec";
 import { masterNewPath, masterPath, PURCHASE_PATHS, type MasterKey } from "@/lib/purchase/routes";
 import { MasterForm } from "./MasterForm";
@@ -20,7 +19,7 @@ export function MasterScreen({ master, recordId, isNew, initial, title, indicato
   isNew: boolean;
   initial: Values;
   title: string;
-  indicator?: { label: string; colour: PillColour } | null;
+  indicator?: { label: string; colour: "green" | "red" | "orange" | "gray" | "blue" } | null;
   editable: boolean;
   save: (values: Values) => Promise<ActionResult<{ id: string; notices?: string[] }>>;
   remove?: () => Promise<ActionResult>;

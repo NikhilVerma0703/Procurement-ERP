@@ -21,6 +21,7 @@ import { ArrowDownWideNarrow, ArrowUpNarrowWide, ChevronDown, FilterX, Heart, Li
 import { toast } from "sonner";
 import { bulkDeleteDocsAction } from "@/app/purchase/doc-actions";
 import { bulkDeleteGateEntriesAction } from "@/app/purchase/gate-entries/actions";
+import { bulkDeleteMastersAction } from "@/app/purchase/masters-actions";
 import { cn } from "@/lib/purchase/cn";
 import { isLikedByMeFilter, likedByMeFilter, NO_LIKES, type LikeInfo, type LikeKind } from "@/lib/purchase/like-rules";
 import {
@@ -28,6 +29,7 @@ import {
   type DocFilter, type DocListQuery, type ListCell, type ListColumnView, type ListRowView, type StandardFilter,
 } from "@/lib/purchase/doc/list-view";
 import type { ListField, ListFilter } from "@/lib/purchase/orders/list";
+import type { MasterKey } from "@/lib/purchase/routes";
 import { LinkInput } from "../form/controls";
 import { ConfirmDialog } from "../form/Grid";
 import { LikeButton } from "../likes/LikeButton";
@@ -36,7 +38,10 @@ import { MessageDialog } from "../list/BulkDialogs";
 import { FilterBuilder } from "../list/FilterBuilder";
 import { CHECKBOX, ListSelection, useListSelection } from "../list/selection";
 import { usePopover } from "../ui/usePopover";
+import { QuickEntryDialog } from "../masters/QuickEntryDialog";
 import { IndicatorPill } from "./IndicatorPill";
+
+const MASTER_KEYS: ReadonlySet<string> = new Set<MasterKey>(["suppliers", "items", "addresses", "contacts", "taxTemplates", "paymentTermsTemplates", "paymentTerms", "terms"]);
 
 export interface DocListRow extends ListRowView {
   likes: LikeInfo;
@@ -59,6 +64,10 @@ export interface DocListProps {
   canDelete: boolean;
   /** "+ Add <DocType>" (absent: records are not entered here). */
   newHref?: string | null;
+  /** "+ Add <DocType>" opens this master's quick entry dialog instead (the old Supplier list). */
+  quickEntry?: MasterKey;
+  /** The page was opened with ?new=1: the dialog opens on arrival. */
+  openQuickEntry?: boolean;
   columns: ListColumnView[];
   rows: DocListRow[];
   total: number;
@@ -73,7 +82,7 @@ export interface DocListProps {
   sortOptions: { field: string; label: string }[];
   /** The ⋯ menu's Export (the filtered list as a file), when offered. */
   exportHref?: string | null;
-  /** The view switcher's views (List View; Tree for a tree DocType). */
+  /** The view switcher's views (List View, and Tree for a tree DocType); List View alone when absent. */
   views?: { label: string; href: string; active: boolean }[];
   /** The server's clock (ISO), so "time ago" reads the same on both sides. */
   now: string;
@@ -120,6 +129,18 @@ function DocListBody(p: DocListProps) {
   const [messages, setMessages] = useState<string[] | null>(null);
   const now = new Date(p.now);
   const q = p.query;
+  // Every old list had its "List View ▾" switcher; here it offers the views this ERP has (the Report
+  // view was not rebuilt, owner 17-11-2026: docs/05 §4).
+  const viewList = p.views?.length ? p.views : [{ label: "List View", href: p.basePath, active: true }];
+  const [adding, setAdding] = useState(false);
+  // ?new=1 (a master's "New …" from elsewhere) opens the quick entry, then leaves the address as the list's.
+  useEffect(() => {
+    if (!p.openQuickEntry) return;
+    setAdding(true);
+    const params = docListParams(q, p.defaults).toString();
+    router.replace(`${pathname}${params ? `?${params}` : ""}`, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [p.openQuickEntry]);
 
   /** Goes to the list in a new state; a new condition starts again from the first page. */
   const go = (next: Partial<DocListQuery>, keepRows = false) => {
@@ -171,7 +192,11 @@ function DocListBody(p: DocListProps) {
     setDeleting(true);
     try {
       // A Gate Entry goes through its own rules (a submitted one is cancelled first; one a receipt names stays).
-      const run = (batch: string[]) => (p.likeKind === "gateEntries" ? bulkDeleteGateEntriesAction(batch) : bulkDeleteDocsAction(p.likeKind, batch));
+      // A Buying master goes through its own (a record still linked stays, docs/09).
+      const run = (batch: string[]) =>
+        p.likeKind === "gateEntries" ? bulkDeleteGateEntriesAction(batch)
+          : MASTER_KEYS.has(p.likeKind) ? bulkDeleteMastersAction(p.likeKind, batch)
+          : bulkDeleteDocsAction(p.likeKind, batch);
       const r = await deleteInBatches(chosen.map((c) => ({ id: c.id, name: c.name })), run);
       setConfirming(false);
       if (!r.ok) return setMessages([r.error]);
@@ -199,16 +224,16 @@ function DocListBody(p: DocListProps) {
           <h1 className="truncate text-2xl font-bold tracking-tight text-pacific-dark">{p.doctype}</h1>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          {p.views && p.views.length > 0 && (
+          {viewList.length > 0 && (
             <div ref={views.ref} className="relative">
               <button type="button" className="po-btn-secondary" aria-haspopup="menu" aria-expanded={views.open} onClick={() => views.setOpen(!views.open)}>
                 <List className="h-4 w-4" aria-hidden />
-                {p.views.find((v) => v.active)?.label ?? "List View"}
+                {viewList.find((v) => v.active)?.label ?? "List View"}
                 <ChevronDown className="h-3.5 w-3.5" aria-hidden />
               </button>
               {views.open && (
                 <div role="menu" className="absolute right-0 top-full z-30 mt-1 min-w-[160px] rounded-md border border-gray-200 bg-white py-1 shadow-lg">
-                  {p.views.map((v) => (
+                  {viewList.map((v) => (
                     <Link key={v.label} role="menuitem" href={v.href} className={cn("block px-3 py-1.5 text-[13px] hover:bg-gray-50", v.active ? "font-semibold text-gray-900" : "text-gray-700")} onClick={() => views.setOpen(false)}>
                       {v.label}
                     </Link>
@@ -253,6 +278,10 @@ function DocListBody(p: DocListProps) {
                 </div>
               )}
             </div>
+          ) : p.quickEntry ? (
+            <button type="button" className="po-btn-primary" onClick={() => setAdding(true)}>
+              <Plus className="h-4 w-4" aria-hidden /> Add {p.doctype}
+            </button>
           ) : (
             p.newHref && (
               <Link href={p.newHref} className="po-btn-primary">
@@ -278,11 +307,10 @@ function DocListBody(p: DocListProps) {
               filters={builderFilters as ListFilter[]}
               onApply={(f) => setFilters([...q.filters.filter((x) => !builderFilters.includes(x)), ...(f as DocFilter[])])}
             />
-            {anyFilter && (
-              <button type="button" onClick={() => setFilters([])} className="po-btn-secondary px-2 py-1.5" title="Clear filters" aria-label="Clear filters">
-                <FilterX className="h-4 w-4" />
-              </button>
-            )}
+            {/* The old filter area always showed the clear button beside Filter (filter-x-button). */}
+            <button type="button" onClick={() => anyFilter && setFilters([])} className="po-btn-secondary -ml-1 px-2 py-1.5" title="Clear filters" aria-label="Clear filters">
+              <FilterX className="h-4 w-4" />
+            </button>
             <div ref={sort.ref} className="relative flex">
               <button
                 type="button"
@@ -455,6 +483,7 @@ function DocListBody(p: DocListProps) {
         />
       )}
       {messages && <MessageDialog lines={messages} onClose={() => setMessages(null)} />}
+      {adding && p.quickEntry && <QuickEntryDialog master={p.quickEntry} onClose={() => setAdding(false)} />}
     </>
   );
 }

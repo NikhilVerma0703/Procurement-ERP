@@ -57,7 +57,6 @@ All test records were made with made-up data. They were removed afterwards, and 
   - dates
   - mandatory fields
   - `validate_name`
-- `list-query.ts`: a list's state in the URL.
 - `kit.ts` (server):
   - refusals
   - the stale-form check
@@ -66,7 +65,7 @@ All test records were made with made-up data. They were removed afterwards, and 
   - created / edited stamps
 - `gated.ts`: the gate every master action passes.
 - `components/purchase/masters/`:
-  - `MasterForm.tsx`, `MasterList.tsx`, `MasterScreen.tsx`
+  - `MasterForm.tsx`, `MasterScreen.tsx` (the lists: `components/purchase/doc/DocList.tsx`, below)
   - `QuickEntryDialog.tsx`, `RenameDialog.tsx`
   - `PartyCards.tsx`, `MasterFooter.tsx`
   - `screens.ts`: each screen's layout and triggers
@@ -93,6 +92,27 @@ All test records were made with made-up data. They were removed afterwards, and 
 
 ## How they behave (the old site's rules)
 
+- **The lists are the old list view** (since 25-11-2026, owner: "the Item section … should look exactly same as
+  website. Similarly all these built sections"): the same component as every Stock list ([14](14-stock-screens-and-reports.md)
+  §2), fed by `doc/screens.ts` `MASTER_SCREENS`. Each reads the record's old row overlaid with its current values
+  (the forms save typed columns, not the old row). Read off the old site's lists the same day and held by
+  `tests/purchase/stock-screens.test.ts`:
+  - **Columns** (at up to 1,366 px): Item — Item Name, Status, Item Group, ID; Supplier — Supplier Name, Status,
+    Supplier Group, ID; Address — ID, Status, Address Type (City from 1,367 px); Contact — ID, Email Address, Status
+    (Phone); Tax Template — Title, Status, Default, ID (Disabled, Company); Terms and Conditions — ID, Status, Selling
+    (Buying); Payment Terms Template and Payment Term — ID.
+  - **Standard filters:** Item — ID, Item Name, Item Group, Has Variants (a tick), Variant Of; Supplier — ID, Supplier
+    Name, Supplier Group; Address — ID, Address Type, Country; Contact — ID, Status; Tax Template — ID, Title, Company;
+    the rest — ID.
+  - **Status:** Item's Disabled / Expired / Template / Variant / Enabled and Supplier's On Hold / Enabled (their
+    `_list.js` files); Enabled / Disabled elsewhere.
+  - **Sort:** as Thiru R had each list: Item by Default Unit of Measure, ascending; Supplier, Contact and Terms by
+    Last Updated On, ascending; the rest newest first.
+  - **Above:** List View ▾, ↻, ⋯ › Export, "+ Add …" (Supplier: its quick entry; `?new=1` opens it).
+  - The search box's "Find <text> in Item" filters ID like %text%, and on the list itself the title field (Item
+    Name, Supplier Name, Title), as the old awesome bar's route options did.
+  - **Where it differs:** rows with the same sort value (Item: all those of one unit, such as Box or Nos) come in another order — the
+    old database returned ties in its own internal order, which no field records.
 - **Every list** (added by owner decision 19-11-2026, as on the PO list, [05](05-list-screen.md) §2):
   - a checkbox and a ♥ before each title; the heading's checkbox ticks every row shown, and its ♥ shows only what you
     liked (`?_liked_by=<you>`, Frappe's "Liked By like %you%");

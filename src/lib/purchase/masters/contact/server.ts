@@ -1,66 +1,22 @@
-// The Contact master on the server: its list, one contact's form values, and
+// The Contact master on the server (its list is the old list view, doc/screens.ts): one contact's form values, and
 // its save and delete. A save re-checks the form and sets what Frappe set:
 // the name of a new contact ("{first} {last}-{party}"), its Email Address,
 // Phone and Mobile No from the rows marked primary (refusing two marked), its
 // User Id from the email when none is given, and the links' titles.
 import "server-only";
-import type { Prisma } from "@prisma/client";
 import type { ActionResult } from "../../orders/form-schema";
-import { masterPath } from "../../routes";
 import type { PurchaseUser } from "../../server/current-user";
 import { db } from "../../server/db";
 import { linksOf, syncLinks, type SaveMasterRequest } from "../address/server";
 import { assertFresh, MasterError, masterResult, refuseIf, stampsOf, syncRows, type Stamp } from "../kit";
-import type { ListPage, ListShape, MasterListQuery } from "../list-query";
 import { assertContactUnused, insertContact, linkKey, primaryOf } from "../parties";
 import type { Values } from "../spec";
 import { cleanValues, flag, mandatoryErrors, rflag, rowsOf, rstr, str } from "../values";
 import { contactSpec } from "./spec";
 
-// The list ----------------------------------------------------------------------------------------
-
-/** Contact list: Status is its standard filter; sorted as the doctype said (modified, ascending). */
-export const CONTACT_LIST: ListShape = { filters: ["status"], sorts: ["modified", "creation", "name"], defaultSort: "modified", defaultOrder: "asc" };
-
-const ORDER: Record<string, (o: "asc" | "desc") => Prisma.PurchaseContactOrderByWithRelationInput> = {
-  modified: (o) => ({ updatedAt: o }),
-  creation: (o) => ({ createdAt: o }),
-  name: (o) => ({ code: o }),
-};
-
 /** Frappe's indicator for a doctype with a Status field: the status, Passive in grey. */
 export const contactIndicator = (c: { status: string | null }) =>
   c.status ? ({ label: c.status, colour: c.status === "Open" ? "orange" : c.status === "Replied" ? "blue" : "gray" } as const) : null;
-
-export async function listContacts(q: MasterListQuery): Promise<ListPage> {
-  const has = (s: string) => ({ contains: s, mode: "insensitive" as const });
-  const base: Prisma.PurchaseContactWhereInput = {
-    ...(q.q ? { OR: [{ code: has(q.q) }, { firstName: has(q.q) }, { lastName: has(q.q) }, { emailId: has(q.q) }, { companyName: has(q.q) }] } : {}),
-    ...(q.filters.status ? { status: q.filters.status } : {}),
-  };
-  const where: Prisma.PurchaseContactWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
-  const [rows, total] = await Promise.all([
-    db.purchaseContact.findMany({
-      where,
-      orderBy: [(ORDER[q.sort] ?? ORDER.modified)(q.order), { code: "asc" }],
-      take: q.limit,
-      select: { id: true, code: true, status: true, emailId: true, phone: true, updatedAt: true },
-    }),
-    db.purchaseContact.count({ where }),
-  ]);
-  return {
-    total,
-    rows: rows.map((c) => ({
-      id: c.id,
-      href: masterPath("contacts", c.id),
-      title: c.code,
-      name: c.code,
-      pill: contactIndicator(c),
-      cells: { email_id: c.emailId, phone: c.phone },
-      updatedAt: c.updatedAt.toISOString(),
-    })),
-  };
-}
 
 // One contact -------------------------------------------------------------------------------------
 

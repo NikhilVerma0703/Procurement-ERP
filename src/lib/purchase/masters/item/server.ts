@@ -1,4 +1,4 @@
-// The Item master on the server: its list, one item's form values, its save
+// The Item master on the server (its list is the old list view, doc/screens.ts): one item's form values, its save
 // and delete, and its variants. A save re-checks the form and applies
 // ERPNext's Item.validate as the old site ran it (Stock Settings named items
 // by Item Code; India Compliance checked HSN/SAC; Item Variant Settings let a
@@ -10,74 +10,16 @@ import { isCountry } from "../../countries";
 import { siteToday } from "../../format";
 import { htmlToText, sanitizeHtml } from "../../html";
 import type { ActionResult } from "../../orders/form-schema";
-import { masterPath } from "../../routes";
 import type { PurchaseUser } from "../../server/current-user";
 import { db } from "../../server/db";
 import type { SaveMasterRequest } from "../address/server";
 import { assertFresh, dateOf, MasterError, masterResult, refuseIf, stampsOf, syncRows, ymd, type Stamp } from "../kit";
-import type { ListPage, ListShape, MasterListQuery } from "../list-query";
 import type { Row, Values } from "../spec";
 import { checkNewName, cleanValues, flag, mandatoryErrors, num, rnum, rowsOf, rstr, str } from "../values";
 import { itemIndicator, itemSpec, VARIANT_FIELDS, variantNames } from "./spec";
 
 type Tx = Prisma.TransactionClient;
 const fieldError = (field: string, message: string) => new MasterError(message, { [field]: message });
-
-// The list ----------------------------------------------------------------------------------------
-
-/** Item list: Item Group, Has Variants and Variant Of are its standard filters; latest change first. */
-export const ITEM_LIST: ListShape = {
-  filters: ["item_group", "has_variants", "variant_of", "disabled"],
-  sorts: ["modified", "creation", "name", "item_name"],
-  defaultSort: "modified",
-  defaultOrder: "desc",
-};
-
-const ORDER: Record<string, (o: "asc" | "desc") => Prisma.PurchaseItemOrderByWithRelationInput> = {
-  modified: (o) => ({ updatedAt: o }),
-  creation: (o) => ({ createdAt: o }),
-  name: (o) => ({ code: o }),
-  item_name: (o) => ({ itemName: o }),
-};
-
-export async function listItems(q: MasterListQuery): Promise<ListPage> {
-  const has = (s: string) => ({ contains: s, mode: "insensitive" as const });
-  const yes = (k: string) => (q.filters[k] === "Yes" ? true : q.filters[k] === "No" ? false : undefined);
-  const base: Prisma.PurchaseItemWhereInput = {
-    ...(q.q ? { OR: [{ code: has(q.q) }, { itemName: has(q.q) }] } : {}),
-    ...(q.filters.item_group ? { itemGroup: { code: q.filters.item_group } } : {}),
-    ...(yes("has_variants") !== undefined ? { hasVariants: yes("has_variants") } : {}),
-    ...(yes("disabled") !== undefined ? { disabled: yes("disabled") } : {}),
-    ...(q.filters.variant_of ? { variantOf: { code: q.filters.variant_of } } : {}),
-  };
-  const where: Prisma.PurchaseItemWhereInput = q.idFilter ? { AND: [base, { id: q.idFilter }] } : base;
-  const today = siteToday();
-  const [rows, total] = await Promise.all([
-    db.purchaseItem.findMany({
-      where,
-      orderBy: [(ORDER[q.sort] ?? ORDER.modified)(q.order), { code: "asc" }],
-      take: q.limit,
-      select: { id: true, code: true, itemName: true, disabled: true, endOfLife: true, hasVariants: true, variantOfId: true, updatedAt: true, itemGroup: { select: { code: true } } },
-    }),
-    db.purchaseItem.count({ where }),
-  ]);
-  return {
-    total,
-    rows: rows.map((i) => ({
-      id: i.id,
-      href: masterPath("items", i.id),
-      title: i.itemName,
-      name: i.code,
-      pill: itemIndicator({ disabled: i.disabled, endOfLife: ymd(i.endOfLife), hasVariants: i.hasVariants, variantOf: i.variantOfId }, today),
-      cells: { item_group: i.itemGroup?.code ?? null },
-      updatedAt: i.updatedAt.toISOString(),
-    })),
-  };
-}
-
-export async function itemGroupNames(): Promise<string[]> {
-  return (await db.purchaseItemGroup.findMany({ select: { code: true }, orderBy: { code: "asc" } })).map((g) => g.code);
-}
 
 // One item ----------------------------------------------------------------------------------------
 

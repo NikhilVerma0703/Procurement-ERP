@@ -22,6 +22,7 @@ type Legacy = Record<string, unknown>;
 
 /** The FROM clause of a screen's records, as "t". */
 function source(s: DocScreen): Prisma.Sql {
+  if (s.store.kind === "overlay") return Prisma.sql`(${Prisma.raw(s.store.sql)}) t WHERE TRUE`;
   return s.store.kind === "table" ? Prisma.sql`${Prisma.raw(`"${s.store.table}"`)} t WHERE TRUE` : Prisma.sql`purchase_documents t WHERE t.doctype = ${s.doctype}`;
 }
 
@@ -168,7 +169,7 @@ export async function adjacentDocs(s: DocScreen, id: string): Promise<{ prev: st
   const sort = s.sort.field;
   const key = isNumeric(l, sort) ? numberOf(sort) : textOf(sort);
   const meKey = isNumeric(l, sort) ? Prisma.sql`COALESCE(NULLIF(me.legacy->>${sort}, ''), '0')::numeric` : Prisma.sql`COALESCE(me.legacy->>${sort}, '')`;
-  const meTable = s.store.kind === "table" ? Prisma.raw(`"${s.store.table}"`) : Prisma.raw("purchase_documents");
+  const meTable = s.store.kind === "table" ? Prisma.raw(`"${s.store.table}"`) : s.store.kind === "overlay" ? Prisma.raw(`(${s.store.sql})`) : Prisma.raw("purchase_documents");
   // ‹ goes to the record listed before this one, › to the one after, in the list's own order.
   const before = s.sort.order === "desc" ? Prisma.sql`>` : Prisma.sql`<`;
   const after = s.sort.order === "desc" ? Prisma.sql`<` : Prisma.sql`>`;

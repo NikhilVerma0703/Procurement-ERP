@@ -8,7 +8,6 @@ import { describe, expect, it } from "vitest";
 import { addressGst, checkGstin, gstinCheckDigitOk, guessGstCategory, partyGst } from "@/lib/purchase/gstin";
 import { isCountry } from "@/lib/purchase/countries";
 import { itemIndicator, variantNames } from "@/lib/purchase/masters/item/spec";
-import { masterQueryParams, parseMasterQuery, type ListShape } from "@/lib/purchase/masters/list-query";
 import { partyPrefill } from "@/lib/purchase/masters/prefill";
 import { missingFields, type MasterSpec } from "@/lib/purchase/masters/spec";
 import { supplierGstinPatch, supplierIndicator, supplierPrefill, supplierPrefillParams } from "@/lib/purchase/masters/supplier/spec";
@@ -163,20 +162,7 @@ describe("the Item screen", () => {
   });
 });
 
-describe("master lists, links and access", () => {
-  const shape: ListShape = { filters: ["supplier_group"], sorts: ["modified", "name"], defaultSort: "modified", defaultOrder: "asc" };
-
-  it("reads and writes a list's state in the address bar", () => {
-    const q = parseMasterQuery({ q: " acme ", supplier_group: "Raw Material", sort: "name", order: "desc", limit: "100", other: "x" }, shape);
-    expect(q).toEqual({ q: "acme", filters: { supplier_group: "Raw Material" }, sort: "name", order: "desc", limit: 100, likedBy: "" });
-    expect(masterQueryParams(q, shape).toString()).toBe("q=acme&supplier_group=Raw+Material&sort=name&order=desc&limit=100");
-    expect(parseMasterQuery({ sort: "evil" }, shape)).toMatchObject({ sort: "modified", order: "asc", limit: 20 });
-    // The ♥ heading's filter rides in the address bar too ("Liked By like %<e-mail>%").
-    const liked = parseMasterQuery({ _liked_by: " a@example.com " }, shape);
-    expect(liked.likedBy).toBe("a@example.com");
-    expect(masterQueryParams(liked, shape).toString()).toBe("_liked_by=a%40example.com");
-  });
-
+describe("master links and access", () => {
   it("links a new address or contact to its party and returns only within the module", () => {
     expect(partyPrefill({ link_doctype: "Supplier", link_name: "Acme Traders", return: "/purchase/suppliers/abc" })).toEqual({ link: { doctype: "Supplier", name: "Acme Traders" }, returnTo: "/purchase/suppliers/abc" });
     expect(partyPrefill({ link_doctype: "User", link_name: "x", return: "//evil.example.com" })).toEqual({ link: null, returnTo: null });

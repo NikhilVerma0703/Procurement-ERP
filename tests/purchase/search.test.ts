@@ -70,7 +70,7 @@ describe("the box's list", () => {
 
   it("'cement in supplier': find in the Supplier list", () => {
     const o = searchOptions("cement in supplier", ctx());
-    expect(o[0]).toMatchObject({ value: "Find cement in Supplier", index: 291, href: "/purchase/suppliers?q=cement" });
+    expect(o[0]).toMatchObject({ value: "Find cement in Supplier", index: 291, href: `/purchase/suppliers?${new URLSearchParams({ name: '["like","%cement%"]' })}` });
   });
 
   it("a sum is worked out; =… too", () => {
@@ -110,7 +110,7 @@ describe("the box's list", () => {
   it("on a list: find the text in that list", () => {
     const geList = searchScope(store).doctypes.find((d) => d.doctype === "Gate Entry")!;
     const o = searchOptions("03517", ctx({ currentList: geList }));
-    expect(o.find((x) => x.type === "Current")).toMatchObject({ value: "Find 03517 in Gate Entry", index: 90, href: "/purchase/gate-entries?name=03517" });
+    expect(o.find((x) => x.type === "Current")).toMatchObject({ value: "Find 03517 in Gate Entry", index: 90, href: `/purchase/gate-entries?${new URLSearchParams({ name: '["like","%03517%"]' })}` });
   });
 
   it("a buyer (Purchase) sees no stock screens", () => {
