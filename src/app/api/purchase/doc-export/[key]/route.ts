@@ -5,7 +5,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currencyOfField, listDocs } from "@/lib/purchase/doc/list-data";
 import { docIndicator, isValueField, parseDocListQuery } from "@/lib/purchase/doc/list-view";
-import { DOC_SCREENS, GATE_ENTRY_SCREEN, layoutOf, MASTER_SCREENS } from "@/lib/purchase/doc/screens";
+import { DOC_SCREENS, GATE_ENTRY_SCREEN, layoutOf, MASTER_SCREENS, RECEIPT_SCREEN } from "@/lib/purchase/doc/screens";
 import { displayValue } from "@/lib/purchase/doc/values";
 import { purchaseGate, purchaseRefusal } from "@/lib/purchase/server/gate";
 
@@ -21,7 +21,7 @@ function cell(v: string): string {
 }
 
 /** Every list drawn as the old list view: the Stock screens, Gate Entry and the Buying masters. */
-const SCREENS = [...DOC_SCREENS, GATE_ENTRY_SCREEN, ...MASTER_SCREENS];
+const SCREENS = [...DOC_SCREENS, GATE_ENTRY_SCREEN, RECEIPT_SCREEN, ...MASTER_SCREENS];
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ key: string }> }) {
   const { key } = await params;

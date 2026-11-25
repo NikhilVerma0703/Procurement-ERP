@@ -54,7 +54,7 @@ const DOCTYPES: readonly (SearchDoctype & { action: "view" | "stock"; createActi
   { doctype: "Contact", list: PURCHASE_PATHS.contacts, create: `${PURCHASE_PATHS.contacts}/new`, find: "name", routeOptions: { title: null }, action: "view", createAction: "masters" },
   { doctype: "Purchase Order", list: PURCHASE_PATHS.orders, create: PURCHASE_PATHS.orderNew, find: "name", action: "view", createAction: "save" },
   { doctype: "Item", list: PURCHASE_PATHS.items, create: `${PURCHASE_PATHS.items}/new`, find: "name", routeOptions: { title: "item_name" }, action: "view", createAction: "masters" },
-  { doctype: "Purchase Receipt", list: PURCHASE_PATHS.receipts, create: `${PURCHASE_PATHS.receipts}/new`, find: "name", action: "stock", createAction: "stock" },
+  { doctype: "Purchase Receipt", list: PURCHASE_PATHS.receipts, create: `${PURCHASE_PATHS.receipts}/new`, find: "name", routeOptions: { title: "title" }, action: "stock", createAction: "stock" },
   { doctype: "Purchase Taxes and Charges Template", list: PURCHASE_PATHS.taxTemplates, create: `${PURCHASE_PATHS.taxTemplates}/new`, find: "name", routeOptions: { title: "title" }, action: "view", createAction: "masters" },
   { doctype: "Payment Term", list: PURCHASE_PATHS.paymentTerms, create: `${PURCHASE_PATHS.paymentTerms}/new`, find: "name", routeOptions: { title: null }, action: "view", createAction: "masters" },
   { doctype: "Gate Entry", list: PURCHASE_PATHS.gateEntries, create: `${PURCHASE_PATHS.gateEntries}/new`, find: "name", routeOptions: { title: null }, action: "stock", createAction: "stock" },

@@ -84,7 +84,7 @@ export async function DocListPage({ screen, searchParams, views }: { screen: Doc
   const q = parseDocListQuery(l, searchParams, defaults);
   const [{ rows, total }, currencies] = await Promise.all([listDocs(screen, q), currencyDisplays()]);
   const likes = await likesOf(screen.key, rows.map((r) => r.id), user.email);
-  const columns = listColumns(l, { hideNameColumn: screen.hideNameColumn });
+  const columns = listColumns(l, { hideNameColumn: screen.hideNameColumn, settings: screen.listSettings });
   const format = (f: LayoutField, v: unknown, doc: Doc) => {
     if (f.fieldtype !== "Currency") return displayValue(f, v);
     const code = currencyOfField(f, doc, "INR");
@@ -118,7 +118,7 @@ export async function DocListPage({ screen, searchParams, views }: { screen: Doc
       likeKind={screen.key}
       viewer={user.email}
       canLike={purchaseCan(user, "like")}
-      canDelete={canWrite}
+      canDelete={canWrite && screen.deletable !== false}
       newHref={canWrite && !quickEntry ? `${screen.path}/new` : null}
       quickEntry={quickEntry}
       openQuickEntry={Boolean(quickEntry) && searchParams.new === "1"}

@@ -54,6 +54,8 @@ export function guessColour(text: string): IndicatorColour {
 type Doc = Record<string, unknown>;
 const num = (v: unknown) => (typeof v === "number" ? v : Number(v ?? 0) || 0);
 const str = (v: unknown) => (v === null || v === undefined ? "" : String(v));
+/** flt(v, 2). */
+const round2 = (v: unknown) => Math.round(num(v) * 100) / 100;
 /** System Settings › Float Precision (3), as frappe.defaults.get_default("float_precision"). */
 const FLOAT_PRECISION = 3;
 
@@ -65,6 +67,16 @@ const LIST_INDICATORS: Record<string, (doc: Doc) => Indicator | null> = {
     if (doc.end_of_life && str(doc.end_of_life) < siteToday()) return { label: "Expired", colour: "gray", filter: `end_of_life,<,${siteToday()}` };
     if (num(doc.has_variants)) return { label: "Template", colour: "orange", filter: "has_variants,=,1" };
     if (doc.variant_of) return { label: "Variant", colour: "green", filter: `variant_of,=,${str(doc.variant_of)}` };
+    return null;
+  },
+  // purchase_receipt_list.js (a draft or cancelled receipt is that, before this).
+  "Purchase Receipt": (doc) => {
+    if (num(doc.is_return)) return { label: "Return", colour: "gray", filter: "is_return,=,Yes" };
+    if (str(doc.status) === "Closed") return { label: "Closed", colour: "green", filter: "status,=,Closed" };
+    if (round2(doc.per_returned) === 100) return { label: "Return Issued", colour: "gray", filter: "per_returned,=,100" };
+    if (num(doc.grand_total) !== 0 && round2(doc.per_billed) === 0) return { label: "To Bill", colour: "orange", filter: "per_billed,<,100" };
+    if (round2(doc.per_billed) > 0 && round2(doc.per_billed) < 100) return { label: "Partly Billed", colour: "yellow", filter: "per_billed,<,100" };
+    if (num(doc.grand_total) === 0 || round2(doc.per_billed) === 100) return { label: "Completed", colour: "green", filter: "per_billed,=,100" };
     return null;
   },
   // supplier_list.js: On Hold; else Enabled / Disabled.
@@ -127,6 +139,12 @@ const LIST_INDICATORS: Record<string, (doc: Doc) => Indicator | null> = {
   },
 };
 
+/** A DocType's List View Settings: its columns' fieldnames in order ("status_field": Status), and how many at most. */
+export interface ListViewSettings {
+  fields: readonly string[];
+  totalFields: number;
+}
+
 /** frappe.has_indicator: does the list have a Status column? */
 export function hasIndicator(l: DoctypeLayout): boolean {
   return l.isSubmittable || l.doctype in LIST_INDICATORS || hasField(l, "enabled") || hasField(l, "disabled");
@@ -164,7 +182,7 @@ function listViewFields(l: DoctypeLayout, indicator: boolean): LayoutField[] {
   return l.fields.filter((f) => isValueField(f) && f.inListView && f.fieldname !== l.titleField && !(indicator && f.fieldname === "status"));
 }
 
-export function listColumns(l: DoctypeLayout, opts: { hideNameColumn?: boolean } = {}): ListColumn[] {
+export function listColumns(l: DoctypeLayout, opts: { hideNameColumn?: boolean; settings?: ListViewSettings } = {}): ListColumn[] {
   const title = l.titleField ? l.fields.find((f) => f.fieldname === l.titleField) ?? null : null;
   const indicator = hasIndicator(l);
   const all: (Omit<ListColumn, "from"> | "tag")[] = [
@@ -174,9 +192,18 @@ export function listColumns(l: DoctypeLayout, opts: { hideNameColumn?: boolean }
     ...listViewFields(l, indicator).map((f) => ({ kind: "field" as const, field: f, label: f.label ?? f.fieldname })),
   ];
   const out: ListColumn[] = [];
-  all.slice(0, 10).forEach((c, i) => {
-    if (c !== "tag") out.push({ ...c, from: i < 4 ? 0 : i < 6 ? 1367 : 1920 });
-  });
+  const s = opts.settings;
+  if (s) {
+    // reorder_listview_fields: the subject and Tag stay first, then the settings' fields in their order
+    // (the rest dropped); total_fields columns at most, whatever the window's width.
+    const rest = all.slice(2);
+    const ordered = [all[0], all[1], ...s.fields.flatMap((name) => rest.filter((c) => c !== "tag" && (name === "status_field" ? c.kind === "status" : c.kind === "field" && c.field?.fieldname === name)).slice(0, 1))];
+    for (const c of ordered.slice(0, s.totalFields)) if (c !== "tag") out.push({ ...c, from: 0 });
+  } else {
+    all.slice(0, 10).forEach((c, i) => {
+      if (c !== "tag") out.push({ ...c, from: i < 4 ? 0 : i < 6 ? 1367 : 1920 });
+    });
+  }
   if (!opts.hideNameColumn && l.titleField && l.titleField !== "name") out.push({ kind: "name", field: null, label: "ID", from: 0 });
   return out;
 }

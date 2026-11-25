@@ -54,7 +54,7 @@ only in this PC's database; remove it with `npm run users -- disable test.admin@
 | Quick filters: ID, Supplier, Supplier Name, Company, Status | Same, applied as you type. Supplier and Company suggest their values. ID and Supplier Name match anywhere; Supplier, Company and Status match exactly (ERPNext's rule). |
 | Filter builder ("N filters") | Same operators: Equals, Not Equals, Like, Not Like, In, Not In, Is set / not set, >, <, >=, <=, Between. 28 fields, including item-row fields such as Item Code. |
 | Sort selector and order toggle | Same; default Last Updated On, newest first (the doctype's default). |
-| Columns | Supplier Name, Status (workflow state pill: Approved green, Rejected red, Created grey), Date, Grand Total, % Billed and % Received bars, ID, time since the last change ("3 d", "1 w"), comment count. |
+| Columns | Supplier Name, Status (workflow state pill: Approved green, Rejected red, Created grey), Date, Grand Total, % Billed and % Received bars, ID, time since the last change ("3 d", "1 w"), comment count. As Frappe chose them by the window's width (no List View Settings for Purchase Order): Grand Total and % Billed from 1,367 px, % Received from 1,920 px (checked against the old list at 956 px, 25-11-2026). |
 | Paging 20 / 100 / 500 / 2500, **Load More**, "20 of …" | Same. |
 | Figures | `₹ 189,125.68` (groups of three, 2 decimals unless the value has 3), dates `dd-mm-yyyy`, times in Asia/Kolkata. |
 | Comes back as you left it (filters and sort, per user) | Same: kept in the browser for each login. |

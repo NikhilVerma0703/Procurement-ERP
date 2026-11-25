@@ -38,7 +38,10 @@ to every captured list (`tests/purchase/stock-screens.test.ts`):
 
 * **Columns** — the title field (or ID), Status when the DocType has one, then its "in list view" fields, cut
   to **4 columns in a window up to 1,366 px wide, 6 below 1,920 px and 10 from 1,920 px** (Frappe's
-  `setup_columns`, by `window.innerWidth`), then ID when the title is another field. This is why the owner's
+  `setup_columns`, by `window.innerWidth`), then ID when the title is another field. A DocType with List View
+  Settings on the old site keeps those columns, in that order, at any width (of ours only Purchase Receipt:
+  Title, Status, Date, Grand Total, Gate Entry, read 25-11-2026). Rows with the same sort value come by ID in the
+  same direction (the old database read an indexed sort through its index). This is why the owner's
   Gate Entry List showed Po No, Inward No, Supplier and Inward Date and the capture (a narrower window) only Po No.
 * **Each row** — ☐ and ♥ (likes, as on the Buying lists), the title in bold opening the record, the status pill,
   a Select as a pill, a Percent as a bar; a click on a value or pill filters the list by it; on the right the

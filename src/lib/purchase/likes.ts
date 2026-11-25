@@ -76,6 +76,8 @@ async function recordExists(kind: LikeKind, id: string): Promise<{ id?: string; 
       return db.purchaseTermsTemplate.findUnique(where);
     case "gateEntries":
       return db.purchaseGateEntry.findUnique(where);
+    case "receipts":
+      return db.purchaseReceipt.findUnique(where);
     default: {
       // The Stock screens drawn from their definitions (doc/screens.ts): their own table, or the
       // generic one.

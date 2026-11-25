@@ -79,9 +79,13 @@ async function whereOf(s: DocScreen, l: DoctypeLayout, filters: DocFilter[]): Pr
   return parts.length ? Prisma.sql`AND ${Prisma.join(parts, " AND ")}` : Prisma.empty;
 }
 
+// Records with the same value come by ID in the same direction: the old database read a sort on an
+// indexed field (Purchase Receipt's Date, Gate Entry's Created On) through that index, whose entries
+// for one value are in ID order (PR/25-26/MM-03464, 03463, 03462 on one date, newest first).
 const orderOf = (l: DoctypeLayout, sort: string, order: "asc" | "desc") => {
   const dir = Prisma.raw(order === "asc" ? "ASC" : "DESC");
-  return isNumeric(l, sort) ? Prisma.sql`${numberOf(sort)} ${dir}, t.id ${dir}` : Prisma.sql`${textOf(sort)} ${dir}, t.id ${dir}`;
+  const key = isNumeric(l, sort) ? numberOf(sort) : textOf(sort);
+  return sort === "name" ? Prisma.sql`${key} ${dir}, t.id ${dir}` : Prisma.sql`${key} ${dir}, ${textOf("name")} ${dir}, t.id ${dir}`;
 };
 
 export interface DocListRecord {

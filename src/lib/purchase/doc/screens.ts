@@ -13,6 +13,7 @@
 
 import type { PurchaseAction } from "../access";
 import type { DoctypeLayout } from "./layout";
+import type { ListViewSettings } from "./list-view";
 import { LAYOUTS } from "./layouts";
 import { PURCHASE_PATHS, type MasterKey } from "../routes";
 
@@ -43,7 +44,7 @@ export interface OverlayStore {
 export type DocScreenKey =
   | "itemGroups" | "productBundles" | "priceLists" | "itemPrices" | "shippingRules" | "pricingRules" | "itemAlternatives"
   | "itemManufacturers" | "customsTariffNumbers" | "materialRequests" | "stockEntries" | "deliveryNotes" | "pickLists" | "deliveryTrips"
-  | "gateEntries" | MasterKey;
+  | "gateEntries" | "receipts" | MasterKey;
 
 export interface DocScreen {
   /** Its name in routes.ts, and its likes' kind (like-rules.ts). */
@@ -67,6 +68,10 @@ export interface DocScreen {
   write?: PurchaseAction;
   /** "+ Add" opens the quick entry dialog (Frappe's quick entry), as on the old Supplier list. */
   quickEntry?: MasterKey;
+  /** The DocType's List View Settings on the old site: its columns in order, and how many at most. */
+  listSettings?: ListViewSettings;
+  /** false: the list's Actions offer no Delete (its records are not deleted from the list here). */
+  deletable?: boolean;
 }
 
 const table = (name: string, children: TableStore["children"] = {}): TableStore => ({ kind: "table", table: name, children });
@@ -114,6 +119,19 @@ export const DOC_SCREENS: readonly DocScreen[] = [
  * records keep their own form, print and rules (stock/gate-entry-save.ts). Not in DOC_SCREENS: its
  * pages are its own (app/purchase/gate-entries).
  */
+/**
+ * Purchase Receipt's list (owner, 25-11-2026: "all these built sections should look like original
+ * website"), as Thiru R had it: its List View Settings (Title, Status, Date, Grand Total, Gate Entry, at
+ * most 10 columns, read from the old site that day) and his sort, Date newest first. The form is its own
+ * (app/purchase/receipts/[id]); a draft is not deleted from the list (no receipt Delete here yet).
+ */
+export const RECEIPT_SCREEN: DocScreen = {
+  key: "receipts", doctype: "Purchase Receipt", path: PURCHASE_PATHS.receipts, card: "Stock Transactions",
+  store: table("purchase_receipts", { items: { table: "purchase_receipt_items", fk: "receipt_id" }, taxes: { table: "purchase_receipt_taxes", fk: "receipt_id" } }),
+  sort: { field: "posting_date", order: "desc" }, editable: false, ownForm: true, deletable: false,
+  listSettings: { fields: ["title", "status_field", "posting_date", "grand_total", "gate_entry"], totalFields: 10 },
+};
+
 export const GATE_ENTRY_SCREEN: DocScreen = {
   key: "gateEntries", doctype: "Gate Entry", path: PURCHASE_PATHS.gateEntries, card: "Stock Transactions",
   store: table("purchase_gate_entries", { items: { table: "purchase_gate_entry_items", fk: "gate_entry_id" } }),

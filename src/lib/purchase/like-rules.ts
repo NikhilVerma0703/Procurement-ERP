@@ -24,6 +24,7 @@ export const LIKE_DOCTYPE = {
   terms: "Terms and Conditions",
   // Stock (owner, 24-11-2026): the old lists had the ♥ on every DocType.
   gateEntries: "Gate Entry",
+  receipts: "Purchase Receipt",
   itemGroups: "Item Group",
   productBundles: "Product Bundle",
   priceLists: "Price List",

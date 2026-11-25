@@ -137,7 +137,8 @@ Ordered by what the two users do **today**, so the switch-over loses no daily wo
    Quality Inspection and Serial No / Batch on receipt), then **Landed Cost Voucher**.
    * ✅ (21-11) **The list and the read-only form** of every receipt (`/purchase/receipts`): the old list (Title,
      Status, Date, Grand Total, Gate Entry, ID; filters ID / Title / Company / Status; 20 / 100 / 500 / 2500; newest
-     posting date first, Thiru R's own setting) and the old form drawn **from its own definition** — the form
+     posting date first, Thiru R's own setting; since 25-11-2026 the old list view itself, docs/14 §2, with the
+     DocType's List View Settings: those five columns at any width) and the old form drawn **from its own definition** — the form
      engine `lib/purchase/doc/` (86 layouts captured 21-11 by `scripts/analysis/extract_layouts.py`, a safe
      evaluator for all 193 show/hide conditions, Frappe's read-only rules, the grid width budget, ERPNext's
      currency labels and buying toggles). Checked against the live PR/25-26/MM-03433: the same fields, in the same

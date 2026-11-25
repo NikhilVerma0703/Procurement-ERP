@@ -10,7 +10,7 @@ import {
   standardFilters, withFilters,
 } from "@/lib/purchase/doc/list-view";
 import { afterChange, effectiveLayout, fetchesFor, formRules, lookupFor, mayType } from "@/lib/purchase/doc/master-form";
-import { DOC_SCREENS, GATE_ENTRY_SCREEN, MASTER_SCREENS, masterScreen, screenBySegment } from "@/lib/purchase/doc/screens";
+import { DOC_SCREENS, GATE_ENTRY_SCREEN, MASTER_SCREENS, masterScreen, RECEIPT_SCREEN, screenBySegment } from "@/lib/purchase/doc/screens";
 import { PURCHASE_MODULES, PURCHASE_PATHS } from "@/lib/purchase/routes";
 import { oldDbCompare } from "@/lib/purchase/stock/collation";
 import {
@@ -316,5 +316,26 @@ describe("the Buying masters' lists", () => {
     expect(docIndicator(item, { disabled: 0 })).toMatchObject({ label: "Enabled", colour: "blue" });
     expect(docIndicator(L("Supplier"), { on_hold: 1 })).toMatchObject({ label: "On Hold", colour: "red" });
     expect(docIndicator(L("Supplier"), { disabled: 0 })).toMatchObject({ label: "Enabled", colour: "blue" });
+  });
+});
+
+// Purchase Receipt's list: its List View Settings on the old site (read 25-11-2026).
+describe("the Purchase Receipt list", () => {
+  it("draws the settings' columns at every width, then ID", () => {
+    const cols = listColumns(L("Purchase Receipt"), { settings: RECEIPT_SCREEN.listSettings });
+    expect(cols.map((c) => [c.label, c.from])).toEqual([["Title", 0], ["Status", 0], ["Date", 0], ["Grand Total", 0], ["Gate Entry", 0], ["ID", 0]]);
+    expect(standardFilters(L("Purchase Receipt")).map((f) => f.fieldname)).toEqual(["name", "title", "company", "status"]);
+    expect(RECEIPT_SCREEN.sort).toEqual({ field: "posting_date", order: "desc" });
+    expect(RECEIPT_SCREEN.deletable).toBe(false);
+  });
+
+  it("shows purchase_receipt_list.js's status", () => {
+    const pr = L("Purchase Receipt");
+    expect(docIndicator(pr, { docstatus: 0 })).toMatchObject({ label: "Draft", colour: "red" });
+    expect(docIndicator(pr, { docstatus: 1, grand_total: 433579, per_billed: 0 })).toMatchObject({ label: "To Bill", colour: "orange" });
+    expect(docIndicator(pr, { docstatus: 1, grand_total: 100, per_billed: 40 })).toMatchObject({ label: "Partly Billed", colour: "yellow" });
+    expect(docIndicator(pr, { docstatus: 1, grand_total: 0 })).toMatchObject({ label: "Completed", colour: "green" });
+    expect(docIndicator(pr, { docstatus: 1, is_return: 1 })).toMatchObject({ label: "Return", colour: "gray" });
+    expect(docIndicator(pr, { docstatus: 2 })).toMatchObject({ label: "Cancelled", colour: "red" });
   });
 });

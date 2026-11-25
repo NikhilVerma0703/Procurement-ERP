@@ -14,7 +14,9 @@ import { StatusPill } from "./StatusPill";
 
 // The rows of the Purchase Order list, with the old site's columns in its
 // order: Supplier Name, Status (workflow state), Date, Grand Total, % Billed,
-// % Received, ID, then when it last changed and its comment count. The count
+// % Received, ID, then when it last changed and its comment count — Grand Total and % Billed from a
+// 1,367 px window, % Received from 1,920 px, as Frappe chose a list's columns by the window's width
+// (Purchase Order had no List View Settings; the old list at 956 px, 25-11-2026). The count
 // "20 of 3,199" heads the right-hand side as it did there.
 //
 // Before the supplier name each row has the old list's checkbox and ♥ (owner
@@ -76,9 +78,9 @@ export function OrderTable({ rows, total, query, now, viewer, canLike }: {
           <col className="w-[24%]" />
           <col className="w-[12%]" />
           <col className="w-[10%]" />
-          <col className="w-[14%]" />
-          <col className="hidden w-[9%] md:table-column" />
-          <col className="hidden w-[9%] md:table-column" />
+          <col className="hidden w-[14%] min-[1367px]:table-column" />
+          <col className="hidden w-[9%] min-[1367px]:table-column" />
+          <col className="hidden w-[9%] min-[1920px]:table-column" />
           <col className="w-[12%]" />
           <col className="w-[10%]" />
         </colgroup>
@@ -93,9 +95,9 @@ export function OrderTable({ rows, total, query, now, viewer, canLike }: {
               </th>
               <th className={TH} />
               <th className={TH} />
-              <th className={TH} />
-              <th className={`${TH} hidden md:table-cell`} />
-              <th className={`${TH} hidden md:table-cell`} />
+              <th className={`${TH} hidden min-[1367px]:table-cell`} />
+              <th className={`${TH} hidden min-[1367px]:table-cell`} />
+              <th className={`${TH} hidden min-[1920px]:table-cell`} />
               <th className={TH} />
               <th className={`${TH} text-right`}>{count}</th>
             </tr>
@@ -112,9 +114,9 @@ export function OrderTable({ rows, total, query, now, viewer, canLike }: {
               </th>
               <th className={TH}>Status</th>
               <th className={TH}>Date</th>
-              <th className={`${TH} text-right`}>Grand Total</th>
-              <th className={`${TH} hidden md:table-cell`}>% Billed</th>
-              <th className={`${TH} hidden md:table-cell`}>% Received</th>
+              <th className={`${TH} hidden text-right min-[1367px]:table-cell`}>Grand Total</th>
+              <th className={`${TH} hidden min-[1367px]:table-cell`}>% Billed</th>
+              <th className={`${TH} hidden min-[1920px]:table-cell`}>% Received</th>
               <th className={TH}>ID</th>
               <th className={`${TH} text-right`}>{count}</th>
             </tr>
@@ -143,13 +145,13 @@ export function OrderTable({ rows, total, query, now, viewer, canLike }: {
                 <StatusPill label={r.workflowState} docStatus={r.docStatus} href={byState(r.workflowState)} />
               </td>
               <td className={`${TD} whitespace-nowrap text-gray-700`}>{formatDate(r.transactionDate)}</td>
-              <td className={`${TD} truncate text-right text-gray-900`} title={formatCurrency(r.grandTotal, r.currency)}>
+              <td className={`${TD} hidden truncate text-right text-gray-900 min-[1367px]:table-cell`} title={formatCurrency(r.grandTotal, r.currency)}>
                 {formatCurrency(r.grandTotal, r.currency)}
               </td>
-              <td className={`${TD} hidden md:table-cell`}>
+              <td className={`${TD} hidden min-[1367px]:table-cell`}>
                 <PercentBar value={r.perBilled} />
               </td>
-              <td className={`${TD} hidden md:table-cell`}>
+              <td className={`${TD} hidden min-[1920px]:table-cell`}>
                 <PercentBar value={r.perReceived} />
               </td>
               <td className={`${TD} truncate text-gray-600`} title={r.number}>
