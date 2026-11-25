@@ -23,10 +23,9 @@ const ROLE_LABEL: Record<string, string> = { PURCHASE: "Purchase", STORE: "Store
 // stays behind.
 
 // The modules the login may open (lib/purchase/nav.ts), as a tree that opens on demand (owner,
-// 25-11-2026: "the main sidebar should initially display only Buying and Stock … clean,
-// hierarchical, compact"): Buying opens to its nine sections; Stock to the old site's three cards,
-// each opening to its sections. Nothing is open at first; what was opened stays open while moving
-// between pages. A closed module or card holding the page on screen is tinted, so the way back shows.
+// 25-11-2026: "clean, hierarchical, compact"): Buying opens to its nine sections; Stock shows the old
+// site's three cards, each opening to its sections. At first Buying is closed and Stock shows its
+// cards, closed; what was opened stays open while moving between pages. A closed module or card holding the page on screen is tinted, so the way back shows.
 // The four sections used most (routes.ts `primary`) keep their own icon, a tint, an accent bar and
 // bold type wherever they are drawn.
 
@@ -64,7 +63,9 @@ function NavRow({ row, active, onNavigate }: { row: PurchaseNavRow; active: bool
 
 function NavLinks({ user, onNavigate }: { user: SidebarUser; onNavigate?: () => void }) {
   const pathname = usePathname();
-  const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set());
+  // At first: Buying, and Stock's three cards (owner, 25-11-2026: "(1) Buying (2) Stock → Items and
+  // Pricing (3) Stock → Stock Transactions (4) Stock → Stock Reports"); each opens to its sections.
+  const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set(["stock"]));
   const toggle = (key: string) =>
     setOpen((s) => {
       const next = new Set(s);
