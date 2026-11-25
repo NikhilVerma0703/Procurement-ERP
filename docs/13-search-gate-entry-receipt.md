@@ -5,7 +5,8 @@ existing website) … same functionality and behaviour", then "search Gate Entry
 build this entire gate entry list and the Receipt section also … with all previous data".
 
 Everything below was read from the old site on 23–24-11-2026 (as Thiru R, read-only) before its subscription
-ended, and from its final backup `20261124_085443` (3,229 POs, 4,693 gate entries, 5,604 receipts). The whole
+ended, and from its backup `20261124_085443` (3,229 POs, 4,693 gate entries, 5,604 receipts; the final one,
+`20261125_095508`, added the last day's 4 gate entries and 4 receipts: docs/14 §7). The whole
 capture is kept outside the repository (company data): `Downloads\Procurement-ERP-Data-2026-11-23\` and, for the
 code, `data/erpnext-live/` (`live-search-*`, `live-gate-entry-states-*`, `live-screens-*`, `live-assets-*`).
 

@@ -1,6 +1,6 @@
 # Phase II — the Buying module and the Stock module
 
-**Status:** discovery done, data secured and imported (final backup of 24-11-2026: 3,229 POs, 4,693 gate entries, 5,604 receipts), navigation and access done, Stock Ledger and Stock Balance equal to the old site's own answers; the top search box, Gate Entry, and the receipt's submission and cancellation built (24-11-2026, docs/13); the other screens next.
+**Status:** discovery done, data secured and imported (final backup `20261125_095508`, after the old site's last entries of 24-11-2026: 3,232 POs, 4,697 gate entries, 5,608 receipts; docs/14 §7), navigation and access done, Stock Ledger and Stock Balance equal to the old site's own answers; the top search box, Gate Entry, and the receipt's submission and cancellation built (24-11-2026, docs/13); the other screens next.
 **Date:** 21-11-2026 (updated 24-11-2026)
 **Asked by the owner (21-11-2026):** Phase I replicated the part of the old site that **Althaf** uses (Buying →
 Purchase Order and the masters a PO links to). Phase II adds what **Thiru R** (Storekeeper) uses as well:

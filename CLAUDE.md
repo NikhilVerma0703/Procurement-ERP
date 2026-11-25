@@ -48,7 +48,7 @@ npm run export:data -- --out "<folder>"  # every record as readable Excel, by th
   ERPNext screens (`docs/reference/`). Do not add features the original lacked. Do not drop ones it had without
   the owner's say-so (scope table: plan §5).
 - **Golden tests** are the definition of correct. The calculation engine must reproduce the totals, taxes and
-  statuses ERPNext stored on the historical POs (3,199 at Step 4; 3,217 in the 19-11-2026 backup; 3,227 in the 21-11-2026 one). A mismatch is a bug or a documented exception.
+  statuses ERPNext stored on the historical POs (3,199 at Step 4; 3,217 in the 19-11-2026 backup; 3,227 in the 21-11-2026 one; 3,232 in the final one of 25-11-2026). A mismatch is a bug or a documented exception.
 - Comment the *why*, in the style of the Main ERP (business rule, owner decision, date).
 
 ## Data and secrets

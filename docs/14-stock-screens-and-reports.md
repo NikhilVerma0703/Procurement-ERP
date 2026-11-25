@@ -22,7 +22,7 @@ The sidebar's Stock module lists every link of the old Stock workspace's three c
 | | Price List · Item Price | list + form, entered here | 9 · 5,220 |
 | | Product Bundle · Shipping Rule · Pricing Rule · Item Alternative · Item Manufacturer · Customs Tariff Number | list + form, entered here (never used on the old site) | 0 |
 | Stock Transactions | Material Request · Stock Entry · Delivery Note | list + form, **read-only** (§4) | 4,145 · 4,496 · 77 |
-| | Gate Entry · Purchase Receipt | their own screens (docs/13) | 4,693 · 5,604 |
+| | Gate Entry · Purchase Receipt | their own screens (docs/13) | 4,697 · 5,608 |
 | | Pick List · Delivery Trip | list, read-only (never used) | 0 |
 | Stock Reports | Stock Ledger · Stock Balance | docs/12 §7 | |
 | | Stock Projected Qty · Stock Summary · Stock Ageing · Item Price Stock · Warehouse Wise Stock Balance | §5 | |
@@ -99,16 +99,19 @@ comments, emails). Entering them is not offered: Material Requests stopped on 30
 ## 5. The five further reports
 
 `lib/purchase/stock/reports-more.ts` (ERPNext 14.92's report code, ported), loaders `reports-more-data.ts`,
-pages under `app/purchase/`. `npm run golden:stock` holds each to the old site's own answer of 24-11-2026 —
+pages under `app/purchase/`. `npm run golden:stock` holds each to the old site's own answer of 25-11-2026 —
 **every figure and every row, in the old order**:
 
 | Report | Rows equal |
 |---|---:|
 | Stock Projected Qty | 4,682 / 4,682 |
-| Stock Ageing | 4,192 / 4,192 |
-| Item Price Stock | 5,352 / 5,352 |
+| Stock Ageing | 4,193 / 4,193 |
+| Item Price Stock | 5,353 / 5,353 |
 | Warehouse Wise Stock Balance | 29 / 29 |
-| (Stock Balance ×2, Stock Ledger, as before) | 4,429 · 4,237 · 22,641 |
+| (Stock Balance ×2, Stock Ledger, as before) | 4,430 · 4,238 · 22,646 |
+
+(Against the final backup and the old site's answers of 25-11-2026 09:59, §7; on 24-11 the same checks held for
+that morning's data.)
 
 * The old database sorted text by MariaDB's utf8mb4_unicode_ci (“ after ", "½" as "1⁄2", invisible
   characters ignored): `stock/collation.ts` reproduces it for the reports that listed in that order.
@@ -129,8 +132,14 @@ pages under `app/purchase/`. `npm run golden:stock` holds each to the old site's
   the item group's whole row). Migrations `20261124090207_stock_screens`, `20261124120000_stock_documents_erpnext_name`;
   `merge/` rebuilt (`npm run merge:sql`). A reload from the backup empties `purchase_documents` too.
 
-## 7. Open
+## 7. The last day's work (25-11-2026)
 
-* **GE-25-26-03522** (supplier JEONJIN…, on the owner's screenshot of 24-11-2026) was made on the old site after
-  the final backup (`20261124_085443`), so it is not here: 4,693 gate entries against the old list's 4,694.
-  Recover it from the old site while it answers, or enter it again here (the numbering continues at 03522).
+GE-25-26-03522 (JEONJIN CORPORATION, on the owner's screenshot) was missing: the team had kept working on the
+old site all through 24-11-2026 after the 08:54 backup — 4 gate entries (03522–03525), 4 receipts (MM-03458–03461)
+with 7 stock ledger entries, 3 new POs (02560–02562) and changes to 3 others, a supplier, an item, an item price
+and a landed cost voucher (listed from the old site's API, read only). A new final backup, **20261125_095508**,
+was taken on the old site's Backups page and loaded: "✓ Import matches the backup" — 3,232 POs, 4,697 gate
+entries, 5,608 receipts, 26,060 stock ledger entries. The old site's own report answers were captured again at
+09:59 (`live-stock-reports-20261125.json`): every stock report equal row for row; the PO, ledger and receipt
+golden checks as before (0 unexplained). Anything entered on the old site after 09:55 on 25-11-2026 needs one
+more backup.
