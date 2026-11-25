@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FileText, LogOut, Menu, ShoppingCart, X } from "lucide-react";
+import { ChevronRight, ClipboardList, DoorOpen, FileText, LogOut, Menu, Package, PackageCheck, ShoppingCart, Warehouse, X } from "lucide-react";
 import { signOutAction } from "@/app/login/actions";
 import { navModulesFor } from "@/lib/purchase/nav";
+import { PURCHASE_PATHS, type PurchaseNavRow } from "@/lib/purchase/routes";
 import { cn } from "@/lib/purchase/cn";
 
 export interface SidebarUser {
@@ -21,40 +22,116 @@ const ROLE_LABEL: Record<string, string> = { PURCHASE: "Purchase", STORE: "Store
 // sidebar shows the module's rows from PURCHASE_NAV instead, and this file
 // stays behind.
 
-// The modules the login may open (lib/purchase/nav.ts): Buying, then Stock with the old site's
-// card names over its rows (owner, 21-11-2026).
+// The modules the login may open (lib/purchase/nav.ts), as a tree that opens on demand (owner,
+// 25-11-2026: "the main sidebar should initially display only Buying and Stock … clean,
+// hierarchical, compact"): Buying opens to its nine sections; Stock to the old site's three cards,
+// each opening to its sections. Nothing is open at first; what was opened stays open while moving
+// between pages. A closed module or card holding the page on screen is tinted, so the way back shows.
+// The four sections used most (routes.ts `primary`) keep their own icon, a tint, an accent bar and
+// bold type wherever they are drawn.
+
+/** The four sections used most: an icon each, so they read at a glance. */
+const PRIMARY_ICONS: Record<string, typeof FileText> = {
+  [PURCHASE_PATHS.orders]: ClipboardList,
+  [PURCHASE_PATHS.items]: Package,
+  [PURCHASE_PATHS.gateEntries]: DoorOpen,
+  [PURCHASE_PATHS.receipts]: PackageCheck,
+};
+const MODULE_ICONS: Record<string, typeof FileText> = { buying: ShoppingCart, stock: Warehouse };
+
+function NavRow({ row, active, onNavigate }: { row: PurchaseNavRow; active: boolean; onNavigate?: () => void }) {
+  const Icon = (row.primary && PRIMARY_ICONS[row.href]) || FileText;
+  return (
+    <Link
+      href={row.href}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "relative flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] transition",
+        active
+          ? "bg-brand font-medium text-white shadow-sm"
+          : row.primary
+            ? "bg-brand-50 font-semibold text-brand-800 ring-1 ring-inset ring-brand-100 hover:bg-brand-100"
+            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+      )}
+    >
+      {row.primary && !active && <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-brand-500" aria-hidden />}
+      <Icon className={cn("shrink-0", row.primary ? "h-4 w-4" : "h-3.5 w-3.5", active ? "text-white" : row.primary ? "text-brand-600" : "text-gray-400")} aria-hidden />
+      <span className="min-w-0 leading-snug">{row.label}</span>
+    </Link>
+  );
+}
+
 function NavLinks({ user, onNavigate }: { user: SidebarUser; onNavigate?: () => void }) {
   const pathname = usePathname();
+  const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set());
+  const toggle = (key: string) =>
+    setOpen((s) => {
+      const next = new Set(s);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const holdsPage = (rows: readonly PurchaseNavRow[]) => rows.some((r) => isActive(r.href));
   return (
-    <nav className="flex flex-col gap-4 overflow-y-auto">
-      {navModulesFor(user).map((m) => (
-        <div key={m.key} className="flex flex-col gap-1">
-          <div className="px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">{m.label}</div>
-          {m.groups.map((g) => (
-            <div key={g.label ?? m.key} className="flex flex-col gap-1">
-              {g.label && <div className="px-3 pt-1 text-[11px] font-medium text-gray-400">{g.label}</div>}
-              {g.rows.map(({ href, label }) => {
-                const active = pathname === href || pathname.startsWith(`${href}/`);
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={onNavigate}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
-                      active ? "bg-brand text-white shadow-sm" : "text-gray-700 hover:bg-brand-50 hover:text-brand-700",
-                    )}
-                  >
-                    <FileText className="h-4 w-4 shrink-0" aria-hidden />
-                    <span>{label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-      ))}
+    <nav className="flex flex-col gap-1 overflow-y-auto" aria-label="Procurement ERP">
+      {navModulesFor(user).map((m) => {
+        const mOpen = open.has(m.key);
+        const ModuleIcon = MODULE_ICONS[m.key] ?? FileText;
+        const here = holdsPage(m.groups.flatMap((g) => g.rows));
+        return (
+          <div key={m.key}>
+            <button
+              type="button"
+              onClick={() => toggle(m.key)}
+              aria-expanded={mOpen}
+              aria-controls={`nav-${m.key}`}
+              className={cn(
+                "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold transition hover:bg-gray-100",
+                !mOpen && here ? "bg-brand-50 text-brand-700" : "text-gray-800",
+              )}
+            >
+              <ModuleIcon className={cn("h-4 w-4 shrink-0", !mOpen && here ? "text-brand-600" : "text-gray-500")} aria-hidden />
+              <span className="flex-1 text-left">{m.label}</span>
+              <ChevronRight className={cn("h-4 w-4 shrink-0 text-gray-400 transition-transform", mOpen && "rotate-90")} aria-hidden />
+            </button>
+            {mOpen && (
+              <div id={`nav-${m.key}`} className="ml-[1.15rem] mt-1 flex flex-col gap-0.5 border-l border-gray-200 pb-1 pl-2.5">
+                {m.groups.map((g) => {
+                  if (!g.label) return g.rows.map((r) => <NavRow key={r.href} row={r} active={isActive(r.href)} onNavigate={onNavigate} />);
+                  const key = `${m.key}:${g.label}`;
+                  const gOpen = open.has(key);
+                  const gHere = holdsPage(g.rows);
+                  return (
+                    <div key={key}>
+                      <button
+                        type="button"
+                        onClick={() => toggle(key)}
+                        aria-expanded={gOpen}
+                        aria-controls={`nav-${key}`}
+                        className={cn(
+                          "flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition hover:bg-gray-100",
+                          !gOpen && gHere ? "bg-brand-50 text-brand-700" : "text-gray-700",
+                        )}
+                      >
+                        <ChevronRight className={cn("h-3.5 w-3.5 shrink-0 text-gray-400 transition-transform", gOpen && "rotate-90")} aria-hidden />
+                        <span className="flex-1 text-left">{g.label}</span>
+                        {!gOpen && g.rows.some((r) => r.primary) && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand-400" title="Holds a section used most" aria-hidden />}
+                      </button>
+                      {gOpen && (
+                        <div id={`nav-${key}`} className="ml-[0.95rem] mt-0.5 flex flex-col gap-0.5 border-l border-gray-200 pb-1 pl-2">
+                          {g.rows.map((r) => <NavRow key={r.href} row={r} active={isActive(r.href)} onNavigate={onNavigate} />)}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </nav>
   );
 }

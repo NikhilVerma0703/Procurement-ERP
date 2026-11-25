@@ -138,7 +138,18 @@ export const PURCHASE_NAV = [
 export interface PurchaseNavRow {
   readonly href: string;
   readonly label: string;
+  /**
+   * One of the sections used most (owner, 25-11-2026: Purchase Order, and Stock's Item, Gate Entry and
+   * Purchase Receipt "are the most frequently used sections in our entire Procurement ERP"): the
+   * sidebar draws it with emphasis. Its link is the same.
+   */
+  readonly primary?: boolean;
 }
+
+/** The sections used most, by path (Item: on its Stock row; Buying's Item row stays plain). */
+const PRIMARY: ReadonlySet<string> = new Set([PURCHASE_PATHS.orders, PURCHASE_PATHS.items, PURCHASE_PATHS.gateEntries, PURCHASE_PATHS.receipts]);
+const marked = (rows: readonly PurchaseNavRow[], also: (href: string) => boolean): PurchaseNavRow[] =>
+  rows.map((r) => (PRIMARY.has(r.href) && also(r.href) ? { ...r, primary: true } : r));
 
 /**
  * THE SIDEBAR'S MODULES (Phase II, owner 21-11-2026: "make Buying the main section"). As the old
@@ -155,14 +166,14 @@ export interface PurchaseNavModule {
 }
 
 export const PURCHASE_MODULES: readonly PurchaseNavModule[] = [
-  { key: "buying", label: "Buying", groups: [{ label: null, rows: PURCHASE_NAV }] },
+  { key: "buying", label: "Buying", groups: [{ label: null, rows: marked(PURCHASE_NAV, (href) => href === PURCHASE_PATHS.orders) }] },
   {
     key: "stock",
     label: "Stock",
     groups: [
       {
         label: "Items and Pricing",
-        rows: [
+        rows: marked([
           { href: PURCHASE_PATHS.items, label: "Item" },
           { href: PURCHASE_PATHS.itemGroups, label: "Item Group" },
           { href: PURCHASE_PATHS.productBundles, label: "Product Bundle" },
@@ -173,13 +184,13 @@ export const PURCHASE_MODULES: readonly PurchaseNavModule[] = [
           { href: PURCHASE_PATHS.itemAlternatives, label: "Item Alternative" },
           { href: PURCHASE_PATHS.itemManufacturers, label: "Item Manufacturer" },
           { href: PURCHASE_PATHS.customsTariffNumbers, label: "Customs Tariff Number" },
-        ],
+        ], () => true),
       },
       // Gate Entry was the add-on's own DocType, reached by the search box ("Gate Entry List"); here it
       // stands next to the receipt it leads to (PO → Gate Entry → Purchase Receipt, docs/12 §4).
       {
         label: "Stock Transactions",
-        rows: [
+        rows: marked([
           { href: PURCHASE_PATHS.materialRequests, label: "Material Request" },
           { href: PURCHASE_PATHS.stockEntries, label: "Stock Entry" },
           { href: PURCHASE_PATHS.deliveryNotes, label: "Delivery Note" },
@@ -187,7 +198,7 @@ export const PURCHASE_MODULES: readonly PurchaseNavModule[] = [
           { href: PURCHASE_PATHS.receipts, label: "Purchase Receipt" },
           { href: PURCHASE_PATHS.pickLists, label: "Pick List" },
           { href: PURCHASE_PATHS.deliveryTrips, label: "Delivery Trip" },
-        ],
+        ], () => true),
       },
       {
         label: "Stock Reports",

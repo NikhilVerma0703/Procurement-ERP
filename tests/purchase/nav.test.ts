@@ -15,7 +15,17 @@ describe("sidebar modules", () => {
       "Purchase Order", "Supplier", "Item", "Address", "Contact", "Purchase Taxes and Charges Template",
       "Payment Terms Template", "Payment Term", "Terms and Conditions",
     ]);
-    expect(buying.groups[0].rows).toBe(PURCHASE_NAV);
+    expect(buying.groups[0].rows.map(({ href, label }) => ({ href, label }))).toEqual(PURCHASE_NAV.map(({ href, label }) => ({ href, label })));
+  });
+
+  it("marks the four sections used most, and only those (owner, 25-11-2026)", () => {
+    const marked = PURCHASE_MODULES.flatMap((m) => m.groups.flatMap((g) => g.rows.filter((r) => r.primary).map((r) => `${m.label} › ${g.label ?? "-"} › ${r.label}`)));
+    expect(marked).toEqual([
+      "Buying › - › Purchase Order",
+      "Stock › Items and Pricing › Item",
+      "Stock › Stock Transactions › Gate Entry",
+      "Stock › Stock Transactions › Purchase Receipt",
+    ]);
   });
 
   it("names the Stock cards as the old site's Masters & Reports, in its order", () => {
