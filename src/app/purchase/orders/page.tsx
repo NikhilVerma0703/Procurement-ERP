@@ -46,6 +46,7 @@ export default async function PurchaseOrderListPage({ searchParams }: { searchPa
             canApprove={purchaseCan(user, "approve")}
             canDelete={purchaseCan(user, "save")}
             canManage={purchaseCan(user, "manage")}
+            canCreateReceipt={purchaseCan(user, "stock")}
           />
         }
       />

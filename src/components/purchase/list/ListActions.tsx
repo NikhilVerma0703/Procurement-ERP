@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Download, Loader2, MoreHorizontal, Plus, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { bulkCloseAction, bulkDeleteOrdersAction, bulkWorkflowAction } from "@/app/purchase/orders/actions";
+import { bulkCloseAction, bulkDeleteOrdersAction, bulkPurchaseReceiptAction, bulkWorkflowAction } from "@/app/purchase/orders/actions";
 import { cn } from "@/lib/purchase/cn";
 import type { BulkOutcome } from "@/lib/purchase/bulk-delete";
 import { MAX_PRINT_SHEETS, TOO_MANY_TO_PRINT } from "@/lib/purchase/orders/selection";
@@ -29,10 +29,11 @@ import { useListSelection } from "./selection";
 type Dialog =
   | { kind: "print" }
   | { kind: "delete" }
-  | { kind: "message"; lines: string[] }
+  | { kind: "message"; lines: string[]; title?: string }
+  | { kind: "makeReceipts" }
   | { kind: "workflow"; outcome: BulkOutcome };
 
-export function ListActions({ exportHref, selectionExportAction, layouts, defaultLayout, canApprove, canDelete, canManage }: {
+export function ListActions({ exportHref, selectionExportAction, layouts, defaultLayout, canApprove, canDelete, canManage, canCreateReceipt }: {
   /** The filtered list as Excel (the ⋯ menu). */
   exportHref: string;
   /** Where the selection's Export posts its ids (the list's sort kept). */
@@ -44,6 +45,8 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
   canDelete: boolean;
   /** May close and re-open POs (the ⋯ menu's Close / Reopen). */
   canManage: boolean;
+  /** May make Purchase Receipts (Actions › Purchase Receipt). */
+  canCreateReceipt: boolean;
 }) {
   const router = useRouter();
   const [refreshing, startTransition] = useTransition();
@@ -128,8 +131,36 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
     setDialog({ kind: "print" });
   };
 
+  /** Actions › Purchase Receipt (bulk_transaction_processing.js): asked first, then refused while a draft is ticked. */
+  const makeReceipts = async () => {
+    if (chosen.some((r) => r.docStatus === "Draft")) return setDialog({ kind: "message", lines: ["Selected document must be in submitted state"] });
+    setBusy("receipts");
+    try {
+      const r = await bulkPurchaseReceiptAction(ids);
+      if (!r.ok) return setDialog({ kind: "message", lines: [r.error] });
+      const { done, failed } = r.value;
+      const made = done.map((d) => `${d.order} → ${d.receipt}`);
+      const notMade = failed.map((f) => `${f.order}: ${f.error}`);
+      // show_job_status's three answers.
+      if (!failed.length) setDialog({ kind: "message", title: "Successful", lines: ["Creation of Purchase Receipt(s) successful", ...made] });
+      else if (done.length) setDialog({ kind: "message", title: "Partially successful", lines: ["Creation of Purchase Receipt partially successful.", ...made, ...notMade] });
+      else setDialog({ kind: "message", title: "Failed", lines: ["Creation of Purchase Receipt failed.", ...notMade] });
+      if (done.length) {
+        clear();
+        router.refresh();
+      }
+    } catch {
+      toast.error("The server could not be reached. What was done before that stays done; refresh to see it.");
+      router.refresh();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  // The old list's order: the workflow's actions, the list's own (Purchase Receipt), then Frappe's.
   const items: ({ label: string; run: () => void } | "divider")[] = [
     ...(workflow ? [{ label: "Approve", run: () => void runWorkflow("approve") }, { label: "Reject", run: () => void runWorkflow("reject") }, "divider" as const] : []),
+    ...(canCreateReceipt ? [{ label: "Purchase Receipt", run: () => setDialog({ kind: "makeReceipts" }) }] : []),
     { label: "Export", run: () => postForm(selectionExportAction, { ids: JSON.stringify(ids) }) },
     { label: "Print", run: print },
     ...(canDelete ? [{ label: "Delete", run: () => setDialog({ kind: "delete" }) }] : []),
@@ -152,6 +183,10 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
         </button>
         {menu.open && (
           <div className="absolute right-0 z-20 mt-2 w-56 rounded-xl border border-gray-200 bg-white py-1 shadow-lg" role="menu">
+            {/* Frappe's first menu item. */}
+            <button type="button" role="menuitem" onClick={() => { menu.setOpen(false); startTransition(() => router.refresh()); }} className="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+              Refresh
+            </button>
             {/* purchase_order_list.js: Close and Reopen act on the ticked POs (nothing ticked, nothing done). */}
             {canManage && (
               <>
@@ -226,7 +261,15 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
           }}
         />
       )}
-      {dialog?.kind === "message" && <MessageDialog lines={dialog.lines} onClose={() => setDialog(null)} />}
+      {dialog?.kind === "message" && <MessageDialog title={dialog.title} lines={dialog.lines} onClose={() => setDialog(null)} />}
+      {dialog?.kind === "makeReceipts" && (
+        <ConfirmDialog
+          message={`Create ${ids.length} Purchase Receipt ?`}
+          busy={busy === "receipts"}
+          onNo={() => setDialog(null)}
+          onYes={() => void makeReceipts()}
+        />
+      )}
       {dialog?.kind === "workflow" && <WorkflowStatusDialog outcome={dialog.outcome} nameOf={nameOf} onClose={() => setDialog(null)} />}
     </>
   );

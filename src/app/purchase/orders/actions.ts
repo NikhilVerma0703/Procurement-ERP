@@ -20,6 +20,7 @@ import {
   type ActionRequest,
 } from "@/lib/purchase/orders/transitions";
 import { parseSelectedIds } from "@/lib/purchase/orders/selection";
+import { bulkReceiptsFromOrders, type BulkReceiptOutcome } from "@/lib/purchase/stock/bulk-receipts";
 import { orderPath, PURCHASE_PATHS } from "@/lib/purchase/routes";
 import type { PurchaseUser } from "@/lib/purchase/server/current-user";
 import { purchaseGate, purchaseRefusal } from "@/lib/purchase/server/gate";
@@ -182,4 +183,15 @@ export async function lastPurchaseRatesAction(
     conversionFactor: Number(r?.conversionFactor) || 1,
   }));
   return { ok: true, value: await lastPurchaseRates(list, typeof orderNumber === "string" ? orderNumber : null, Number(conversionRate) || 1) };
+}
+
+/** Actions › Purchase Receipt: a draft receipt for each ticked (submitted) PO (stock/bulk-receipts.ts). */
+export async function bulkPurchaseReceiptAction(ids: unknown): Promise<ActionResult<BulkReceiptOutcome>> {
+  const list = parseSelectedIds(ids);
+  const r = await gated("stock", async (u) => ({ ok: true as const, value: await bulkReceiptsFromOrders(u, list) }));
+  if (r.ok && r.value.done.length) {
+    revalidatePath(PURCHASE_PATHS.receipts);
+    refresh();
+  }
+  return r;
 }
