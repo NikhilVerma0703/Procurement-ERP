@@ -45,14 +45,16 @@
    "fieldname": "description",
    "label": "Description",
    "fieldtype": "Small Text",
-   "reqd": true
+   "reqd": true,
+   "printWidth": "300px"
   },
   {
    "fieldname": "included_in_print_rate",
    "label": "Is this Tax included in Basic Rate?",
    "fieldtype": "Check",
    "description": "If checked, the tax amount will be considered as already included in the Print Rate / Print Amount",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "included_in_paid_amount",

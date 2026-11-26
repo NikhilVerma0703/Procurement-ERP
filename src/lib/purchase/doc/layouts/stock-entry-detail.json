@@ -104,7 +104,8 @@
   {
    "fieldname": "description",
    "label": "Description",
-   "fieldtype": "Text Editor"
+   "fieldtype": "Text Editor",
+   "printWidth": "300px"
   },
   {
    "fieldname": "column_break_10",

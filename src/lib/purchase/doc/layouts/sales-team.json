@@ -19,7 +19,8 @@
    "options": "Sales Person",
    "reqd": true,
    "inListView": true,
-   "allowOnSubmit": true
+   "allowOnSubmit": true,
+   "printWidth": "200px"
   },
   {
    "fieldname": "contact_no",
@@ -27,14 +28,16 @@
    "fieldtype": "Data",
    "hidden": true,
    "inListView": true,
-   "allowOnSubmit": true
+   "allowOnSubmit": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "allocated_percentage",
    "label": "Contribution (%)",
    "fieldtype": "Float",
    "inListView": true,
-   "allowOnSubmit": true
+   "allowOnSubmit": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "allocated_amount",
@@ -43,7 +46,8 @@
    "options": "Company:company:default_currency",
    "readOnly": true,
    "inListView": true,
-   "allowOnSubmit": true
+   "allowOnSubmit": true,
+   "printWidth": "120px"
   },
   {
    "fieldname": "commission_rate",

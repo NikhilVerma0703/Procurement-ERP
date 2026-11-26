@@ -36,7 +36,8 @@
    "reqd": true,
    "bold": true,
    "inListView": true,
-   "columns": 3
+   "columns": 3,
+   "printWidth": "100px"
   },
   {
    "fieldname": "product_bundle",
@@ -73,7 +74,8 @@
    "fieldname": "description",
    "label": "Description",
    "fieldtype": "Text Editor",
-   "reqd": true
+   "reqd": true,
+   "printWidth": "300px"
   },
   {
    "fieldname": "gst_hsn_code",
@@ -140,14 +142,16 @@
    "reqd": true,
    "readOnly": true,
    "bold": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "qty",
    "label": "Accepted Quantity",
    "fieldtype": "Float",
    "inListView": true,
-   "columns": 2
+   "columns": 2,
+   "printWidth": "100px"
   },
   {
    "fieldname": "rejected_qty",
@@ -155,7 +159,8 @@
    "fieldtype": "Float",
    "inListView": true,
    "columns": 1,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "bags_qty",
@@ -178,7 +183,8 @@
    "label": "UOM",
    "fieldtype": "Link",
    "options": "UOM",
-   "reqd": true
+   "reqd": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "stock_uom",
@@ -188,7 +194,8 @@
    "reqd": true,
    "readOnly": true,
    "dependsOn": "eval:doc.uom != doc.stock_uom",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "conversion_factor",
@@ -196,7 +203,8 @@
    "fieldtype": "Float",
    "reqd": true,
    "dependsOn": "eval:doc.uom != doc.stock_uom",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "retain_sample",
@@ -230,7 +238,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "eval:doc.uom != doc.stock_uom",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "col_break_tracking_section",
@@ -335,7 +344,8 @@
    "options": "currency",
    "bold": true,
    "inListView": true,
-   "columns": 2
+   "columns": 2,
+   "printWidth": "100px"
   },
   {
    "fieldname": "amount",
@@ -356,7 +366,8 @@
    "options": "Company:company:default_currency",
    "reqd": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "base_amount",
@@ -364,7 +375,8 @@
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "pricing_rules",
@@ -539,7 +551,8 @@
    "readOnly": true,
    "precision": "6",
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "80px"
   },
   {
    "fieldname": "item_tax_amount",
@@ -548,7 +561,8 @@
    "options": "Company:company:default_currency",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "rm_supp_cost",
@@ -557,7 +571,8 @@
    "options": "Company:company:default_currency",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "landed_cost_voucher_amount",
@@ -644,14 +659,16 @@
    "options": "Warehouse",
    "bold": true,
    "inListView": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "rejected_warehouse",
    "label": "Rejected Warehouse",
    "fieldtype": "Link",
    "options": "Warehouse",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "from_warehouse",
@@ -673,7 +690,8 @@
    "label": "Purchase Order",
    "fieldtype": "Link",
    "options": "Purchase Order",
-   "readOnly": true
+   "readOnly": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "purchase_invoice",
@@ -738,7 +756,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "purchase_invoice_item",

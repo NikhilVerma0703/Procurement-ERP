@@ -20,13 +20,15 @@
    "reqd": true,
    "bold": true,
    "inListView": true,
-   "columns": 3
+   "columns": 3,
+   "printWidth": "100px"
   },
   {
    "fieldname": "item_name",
    "label": "Item Name",
    "fieldtype": "Data",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "col_break1",
@@ -40,7 +42,8 @@
    "bold": true,
    "inListView": true,
    "columns": 2,
-   "allowOnSubmit": true
+   "allowOnSubmit": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "section_break_4",
@@ -52,7 +55,8 @@
    "fieldname": "description",
    "label": "Description",
    "fieldtype": "Text Editor",
-   "reqd": true
+   "reqd": true,
+   "printWidth": "250px"
   },
   {
    "fieldname": "gst_hsn_code",
@@ -80,7 +84,8 @@
    "fieldtype": "Link",
    "options": "Brand",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "image",
@@ -101,7 +106,8 @@
    "fieldtype": "Float",
    "reqd": true,
    "inListView": true,
-   "columns": 1
+   "columns": 1,
+   "printWidth": "80px"
   },
   {
    "fieldname": "stock_uom",
@@ -125,7 +131,8 @@
    "fieldtype": "Link",
    "options": "Warehouse",
    "inListView": true,
-   "columns": 3
+   "columns": 3,
+   "printWidth": "100px"
   },
   {
    "fieldname": "col_break2",
@@ -138,7 +145,8 @@
    "options": "UOM",
    "reqd": true,
    "inListView": true,
-   "columns": 1
+   "columns": 1,
+   "printWidth": "70px"
   },
   {
    "fieldname": "conversion_factor",
@@ -163,7 +171,8 @@
    "label": "Min Order Qty",
    "fieldtype": "Float",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "70px"
   },
   {
    "fieldname": "projected_qty",
@@ -171,7 +180,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "70px"
   },
   {
    "fieldname": "qty_info_col_break",

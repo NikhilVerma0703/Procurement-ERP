@@ -50,7 +50,8 @@
    "fieldname": "description",
    "label": "Description",
    "fieldtype": "Text Editor",
-   "readOnly": true
+   "readOnly": true,
+   "printWidth": "300px"
   },
   {
    "fieldname": "stock_uom",

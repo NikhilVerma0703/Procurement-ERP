@@ -58,7 +58,8 @@
    "options": "Company",
    "reqd": true,
    "inStandardFilter": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "column_break_2",
@@ -69,7 +70,8 @@
    "label": "Transaction Date",
    "fieldtype": "Date",
    "reqd": true,
-   "default": "Today"
+   "default": "Today",
+   "printWidth": "100px"
   },
   {
    "fieldname": "schedule_date",
@@ -84,7 +86,8 @@
    "fieldtype": "Link",
    "options": "Material Request",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "warehouse_section",
@@ -110,7 +113,8 @@
   },
   {
    "fieldname": "column_break5",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "set_warehouse",
@@ -174,7 +178,8 @@
    "options": "\nDraft\nSubmitted\nStopped\nCancelled\nPending\nPartially Ordered\nPartially Received\nOrdered\nIssued\nTransferred\nReceived",
    "readOnly": true,
    "inStandardFilter": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "per_ordered",
@@ -186,7 +191,8 @@
   },
   {
    "fieldname": "column_break2",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "transfer_status",

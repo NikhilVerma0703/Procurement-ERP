@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PrintScreen } from "@/components/purchase/print/PrintScreen";
-import { DEFAULT_RECEIPT_PRINT_FORMAT, RECEIPT_PRINT_FORMATS } from "@/lib/purchase/print/receipt-formats";
+import { RECEIPT_FORMAT_NAMES } from "@/lib/purchase/print/receipt-print";
+import { DEFAULT_RECEIPT_PRINT_FORMAT } from "@/lib/purchase/print/receipt-formats";
 import { receiptPath, receiptPrintPagePath } from "@/lib/purchase/routes";
 import { db } from "@/lib/purchase/server/db";
 import { purchasePageGate } from "@/lib/purchase/server/page";
@@ -23,7 +24,7 @@ export default async function PurchaseReceiptPrintPage({ params, searchParams }:
   const { format } = await searchParams;
   const r = await db.purchaseReceipt.findUnique({ where: { id }, select: { id: true, number: true } });
   if (!r) notFound();
-  const names = RECEIPT_PRINT_FORMATS.map((f) => f.name);
+  const names = RECEIPT_FORMAT_NAMES;
   return (
     <PrintScreen
       pageBase={receiptPrintPagePath(r.id)}

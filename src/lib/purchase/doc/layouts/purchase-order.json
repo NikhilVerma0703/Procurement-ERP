@@ -122,7 +122,8 @@
   },
   {
    "fieldname": "column_break1",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "company",
@@ -950,7 +951,8 @@
    "label": "Printing Settings",
    "fieldtype": "Section Break",
    "collapsible": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "50%"
   },
   {
    "fieldname": "letter_head",

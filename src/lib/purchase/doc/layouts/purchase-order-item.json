@@ -110,7 +110,8 @@
    "fieldname": "description",
    "label": "Description",
    "fieldtype": "Text Editor",
-   "reqd": true
+   "reqd": true,
+   "printWidth": "300px"
   },
   {
    "fieldname": "gst_hsn_code",
@@ -158,7 +159,8 @@
    "bold": true,
    "inListView": true,
    "columns": 1,
-   "nonNegative": true
+   "nonNegative": true,
+   "printWidth": "60px"
   },
   {
    "fieldname": "stock_uom",
@@ -167,7 +169,8 @@
    "options": "UOM",
    "reqd": true,
    "readOnly": true,
-   "dependsOn": "eval:doc.uom != doc.stock_uom"
+   "dependsOn": "eval:doc.uom != doc.stock_uom",
+   "printWidth": "100px"
   },
   {
    "fieldname": "col_break2",
@@ -181,7 +184,8 @@
    "options": "UOM",
    "reqd": true,
    "inListView": true,
-   "columns": 1
+   "columns": 1,
+   "printWidth": "100px"
   },
   {
    "fieldname": "conversion_factor",
@@ -189,7 +193,8 @@
    "fieldtype": "Float",
    "reqd": true,
    "dependsOn": "eval:doc.uom != doc.stock_uom",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "stock_qty",
@@ -197,7 +202,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "eval:doc.uom != doc.stock_uom",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "sec_break1",
@@ -335,7 +341,8 @@
    "options": "Company:company:default_currency",
    "reqd": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "base_amount",
@@ -598,7 +605,8 @@
    "options": "Material Request",
    "readOnly": true,
    "mandatoryDependsOn": "eval: doc.material_request_item",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "120px"
   },
   {
    "fieldname": "material_request_item",

@@ -32,7 +32,8 @@
    "label": "Description",
    "fieldtype": "Text Editor",
    "inListView": true,
-   "fetchFrom": "item_code.description"
+   "fetchFrom": "item_code.description",
+   "printWidth": "300px"
   },
   {
    "fieldname": "rate",

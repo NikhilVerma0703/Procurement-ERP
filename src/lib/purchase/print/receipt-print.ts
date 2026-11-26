@@ -18,9 +18,12 @@ import { isValueField } from "../doc/list-view";
 import { formatCurrency, formatDate } from "../format";
 import { db } from "../server/db";
 import { readStoredFile } from "../server/files";
+import { FRAPPE_PRINT_BUNDLE_CSS } from "./print-bundle-css";
 import { FRAPPE_PRINT_CSS } from "./print-css";
 import { PyInt, pyDict, pyDoc, pyPrint, renderJinja, type PyObject } from "./jinja";
 import { DEFAULT_RECEIPT_PRINT_FORMAT, RECEIPT_PRINT_FORMATS } from "./receipt-formats";
+import { LETTER_HEAD_LOGO, renderStandardPrint } from "./standard-print";
+import { receiptPrintRecord } from "./standard-print-data";
 
 type Legacy = Record<string, unknown>;
 
@@ -187,27 +190,54 @@ async function localImages(html: string): Promise<string> {
     if (!qr.has(m[1])) qr.set(m[1], await QRCode.toDataURL(text, { errorCorrectionLevel: "L", margin: 1, width: 200 }));
   }
   let out = html.replace(QR_SRC, (_m, src: string) => `src="${qr.get(src)}"`);
-  if (out.includes(LOGO_SRC)) {
+  // The add-on's logo, and the "Logo" letter head's (the same file).
+  if (out.includes(LOGO_SRC) || out.includes(`src="${LOGO_FILE}"`)) {
     const logo = await readStoredFile(LOGO_FILE);
-    if (logo) out = out.split(LOGO_SRC).join(`data:image/png;base64,${logo.toString("base64")}`);
+    if (logo) {
+      const uri = `data:image/png;base64,${logo.toString("base64")}`;
+      out = out.split(LOGO_SRC).join(uri).split(`src="${LOGO_FILE}"`).join(`src="${uri}"`);
+    }
   }
   return out;
 }
 
-/** What Frappe's print style left to its Bootstrap (the grid and the page): its rules, so the formats lay
- *  out as they did; and the browser's printed page without the screen's grey gutter. */
-const BOOTSTRAP_PRINT = `
-*, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; font-size: 1rem; line-height: 1.5; color: #212529; background-color: #fff; }
-p { margin-top: 0; margin-bottom: 1rem; }
-b, strong { font-weight: bolder; }
-img { vertical-align: middle; border-style: none; }
-table { border-collapse: collapse; }
-th { text-align: inherit; }
-ul { margin-top: 0; margin-bottom: 1rem; }
-.row { display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; }
-${Array.from({ length: 12 }, (_, i) => `.col-xs-${i + 1}, .col-md-${i + 1}`).join(", ")} { position: relative; width: 100%; padding-right: 15px; padding-left: 15px; }
-${Array.from({ length: 12 }, (_, i) => `.col-xs-${i + 1} { flex: 0 0 ${((i + 1) / 12) * 100}%; max-width: ${((i + 1) / 12) * 100}%; }`).join("\n")}
+/**
+ * A printed page as the old print view assembled it: Frappe's print style and the format's own CSS in the
+ * head (get_print_style), the printed body inside .print-format. For the screen and the printer the images
+ * are inlined and scripts left out; the check against the old prints compares the text before that.
+ */
+export async function printPage(title: string, css: string, body: string, opts: { localImages?: boolean } = {}): Promise<string> {
+  let b = body;
+  if (opts.localImages !== false) {
+    b = await localImages(b);
+    // The page runs no script (its values are printed unescaped, as Frappe printed them). The only one a
+    // format had — QR Codes' "$('.print-preview').css()" — did nothing on the old page either.
+    b = b.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, "");
+  }
+  return (
+    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>` +
+    // As the old print page: Frappe's print stylesheet (its Bootstrap), then the print style and the format's
+    // own CSS (get_print_style), then the printed page's margins.
+    `<style>${FRAPPE_PRINT_BUNDLE_CSS}</style><style id="print-style">${FRAPPE_PRINT_CSS}\n\n${css}</style><style>${PAGE_PRINT}</style></head>` +
+    `<body><div class="print-format-gutter"><div class="print-format">${b}</div></div></body></html>`
+  );
+}
+
+/** The options of the print view's sidebar (they change Frappe's Standard print only). */
+export interface PrintViewOptions {
+  localImages?: boolean;
+  /** The letter head's name ("Logo"), or "" for no letter head. */
+  letterhead?: string | null;
+  compactItemPrint?: boolean;
+  printUomAfterQuantity?: boolean;
+  printTaxesWithZeroAmount?: boolean;
+}
+
+/** The receipt's formats in the old print view's order (its default, QR Codes, first; then Standard). */
+export const RECEIPT_FORMAT_NAMES: readonly string[] = [RECEIPT_PRINT_FORMATS[0].name, "Standard", ...RECEIPT_PRINT_FORMATS.slice(1).map((f) => f.name)];
+
+/** The printed page: A4 with Print Settings' 15 mm margins, without the screen's grey gutter. */
+const PAGE_PRINT = `
 @page { size: A4; margin: 15mm; }
 @media print {
   .print-format-gutter { background: none; padding: 0; }
@@ -221,7 +251,8 @@ export type ReceiptPrint =
   | { ok: false; status: number; title: string; error: string };
 
 /** The receipt printed in a format (its name; the default when absent or unknown). */
-export async function receiptPrint(id: string, formatName?: string | null, opts: { localImages?: boolean } = {}): Promise<ReceiptPrint> {
+export async function receiptPrint(id: string, formatName?: string | null, opts: PrintViewOptions = {}): Promise<ReceiptPrint> {
+  if (formatName === "Standard") return receiptStandardPrint(id, opts);
   const format = RECEIPT_PRINT_FORMATS.find((f) => f.name === formatName) ?? RECEIPT_PRINT_FORMATS.find((f) => f.name === DEFAULT_RECEIPT_PRINT_FORMAT)!;
   const r = await db.purchaseReceipt.findUnique({
     where: { id },
@@ -284,16 +315,19 @@ export async function receiptPrint(id: string, formatName?: string | null, opts:
     const message = e instanceof Error ? e.message : String(e);
     body = `<div class="print-format-error"><h4>Error</h4><pre>${escapeHtml(message)}</pre></div>`;
   }
-  // (The check against the old prints compares the text before the images are swapped.)
-  if (opts.localImages !== false) {
-    body = await localImages(body);
-    // The page runs no script (its values are printed unescaped, as Frappe printed them). The only one a
-    // format had — QR Codes' "$('.print-preview').css()" — did nothing on the old page either.
-    body = body.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, "");
-  }
-  const html =
-    `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(`Purchase Receipt ${r.number} - ${format.name}`)}</title>` +
-    `<style>${FRAPPE_PRINT_CSS}\n\n${format.css}</style><style>${BOOTSTRAP_PRINT}</style></head>` +
-    `<body><div class="print-format-gutter"><div class="print-format">${body}</div></div></body></html>`;
+  const html = await printPage(`Purchase Receipt ${r.number} - ${format.name}`, format.css, body, opts);
   return { ok: true, number: r.number, format: format.name, html };
+}
+
+/** The receipt in Frappe's Standard print (standard-print.ts). */
+async function receiptStandardPrint(id: string, opts: PrintViewOptions): Promise<ReceiptPrint> {
+  const loaded = await receiptPrintRecord(id);
+  if (!loaded) return { ok: false, status: 404, title: "Not Found", error: "Purchase Receipt not found" };
+  const name = String(loaded.record.values.name ?? "");
+  if (Number(loaded.record.values.docstatus) === 2) return { ok: false, status: 403, title: "Not Permitted", error: "Not allowed to print cancelled documents" };
+  const body = renderStandardPrint(loaded.record, loaded.system, {
+    letterHead: opts.letterhead === "" ? null : LETTER_HEAD_LOGO,
+    compactItemPrint: opts.compactItemPrint, printUomAfterQuantity: opts.printUomAfterQuantity, printTaxesWithZeroAmount: opts.printTaxesWithZeroAmount,
+  });
+  return { ok: true, number: name, format: "Standard", html: await printPage(`Purchase Receipt ${name} - Standard`, "", body, opts) };
 }

@@ -19,7 +19,8 @@
    "options": "Item",
    "readOnly": true,
    "inListView": true,
-   "inStandardFilter": true
+   "inStandardFilter": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "warehouse",
@@ -28,20 +29,23 @@
    "options": "Warehouse",
    "readOnly": true,
    "inListView": true,
-   "inStandardFilter": true
+   "inStandardFilter": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "posting_date",
    "label": "Posting Date",
    "fieldtype": "Date",
    "readOnly": true,
-   "inListView": true
+   "inListView": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "posting_time",
    "label": "Posting Time",
    "fieldtype": "Time",
-   "readOnly": true
+   "readOnly": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "posting_datetime",
@@ -63,7 +67,8 @@
    "fieldtype": "Link",
    "options": "DocType",
    "readOnly": true,
-   "inListView": true
+   "inListView": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "voucher_no",
@@ -71,13 +76,15 @@
    "fieldtype": "Dynamic Link",
    "options": "voucher_type",
    "readOnly": true,
-   "inStandardFilter": true
+   "inStandardFilter": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "voucher_detail_no",
    "label": "Voucher Detail No",
    "fieldtype": "Data",
-   "readOnly": true
+   "readOnly": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "dependant_sle_voucher_detail_no",
@@ -99,13 +106,15 @@
    "label": "Qty Change",
    "fieldtype": "Float",
    "readOnly": true,
-   "inListView": true
+   "inListView": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "qty_after_transaction",
    "label": "Qty After Transaction",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "incoming_rate",
@@ -131,7 +140,8 @@
    "label": "Valuation Rate",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "stock_value",
@@ -163,14 +173,16 @@
    "label": "Company",
    "fieldtype": "Link",
    "options": "Company",
-   "readOnly": true
+   "readOnly": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "stock_uom",
    "label": "Stock UOM",
    "fieldtype": "Link",
    "options": "UOM",
-   "readOnly": true
+   "readOnly": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "project",
@@ -192,13 +204,15 @@
    "fieldname": "fiscal_year",
    "label": "Fiscal Year",
    "fieldtype": "Data",
-   "readOnly": true
+   "readOnly": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "serial_no",
    "label": "Serial No",
    "fieldtype": "Long Text",
-   "readOnly": true
+   "readOnly": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "is_cancelled",

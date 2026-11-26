@@ -19,7 +19,8 @@
   },
   {
    "fieldname": "column_break0",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "title",
@@ -47,7 +48,8 @@
    "options": "Supplier",
    "reqd": true,
    "bold": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "supplier_name",
@@ -78,7 +80,8 @@
   },
   {
    "fieldname": "column_break1",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "posting_date",
@@ -86,14 +89,16 @@
    "fieldtype": "Date",
    "reqd": true,
    "inListView": true,
-   "default": "Today"
+   "default": "Today",
+   "printWidth": "100px"
   },
   {
    "fieldname": "posting_time",
    "label": "Posting Time",
    "fieldtype": "Time",
    "reqd": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "set_posting_time",
@@ -118,7 +123,8 @@
    "options": "Company",
    "reqd": true,
    "inStandardFilter": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "apply_putaway_rule",
@@ -205,7 +211,8 @@
   },
   {
    "fieldname": "column_break2",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "buying_price_list",
@@ -297,7 +304,8 @@
    "fieldtype": "Link",
    "options": "Warehouse",
    "dependsOn": "eval:doc.is_subcontracted",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "50px"
   },
   {
    "fieldname": "items_section",
@@ -348,7 +356,8 @@
    "options": "Company:company:default_currency",
    "reqd": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "column_break_27",
@@ -466,7 +475,8 @@
   },
   {
    "fieldname": "column_break3",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "taxes_and_charges_added",
@@ -839,12 +849,14 @@
    "readOnly": true,
    "inStandardFilter": true,
    "default": "Draft",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "column_break4",
    "fieldtype": "Column Break",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "50%"
   },
   {
    "fieldname": "per_billed",
@@ -966,20 +978,23 @@
   },
   {
    "fieldname": "column_break5",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "lr_no",
    "label": "Transport Receipt No",
    "fieldtype": "Data",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "lr_date",
    "label": "Transport Receipt Date",
    "fieldtype": "Date",
    "default": "Today",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "driver",
@@ -1076,7 +1091,8 @@
    "options": "Purchase Receipt",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "is_old_subcontracting_flow",
@@ -1091,7 +1107,8 @@
    "fieldtype": "HTML",
    "options": "<div class=\"columnHeading\">Other Details</div>",
    "hidden": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "30%"
   },
   {
    "fieldname": "connections_tab",

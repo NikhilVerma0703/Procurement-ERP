@@ -18,7 +18,8 @@
    "fieldtype": "Link",
    "options": "Customer",
    "bold": true,
-   "inListView": true
+   "inListView": true,
+   "printWidth": "180px"
   },
   {
    "fieldname": "customer_group",
@@ -33,7 +34,8 @@
    "label": "Ref Code",
    "fieldtype": "Data",
    "reqd": true,
-   "inListView": true
+   "inListView": true,
+   "printWidth": "120px"
   }
  ]
 }

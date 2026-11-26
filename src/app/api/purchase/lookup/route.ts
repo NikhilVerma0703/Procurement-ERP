@@ -33,10 +33,19 @@ interface Args {
 }
 
 const has = (q: string) => ({ contains: q, mode: "insensitive" as const });
+/** Every typed word somewhere in the name ("30 advance" finds "30% Advance & 70% CAD …"). */
+const words = (q: string, field: string) => q.split(/\s+/).filter(Boolean).map((w) => ({ [field]: has(w) }));
+
+/**
+ * The terms lists come whole (owner, 26-11-2026: the procurement team "is not able to select his own
+ * required Payment Terms Template … it should be completely"): all 219 payment terms templates, the 206
+ * payment terms and the buying terms and conditions, by name, the list scrolling — not the first 20.
+ */
+const COMPLETE = new Set(["paymentTermsTemplate", "paymentTerm", "termsTemplate"]);
 const PURCHASE_TAX_ACCOUNT_TYPES = ["Tax", "Chargeable", "Income Account", "Expenses Included In Valuation"];
 
 /** Exact and leading matches first, as Frappe ranked them. */
-function rank(rows: Row[], q: string): Row[] {
+function rank(rows: Row[], q: string, complete = false): Row[] {
   const s = q.toLowerCase();
   const score = (r: Row) => {
     const v = r.value.toLowerCase();
@@ -46,7 +55,8 @@ function rank(rows: Row[], q: string): Row[] {
     if (v.includes(s)) return 2;
     return 3;
   };
-  return rows.sort((a, b) => score(a) - score(b) || a.value.localeCompare(b.value)).slice(0, LIMIT);
+  const sorted = rows.sort((a, b) => score(a) - score(b) || a.value.localeCompare(b.value));
+  return complete ? sorted : sorted.slice(0, LIMIT);
 }
 
 const companyFilter = (company: string | null) => (company ? { company: { code: company } } : {});
@@ -212,17 +222,17 @@ const LOOKUPS: Record<string, (a: Args) => Promise<Row[]>> = {
     })).map((c) => ({ value: c.code, description: c.customerName !== c.code ? c.customerName : null })),
 
   paymentTermsTemplate: async ({ q }) =>
-    (await db.purchasePaymentTermsTemplate.findMany({ where: q ? { code: has(q) } : {}, select: { code: true }, take: 60 })).map((t) => ({ value: t.code })),
+    (await db.purchasePaymentTermsTemplate.findMany({ where: q ? { AND: words(q, "code") } : {}, select: { code: true }, orderBy: { code: "asc" } })).map((t) => ({ value: t.code })),
 
   paymentTerm: async ({ q }) =>
-    (await db.purchasePaymentTerm.findMany({ where: q ? { code: has(q) } : {}, select: { code: true }, take: 60 })).map((t) => ({ value: t.code })),
+    (await db.purchasePaymentTerm.findMany({ where: q ? { AND: words(q, "code") } : {}, select: { code: true }, orderBy: { code: "asc" } })).map((t) => ({ value: t.code })),
 
   // Terms and Conditions for buying.
   termsTemplate: async ({ q }) =>
     (await db.purchaseTermsTemplate.findMany({
-      where: { disabled: false, buying: true, ...(q ? { OR: [{ code: has(q) }, { title: has(q) }] } : {}) },
+      where: { disabled: false, buying: true, ...(q ? { OR: [{ AND: words(q, "code") }, { AND: words(q, "title") }] } : {}) },
       select: { code: true },
-      take: 60,
+      orderBy: { code: "asc" },
     })).map((t) => ({ value: t.code })),
 
   letterHead: async ({ q }) =>
@@ -391,5 +401,5 @@ export async function GET(req: NextRequest) {
     q, company: sp.get("company"), supplier: sp.get("supplier"), customer: sp.get("customer"), item: sp.get("item"), attribute: sp.get("attribute"),
     extra: (key) => (sp.get(key) ?? "").slice(0, 140) || null,
   });
-  return NextResponse.json({ results: rank(rows, q) });
+  return NextResponse.json({ results: rank(rows, q, COMPLETE.has(sp.get("type") ?? "")) });
 }

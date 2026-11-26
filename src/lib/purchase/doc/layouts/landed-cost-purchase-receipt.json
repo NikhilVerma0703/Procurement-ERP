@@ -26,7 +26,8 @@
    "fieldtype": "Dynamic Link",
    "options": "receipt_document_type",
    "reqd": true,
-   "inListView": true
+   "inListView": true,
+   "printWidth": "220px"
   },
   {
    "fieldname": "supplier",

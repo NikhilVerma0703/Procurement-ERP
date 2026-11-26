@@ -32,14 +32,16 @@
    "options": "Item",
    "reqd": true,
    "inListView": true,
-   "columns": 2
+   "columns": 2,
+   "printWidth": "150px"
   },
   {
    "fieldname": "item_name",
    "label": "Item Name",
    "fieldtype": "Data",
    "reqd": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "col_break1",
@@ -63,7 +65,8 @@
    "fieldname": "description",
    "label": "Description",
    "fieldtype": "Text Editor",
-   "reqd": true
+   "reqd": true,
+   "printWidth": "300px"
   },
   {
    "fieldname": "gst_hsn_code",
@@ -80,7 +83,8 @@
    "options": "Brand",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "item_group",
@@ -122,7 +126,8 @@
    "fieldtype": "Float",
    "reqd": true,
    "inListView": true,
-   "columns": 1
+   "columns": 1,
+   "printWidth": "100px"
   },
   {
    "fieldname": "uom_factor",
@@ -162,7 +167,8 @@
    "reqd": true,
    "readOnly": true,
    "dependsOn": "eval:doc.uom != doc.stock_uom",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "50px"
   },
   {
    "fieldname": "col_break2",
@@ -218,7 +224,8 @@
    "fieldtype": "Currency",
    "options": "currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "base_price_list_rate",
@@ -226,7 +233,8 @@
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "discount_and_margin",
@@ -268,7 +276,8 @@
    "label": "Discount (%) on Price List Rate with Margin",
    "fieldtype": "Float",
    "dependsOn": "price_list_rate",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "discount_amount",
@@ -296,7 +305,8 @@
    "fieldtype": "Currency",
    "options": "currency",
    "inListView": true,
-   "columns": 1
+   "columns": 1,
+   "printWidth": "150px"
   },
   {
    "fieldname": "amount",
@@ -305,7 +315,8 @@
    "options": "currency",
    "readOnly": true,
    "inListView": true,
-   "columns": 1
+   "columns": 1,
+   "printWidth": "100px"
   },
   {
    "fieldname": "col_break3",
@@ -317,7 +328,8 @@
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "base_amount",
@@ -327,7 +339,8 @@
    "readOnly": true,
    "inListView": true,
    "columns": 1,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "pricing_rules",
@@ -553,7 +566,8 @@
    "fieldtype": "Link",
    "options": "Warehouse",
    "inListView": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "target_warehouse",
@@ -590,7 +604,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "against_sales_invoice",
@@ -649,7 +664,8 @@
    "readOnly": true,
    "dependsOn": "batch_no",
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "actual_qty",
@@ -657,14 +673,16 @@
    "fieldtype": "Float",
    "readOnly": true,
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "installed_qty",
    "label": "Installed Qty",
    "fieldtype": "Float",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "item_tax_rate",

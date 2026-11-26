@@ -123,7 +123,8 @@
   },
   {
    "fieldname": "col2",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "company",
@@ -354,7 +355,8 @@
    "label": "Total Value Difference (Incoming - Outgoing)",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "printHideIfNoValue": true
   },
   {
    "fieldname": "additional_costs_section",
@@ -374,7 +376,8 @@
    "label": "Total Additional Costs",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "printHideIfNoValue": true
   },
   {
    "fieldname": "supplier_info_tab",
@@ -476,7 +479,8 @@
   },
   {
    "fieldname": "col5",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "per_transferred",
@@ -492,7 +496,8 @@
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
    "readOnly": true,
-   "dependsOn": "total_amount"
+   "dependsOn": "total_amount",
+   "printHideIfNoValue": true
   },
   {
    "fieldname": "job_card",

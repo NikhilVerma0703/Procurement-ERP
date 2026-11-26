@@ -75,7 +75,8 @@
    "fieldname": "description",
    "label": "Description",
    "fieldtype": "Small Text",
-   "reqd": true
+   "reqd": true,
+   "printWidth": "300px"
   },
   {
    "fieldname": "section_break_10",

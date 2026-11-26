@@ -13,8 +13,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { db } from "@/lib/purchase/server/db";
-import { receiptPrint } from "@/lib/purchase/print/receipt-print";
-import { RECEIPT_PRINT_FORMATS } from "@/lib/purchase/print/receipt-formats";
+import { RECEIPT_FORMAT_NAMES, receiptPrint } from "@/lib/purchase/print/receipt-print";
 
 /** The old site's prints, 26-11-2026: [receipt, format] → [body, style] fingerprints. */
 const OLD: Record<string, [string, string]> = {
@@ -28,6 +27,9 @@ const OLD: Record<string, [string, string]> = {
   "PR/25-26/MM-00407 | Purchase Receipt PF": ["4cf2edac357d479c", "c3e92e1657980da5"],
   "PR/25-26/MM-00407 | Puchase Receipt Format": ["1b8449b545ac58f9", "5a403b5c74f82e07"],
   "PR/25-26/MM-00407 | Goods Receipt": ["7abf9d2217bf5eb1", "5a403b5c74f82e07"],
+  // Frappe's Standard print (standard-print.ts), with the "Logo" letter head.
+  "PR/25-26/MM-03457 | Standard": ["b12c33b596e8ce26", "820b23063dc1e16e"],
+  "PR/25-26/MM-00407 | Standard": ["6cce0d923badf35c", "820b23063dc1e16e"],
 };
 const CAPTURE = "data/erpnext-live/live-screens-20261124.json";
 
@@ -38,7 +40,7 @@ const between = (s: string, a: string, b: string) => {
   return i < 0 ? "" : s.slice(i + a.length, s.indexOf(b, i + a.length));
 };
 const body = (html: string) => between(html, '<div class="print-format">', "</div></div></body>");
-const style = (html: string) => between(html, "<style>", "</style>");
+const style = (html: string) => between(html, '<style id="print-style">', "</style>");
 
 async function main() {
   const snaps = existsSync(CAPTURE) ? (JSON.parse(readFileSync(CAPTURE, "utf8")) as { snaps: { label: string; html: string }[] }).snaps : [];
@@ -47,7 +49,7 @@ async function main() {
     const [number, format] = key.split(" | ");
     const r = await db.purchaseReceipt.findUnique({ where: { number }, select: { id: true } });
     if (!r) throw new Error(`${number} is not in the database`);
-    if (!RECEIPT_PRINT_FORMATS.some((f) => f.name === format)) throw new Error(`No format ${format}`);
+    if (!RECEIPT_FORMAT_NAMES.includes(format)) throw new Error(`No format ${format}`);
     const mine = await receiptPrint(r.id, format, { localImages: false });
     if (!mine.ok) throw new Error(mine.error);
     const [b, s] = [fingerprint(body(mine.html)), fingerprint(style(mine.html))];

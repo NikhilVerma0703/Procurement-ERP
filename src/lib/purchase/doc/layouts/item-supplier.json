@@ -24,7 +24,8 @@
    "fieldname": "supplier_part_no",
    "label": "Supplier Part Number",
    "fieldtype": "Data",
-   "inListView": true
+   "inListView": true,
+   "printWidth": "200px"
   }
  ]
 }

@@ -25,7 +25,17 @@ import { pyStr } from "../pdf/pyfmt";
 // Python values
 
 /** A Python int (an Int or Check field, idx, docstatus, a length): prints without ".0". */
+// Recognised by process-wide markers, not by which copy of this module made them: the app's bundler may
+// load the module more than once while nunjucks (and its patched runtime) is loaded once.
+const INT = Symbol.for("purchase.jinja.PyInt");
+const UNDEF = Symbol.for("purchase.jinja.PyUndefined");
+const marked = (v: unknown, mark: symbol) => v !== null && typeof v === "object" && (v as Record<symbol, unknown>)[mark] === true;
+
 export class PyInt {
+  readonly [INT] = true;
+  static [Symbol.hasInstance](v: unknown) {
+    return marked(v, INT);
+  }
   constructor(readonly v: number) {}
   valueOf(): number {
     return this.v;
@@ -37,6 +47,10 @@ export class PyInt {
 
 /** Jinja's DebugUndefined: false, empty, and printed as the text Frappe showed. */
 export class PyUndefined {
+  readonly [UNDEF] = true;
+  static [Symbol.hasInstance](v: unknown) {
+    return marked(v, UNDEF);
+  }
   constructor(readonly text: string) {}
   valueOf(): number {
     return Number.NaN;
@@ -46,7 +60,7 @@ export class PyUndefined {
   }
 }
 
-const META = Symbol("py");
+const META = Symbol.for("purchase.jinja.py");
 interface PyMeta {
   /** Its class as Python named it ("erpnext.stock.doctype.….PurchaseReceipt"; "frappe._dict"). */
   cls: string;
@@ -228,7 +242,18 @@ const STR_METHODS: Record<string, (s: string, ...a: unknown[]) => unknown> = {
   endswith: (s, p) => s.endsWith(String(p)),
   find: (s, p) => new PyInt(s.indexOf(String(p))),
   join: (s, list) => (Array.isArray(list) ? list.map((x) => (typeof x === "string" ? x : pyPrint(x))).join(s) : ""),
+  // str.format: {0} / {} / {name} (no format specs: the print templates use none).
+  format: (s, ...args) => {
+    const kw = (args.length && isKeywords(args[args.length - 1]) ? args.pop() : {}) as Record<string, unknown>;
+    let next = 0;
+    return s.replace(/\{(\w*)\}/g, (_m, key: string) => {
+      const v = key === "" ? args[next++] : /^\d+$/.test(key) ? args[Number(key)] : kw[key];
+      return typeof v === "string" ? v : v instanceof nunjucks.runtime.SafeString ? String(v) : pyPrint(v);
+    });
+  },
 };
+/** nunjucks passes keyword arguments as a last object marked __keywords. */
+export const isKeywords = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === "object" && "__keywords" in (v as object);
 const escapeClass = (s: string) => s.replace(/[\\\]^-]/g, "\\$&");
 
 const LIST_METHODS: Record<string, (l: unknown[], ...a: unknown[]) => unknown> = {
@@ -337,8 +362,21 @@ export function pyFloat(v: unknown, dflt: unknown = 0): number {
   return Number(num(dflt));
 }
 
+/** Templates that others import or include by name (Frappe's standard print: frappe-templates.ts). */
+const TEMPLATES = new Map<string, string>();
+export function registerTemplates(templates: Record<string, string>) {
+  for (const [name, src] of Object.entries(templates)) TEMPLATES.set(name, src);
+}
+const LOADER = {
+  getSource(name: string) {
+    const src = TEMPLATES.get(name);
+    if (src === undefined) throw new Error(`TemplateNotFound: ${name}`);
+    return { src, path: name, noCache: false };
+  },
+} as unknown as nunjucks.ILoader;
+
 function makeEnvironment(): nunjucks.Environment {
-  const env = new nunjucks.Environment(null, { autoescape: false, throwOnUndefined: false });
+  const env = new nunjucks.Environment(LOADER, { autoescape: false, throwOnUndefined: false });
   env.addFilter("format", (fmt: unknown, ...args: unknown[]) => pyPercent(String(fmt), args.length === 1 ? args[0] : args));
   env.addFilter("float", (v: unknown, d: unknown = 0) => pyFloat(v, d));
   env.addFilter("int", (v: unknown, d: unknown = new PyInt(0)) => {
@@ -365,6 +403,19 @@ function makeEnvironment(): nunjucks.Environment {
   env.addFilter("default", dflt);
   env.addFilter("d", dflt);
   env.addFilter("string", (v: unknown) => (typeof v === "string" ? v : pyPrint(v)));
+  // Frappe rendered its print with filters={"len": len}.
+  env.addFilter("len", length);
+  // Python's list slice, rows[start:end] (nunjucks has no syntax for it; frappe-templates.ts).
+  env.addFilter("pyslice", (v: unknown, start: unknown = null, end: unknown = null) => {
+    const s = start === null || start === undefined ? undefined : Number(num(start));
+    const e = end === null || end === undefined ? undefined : Number(num(end));
+    return Array.isArray(v) || typeof v === "string" ? v.slice(s, e) : v;
+  });
+  env.addFilter("map", (v: unknown, ...args: unknown[]) => {
+    const kw = (args.length && isKeywords(args[args.length - 1]) ? args.pop() : {}) as Record<string, unknown>;
+    return Array.isArray(v) && kw.attribute !== undefined ? v.map((x) => pyLookup(x, kw.attribute)) : v;
+  });
+  env.addFilter("list", (v: unknown) => (Array.isArray(v) ? [...v] : typeof v === "string" ? [...v] : []));
   // addTest is in nunjucks 3 (not in its type definitions).
   const addTest = (env as unknown as { addTest(n: string, f: (v: unknown) => boolean): void }).addTest.bind(env);
   addTest("defined", (v: unknown) => !isUndef(v));
@@ -375,19 +426,42 @@ function makeEnvironment(): nunjucks.Environment {
 }
 
 // ---------------------------------------------------------------------------------------------
-// The compiler and runtime, made to follow Python (applied once, to this module's nunjucks)
+// The compiler and runtime, made to follow Python (applied each time this module loads; same functions)
 
 type Emitter = { _emit(s: string): void; _emitLine(s: string): void; compile(n: unknown, f: unknown): void; _compileExpression(n: unknown, f: unknown): void; _withScopedSyntax(f: () => void): void };
 type Node = Record<string, unknown> & { ops?: { type: string; expr: unknown }[] };
 
 function patchNunjucks() {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const compiler = require("nunjucks/src/compiler");
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const runtime = require("nunjucks/src/runtime");
-  if (runtime.__python) return;
-  runtime.__python = true;
+  // nunjucks's own modules, as its index exports them: the very instances its Environment renders with
+  // (a require of "nunjucks/src/…" could load a second copy under the app's bundler).
+  const nj = nunjucks as unknown as { compiler: { Compiler: { prototype: unknown } }; runtime: Record<string, unknown> & { __python?: boolean }; parser: { Parser: { prototype: unknown } }; lexer: { TOKEN_INT: string } };
+  const compiler = nj.compiler;
+  const runtime = nj.runtime as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  // nunjucks's own functions, kept once (the patches below may be applied again when this module loads again).
+  const originals = (runtime.__pyOriginals ??= {
+    parsePrimary: (nj.parser.Parser.prototype as Record<string, unknown>).parsePrimary,
+    compileLiteral: (compiler.Compiler.prototype as Record<string, unknown>).compileLiteral,
+    fromIterator: runtime.fromIterator,
+    contextOrFrameLookup: runtime.contextOrFrameLookup,
+    suppressValue: runtime.suppressValue,
+  }) as Record<string, (...a: any[]) => any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   const C = compiler.Compiler.prototype as Record<string, (this: Emitter, node: Node, frame: unknown, async?: boolean) => void>;
+  const parserModule = nj.parser;
+  const lexer = nj.lexer;
+  // An integer literal is a Python int ({{ 80 }}px printed "80px"); 80.0 stays a float.
+  const P = parserModule.Parser.prototype as { parsePrimary(this: { peekToken(): { type: string } | null }, noPostfix?: boolean): Node };
+  const parsePrimary = originals.parsePrimary as typeof P.parsePrimary;
+  P.parsePrimary = function (noPostfix) {
+    const tok = this.peekToken();
+    const node = parsePrimary.call(this, noPostfix);
+    if (tok && tok.type === lexer.TOKEN_INT && node && (node as { typename?: string }).typename === "Literal") (node as Node).pyInt = true;
+    return node;
+  };
+  const compileLiteral = originals.compileLiteral as typeof C.compileLiteral;
+  C.compileLiteral = function (node, frame) {
+    if (node.pyInt) this._emit(`new runtime.PyInt(${Number(node.value)})`);
+    else compileLiteral.call(this, node, frame);
+  };
 
   C.compileIf = function (node, frame, async) {
     this._emit("if(runtime.pyBool(");
@@ -454,6 +528,11 @@ function patchNunjucks() {
   C.compileFloorDiv = arith("//");
   C.compileMod = arith("%");
   C.compilePow = arith("**");
+  // A Python tuple, ("Int", "Float"), is a sequence (nunjucks read it as its last item); (x) stays x.
+  C.compileGroup = function (node, frame) {
+    const children = (node.children as unknown[]) ?? [];
+    (this as unknown as { _compileAggregate(n: Node, f: unknown, a: string, b: string): void })._compileAggregate(node, frame, children.length > 1 ? "[" : "(", children.length > 1 ? "]" : ")");
+  };
   C.compileConcat = function (node, frame) {
     this._emit("(runtime.pyStrOf(");
     this.compile(node.left, frame);
@@ -497,9 +576,9 @@ function patchNunjucks() {
   runtime.pyOr = (a: unknown, b: () => unknown) => (pyBool(a) ? a : b());
   runtime.pyAnd = (a: unknown, b: () => unknown) => (pyBool(a) ? b() : a);
   runtime.memberLookup = pyLookup;
-  const fromIterator = runtime.fromIterator;
+  const fromIterator = originals.fromIterator;
   runtime.fromIterator = (v: unknown) => (v instanceof PyUndefined ? [] : metaOf(v)?.dict ? Object.keys(v as object) : fromIterator(v));
-  const contextOrFrameLookup = runtime.contextOrFrameLookup;
+  const contextOrFrameLookup = originals.contextOrFrameLookup;
   runtime.contextOrFrameLookup = (context: unknown, frame: unknown, name: string) => {
     const v = contextOrFrameLookup(context, frame, name);
     if (v !== undefined) return v;
@@ -508,7 +587,7 @@ function patchNunjucks() {
     if (name === "None") return null;
     return new PyUndefined(`{{ ${name} }}`);
   };
-  const suppressValue = runtime.suppressValue;
+  const suppressValue = originals.suppressValue;
   runtime.suppressValue = (v: unknown, autoescape: boolean) =>
     v instanceof nunjucks.runtime.SafeString || typeof v === "string" ? suppressValue(v, autoescape) : suppressValue(pyPrint(v), autoescape);
 }

@@ -42,7 +42,8 @@
    "fieldname": "description",
    "label": "Description",
    "fieldtype": "Text Editor",
-   "inListView": true
+   "inListView": true,
+   "printWidth": "300px"
   },
   {
    "fieldname": "section_break_6",

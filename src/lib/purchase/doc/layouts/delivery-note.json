@@ -71,14 +71,16 @@
    "label": "Date",
    "fieldtype": "Date",
    "reqd": true,
-   "default": "Today"
+   "default": "Today",
+   "printWidth": "100px"
   },
   {
    "fieldname": "posting_time",
    "label": "Posting Time",
    "fieldtype": "Time",
    "reqd": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "set_posting_time",
@@ -112,7 +114,8 @@
    "options": "Company",
    "reqd": true,
    "inStandardFilter": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "amended_from",
@@ -120,7 +123,8 @@
    "fieldtype": "Link",
    "options": "Delivery Note",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "is_return",
@@ -322,7 +326,8 @@
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "column_break_33",
@@ -410,7 +415,8 @@
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "column_break_47",
@@ -436,7 +442,8 @@
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "base_rounding_adjustment",
@@ -454,7 +461,8 @@
    "options": "Company:company:default_currency",
    "readOnly": true,
    "dependsOn": "eval:!doc.disable_rounded_total",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "base_in_words",
@@ -462,7 +470,8 @@
    "fieldtype": "Data",
    "readOnly": true,
    "description": "In Words will be visible once you save the Delivery Note.",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "200px"
   },
   {
    "fieldname": "column_break3",
@@ -474,7 +483,8 @@
    "fieldtype": "Currency",
    "options": "currency",
    "readOnly": true,
-   "inListView": true
+   "inListView": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "rounding_adjustment",
@@ -492,14 +502,16 @@
    "options": "currency",
    "readOnly": true,
    "dependsOn": "eval:!doc.disable_rounded_total",
-   "bold": true
+   "bold": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "in_words",
    "label": "In Words",
    "fieldtype": "Data",
    "readOnly": true,
-   "description": "In Words (Export) will be visible once you save the Delivery Note."
+   "description": "In Words (Export) will be visible once you save the Delivery Note.",
+   "printWidth": "150px"
   },
   {
    "fieldname": "disable_rounded_total",
@@ -660,7 +672,8 @@
   },
   {
    "fieldname": "col_break21",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "contact_person",
@@ -809,7 +822,8 @@
    "readOnly": true,
    "inStandardFilter": true,
    "default": "Draft",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "column_break_112",
@@ -857,7 +871,8 @@
    "label": "Transporter",
    "fieldtype": "Link",
    "options": "Supplier",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "gst_transporter_id",
@@ -877,7 +892,8 @@
    "fieldname": "lr_no",
    "label": "Container No",
    "fieldtype": "Data",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "vehicle_no",
@@ -894,7 +910,8 @@
   },
   {
    "fieldname": "col_break34",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "printWidth": "50%"
   },
   {
    "fieldname": "transporter_name",
@@ -924,7 +941,8 @@
    "label": "Transport Receipt Date",
    "fieldtype": "Date",
    "default": "Today",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "gst_vehicle_type",
@@ -995,7 +1013,8 @@
    "label": "Customer's Purchase Order No",
    "fieldtype": "Small Text",
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "column_break_17",
@@ -1005,7 +1024,8 @@
    "fieldname": "po_date",
    "label": "Customer's Purchase Order Date",
    "fieldtype": "Date",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "sales_team_section_break",
@@ -1021,7 +1041,8 @@
    "label": "Sales Partner",
    "fieldtype": "Link",
    "options": "Sales Partner",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "amount_eligible_for_commission",
@@ -1032,14 +1053,16 @@
   {
    "fieldname": "column_break7",
    "fieldtype": "Column Break",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "50%"
   },
   {
    "fieldname": "commission_rate",
    "label": "Commission Rate (%)",
    "fieldtype": "Float",
    "fetchFrom": "sales_partner.commission_rate",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "100px"
   },
   {
    "fieldname": "total_commission",
@@ -1186,7 +1209,8 @@
   {
    "fieldname": "column_break5",
    "fieldtype": "Column Break",
-   "printHide": true
+   "printHide": true,
+   "printWidth": "50%"
   },
   {
    "fieldname": "excise_page",

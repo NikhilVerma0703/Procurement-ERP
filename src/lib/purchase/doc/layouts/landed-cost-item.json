@@ -27,7 +27,8 @@
    "fieldtype": "Text Editor",
    "reqd": true,
    "readOnly": true,
-   "inListView": true
+   "inListView": true,
+   "printWidth": "300px"
   },
   {
    "fieldname": "receipt_document_type",

@@ -16,13 +16,15 @@
    "fieldname": "label",
    "label": "Label",
    "fieldtype": "Data",
-   "inListView": true
+   "inListView": true,
+   "printWidth": "150px"
   },
   {
    "fieldname": "description",
    "label": "Description",
    "fieldtype": "Text Editor",
-   "inListView": true
+   "inListView": true,
+   "printWidth": "300px"
   }
  ]
 }
