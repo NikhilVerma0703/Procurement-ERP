@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GateEntryForm } from "@/components/purchase/stock/GateEntryForm";
+import { layoutInFy } from "@/lib/purchase/doc/fy-layout";
 import { LAYOUTS } from "@/lib/purchase/doc/layouts";
 import { PURCHASE_PATHS } from "@/lib/purchase/routes";
 import { purchasePageGate } from "@/lib/purchase/server/page";
@@ -31,7 +32,7 @@ export default async function NewGateEntryPage({ searchParams }: { searchParams:
         modified={null}
         docStatus="DRAFT"
         amendFrom={made?.ok ? amend : null}
-        layout={LAYOUTS[GATE_ENTRY]}
+        layout={layoutInFy(LAYOUTS[GATE_ENTRY])}
         childLayouts={GATE_ENTRY_CHILDREN}
         links={{ order: null, supplier: null, receipt: null, items: {} }}
       />

@@ -3,7 +3,8 @@
 // A new PO takes the next number of its naming series: the series
 // "PUR-ORD/25-26/" was the only one (and still said 25-26 in 2026-27), five
 // digits, continuing from the last imported number (purchase_naming_series
-// holds the counter, from ERPNext's tabSeries). An amended PO is named after
+// holds the counter, from ERPNext's tabSeries). Since 26-11-2026 it is put in
+// the financial year of the PO Date (financial-year.ts: PUR-ORD/26-27/02563 next). An amended PO is named after
 // the cancelled one: "<number>-1", and "-2" when an amendment is amended
 // (Frappe's _get_amended_name). Pure.
 

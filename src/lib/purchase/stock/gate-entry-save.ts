@@ -17,6 +17,8 @@ import { LAYOUTS } from "../doc/layouts";
 import { docSchema, legacyRow, missingFields, newRowName, siteDateTime, type Doc } from "../doc/store";
 import { typedDoc } from "../doc/values";
 import { siteToday } from "../format";
+import { fyFull, fyStartOf, sameSeries, seriesForDate } from "../financial-year";
+import { nextInSeries } from "../series-counter";
 import { importId } from "../migrate/convert";
 import { gateEntryColumns, gateEntryItemColumns } from "../migrate/stock-build";
 import { fieldErrorsOf, type ActionResult } from "../orders/form-schema";
@@ -63,8 +65,9 @@ export async function storedGateEntryDoc(id: string, tx: Tx | typeof db = db) {
 export function blankGateEntry(now = new Date()): Doc {
   const today = siteToday(now);
   return {
-    __islocal: 1, docstatus: 0, naming_series: DEFAULT_GATE_ENTRY_SERIES, location: GATE_ENTRY_LOCATION,
-    invoice_date: today, gate_entry_date: today, items: [],
+    // The series and the Financial Year of today (financial-year.ts, owner 26-11-2026).
+    __islocal: 1, docstatus: 0, naming_series: seriesForDate(DEFAULT_GATE_ENTRY_SERIES, today), location: GATE_ENTRY_LOCATION,
+    invoice_date: today, gate_entry_date: today, financial_year: fyFull(fyStartOf(today)), items: [],
   };
 }
 
@@ -98,11 +101,7 @@ export async function amendDoc(id: string): Promise<{ ok: true; doc: Doc } | { o
 
 async function nextNumber(tx: Tx, doc: Doc): Promise<string> {
   const { prefix, digits } = gateEntrySeriesKey(str(doc.naming_series), doc);
-  const rows = await tx.$queryRaw<{ current: number }[]>`
-    INSERT INTO purchase_naming_series (prefix, current) VALUES (${prefix}, 1)
-    ON CONFLICT (prefix) DO UPDATE SET current = purchase_naming_series.current + 1
-    RETURNING current`;
-  return `${prefix}${String(rows[0].current).padStart(digits, "0")}`;
+  return nextInSeries(tx, prefix, digits);
 }
 
 /** What the user may change on a draft; everything else comes from the stored entry or the PO. */
@@ -140,7 +139,12 @@ export async function saveGateEntry(user: PurchaseUser, req: SaveRequest): Promi
       const doc: Doc = { ...(stored?.doc ?? blankGateEntry(now)) };
       for (const f of TYPED_HEADER) if (f in typed) doc[f] = typed[f];
       doc.docstatus = 0;
-      if (!SERIES.includes(str(doc.naming_series))) doc.naming_series = DEFAULT_GATE_ENTRY_SERIES;
+      // The series in the financial year of the Gate Entry Date (financial-year.ts, owner 26-11-2026),
+      // and the entry's Financial Year field with it (the add-on filled it with the year's name).
+      const day = str(doc.gate_entry_date) || siteToday(now);
+      if (!SERIES.some((s) => sameSeries(s, str(doc.naming_series)))) doc.naming_series = DEFAULT_GATE_ENTRY_SERIES;
+      doc.naming_series = seriesForDate(str(doc.naming_series), day);
+      if (!str(doc.financial_year)) doc.financial_year = fyFull(fyStartOf(day));
 
       // An amendment (new only): of a cancelled entry not amended before.
       let amendedFromId: string | null = stored?.entry.amendedFromId ?? null;

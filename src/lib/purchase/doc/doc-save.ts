@@ -19,6 +19,9 @@ import { versionDiff } from "../orders/version";
 import type { PurchaseUser } from "../server/current-user";
 import { db } from "../server/db";
 import { seriesKey } from "../stock/receipt-meta";
+import { seriesForDate } from "../financial-year";
+import { siteToday } from "../format";
+import { nextInSeries } from "../series-counter";
 import { isTable, LAYOUT_TYPES, type DoctypeLayout } from "./layout";
 import { linkExists, linkedRow } from "./links";
 import { childLayoutsOf, layoutOf, type DocScreen } from "./screens";
@@ -392,13 +395,12 @@ const RULES: Record<string, Rule> = {
 
 const SPECIAL = /[<>]/;
 
-async function nextInSeries(tx: Tx, series: string): Promise<string> {
-  const { prefix, digits } = seriesKey(series, new Date());
-  const rows = await tx.$queryRaw<{ current: number }[]>`
-    INSERT INTO purchase_naming_series (prefix, current) VALUES (${prefix}, 1)
-    ON CONFLICT (prefix) DO UPDATE SET current = purchase_naming_series.current + 1
-    RETURNING current`;
-  return `${prefix}${String(rows[0].current).padStart(digits, "0")}`;
+/** The next name of a series — put in the financial year of the record's own date when it names one
+ *  (financial-year.ts, owner 26-11-2026: Stock Entry's "MAT-STE/24-25/", Delivery Note's "DN/24-25/"). */
+async function nameInSeries(tx: Tx, series: string, doc: Doc): Promise<string> {
+  const day = str(doc.posting_date) || str(doc.transaction_date) || str(doc.report_date) || siteToday();
+  const { prefix, digits } = seriesKey(seriesForDate(series, day), new Date());
+  return nextInSeries(tx, prefix, digits);
 }
 
 /** A new record's name, as the DocType's naming rule made it. */
@@ -407,7 +409,7 @@ async function nameOf(tx: Tx, s: DocScreen, doc: Doc): Promise<string> {
   let name = "";
   if (s.doctype === "Product Bundle") name = str(doc.new_item_code);
   else if (l.autoname?.startsWith("field:")) name = str(doc[l.autoname.slice(6)]);
-  else if (l.autoname === "naming_series:") name = await nextInSeries(tx, str(doc.naming_series) || (l.fields.find((f) => f.fieldname === "naming_series")?.options ?? "").split("\n")[0]);
+  else if (l.autoname === "naming_series:") name = await nameInSeries(tx, str(doc.naming_series) || (l.fields.find((f) => f.fieldname === "naming_series")?.options ?? "").split("\n")[0], doc);
   else name = newRowName();
   if (!name) refuse(`No Name Specified for ${s.doctype}`);
   if (SPECIAL.test(name)) refuse("Name cannot contain special characters like '<', '>'");

@@ -285,7 +285,12 @@ export async function receiptPrint(id: string, formatName?: string | null, opts:
     body = `<div class="print-format-error"><h4>Error</h4><pre>${escapeHtml(message)}</pre></div>`;
   }
   // (The check against the old prints compares the text before the images are swapped.)
-  if (opts.localImages !== false) body = await localImages(body);
+  if (opts.localImages !== false) {
+    body = await localImages(body);
+    // The page runs no script (its values are printed unescaped, as Frappe printed them). The only one a
+    // format had — QR Codes' "$('.print-preview').css()" — did nothing on the old page either.
+    body = body.replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, "");
+  }
   const html =
     `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${escapeHtml(`Purchase Receipt ${r.number} - ${format.name}`)}</title>` +
     `<style>${FRAPPE_PRINT_CSS}\n\n${format.css}</style><style>${BOOTSTRAP_PRINT}</style></head>` +

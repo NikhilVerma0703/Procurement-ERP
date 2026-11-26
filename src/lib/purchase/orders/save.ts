@@ -46,7 +46,9 @@ import { ADD_DEDUCT_KEYS, CHARGE_TYPE_KEYS, DISCOUNT_ON_KEYS, MARGIN_TYPE_KEYS, 
 import { currencyDisplay, orderRecord } from "./load";
 import { currencies, gstAccountTypes, itemTaxTemplates, paymentTerms } from "./masters";
 import { defaultSchedule, scheduleFromTerms } from "../calc/schedule";
-import { amendedNumber, DEFAULT_SERIES, seriesNumber } from "./numbering";
+import { seriesForDate } from "../financial-year";
+import { nextInSeries } from "../series-counter";
+import { amendedNumber, DEFAULT_SERIES } from "./numbering";
 import { orderSnapshot, type OrderRecord } from "./record";
 import { versionDiff } from "./version";
 
@@ -469,25 +471,18 @@ function scheduleRows(d: OrderFormData, r: Ok, c: PurchaseOrderCalcResult, rows:
   });
 }
 
-/** Takes the next number of a series inside the save's transaction (the row lock orders two saves). */
-async function nextNumber(tx: Tx, prefix: string): Promise<string> {
-  const rows = await tx.$queryRaw<{ current: number }[]>`
-    insert into purchase_naming_series (prefix, current) values (${prefix}, 1)
-    on conflict (prefix) do update set current = purchase_naming_series.current + 1
-    returning current`;
-  return seriesNumber(prefix, rows[0].current);
-}
 
 /** The name of a new amendment of a cancelled PO, refusing a second amendment of it. */
-async function amendmentOf(tx: Tx, fromId: string): Promise<{ id: string; number: string }> {
+async function amendmentOf(tx: Tx, fromId: string): Promise<{ id: string; number: string; namingSeries: string }> {
   const from = await tx.purchaseOrder.findUnique({
     where: { id: fromId },
-    select: { id: true, number: true, docStatus: true, amendedFromId: true, amendments: { select: { number: true } } },
+    select: { id: true, number: true, namingSeries: true, docStatus: true, amendedFromId: true, amendments: { select: { number: true } } },
   });
   if (!from) throw new UserError("The Purchase Order being amended no longer exists.");
   if (from.docStatus !== "CANCELLED") throw new UserError(`Only a cancelled Purchase Order can be amended; ${from.number} is not cancelled.`);
   if (from.amendments.length) throw new UserError(`${from.number} has already been amended (${from.amendments[0].number}).`);
-  return { id: from.id, number: amendedNumber(from.number, Boolean(from.amendedFromId)) };
+  // An amendment keeps the cancelled PO's series (its number is that PO's, with "-1").
+  return { id: from.id, number: amendedNumber(from.number, Boolean(from.amendedFromId)), namingSeries: from.namingSeries };
 }
 
 export interface SaveRequest {
@@ -657,12 +652,14 @@ export async function saveOrder(user: PurchaseUser, req: SaveRequest): Promise<A
     const saved = await db.$transaction(async (tx) => {
       if (!req.id) {
         const amendment = req.amendedFromId ? await amendmentOf(tx, req.amendedFromId) : null;
-        const number = amendment ? amendment.number : await nextNumber(tx, DEFAULT_SERIES);
+        // The series in the financial year of the PO Date (financial-year.ts, owner 26-11-2026).
+        const series = amendment ? amendment.namingSeries : seriesForDate(DEFAULT_SERIES, p.data.transactionDate);
+        const number = amendment ? amendment.number : await nextInSeries(tx, series);
         return tx.purchaseOrder.create({
           data: {
             ...headerData(p.data, p.resolved, p.calc),
             number,
-            namingSeries: DEFAULT_SERIES,
+            namingSeries: series,
             amendedFromId: amendment?.id ?? null,
             createdBy: user.email,
             updatedBy: user.email,

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/purchase/layout/PageHeader";
 import { ReceiptForm } from "@/components/purchase/stock/ReceiptForm";
+import { layoutInFy } from "@/lib/purchase/doc/fy-layout";
 import { LAYOUTS } from "@/lib/purchase/doc/layouts";
 import { engineMasters } from "@/lib/purchase/orders/save";
 import { PURCHASE_PATHS } from "@/lib/purchase/routes";
@@ -39,7 +40,7 @@ export default async function NewPurchaseReceiptPage({ searchParams }: { searchP
         id={null}
         initial={initial}
         modified={null}
-        layout={LAYOUTS["Purchase Receipt"]}
+        layout={layoutInFy(LAYOUTS["Purchase Receipt"])}
         childLayouts={RECEIPT_CHILDREN}
         masters={await engineMasters(companyCurrency)}
         companyCurrency={companyCurrency}

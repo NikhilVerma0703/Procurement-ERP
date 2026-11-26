@@ -18,6 +18,7 @@ npm run db:migrate # prisma migrate dev (refuses any database not on this machin
 npm run golden     # engine vs all imported POs (local data)
 npm run golden:stock  # the seven stock reports vs the old site's own live answers (data/erpnext-live)
 npm run check:stock-forms  # save / edit / delete every Stock master through the server code (local DB; cleans up)
+npm run check:receipt-prints  # the receipt print formats vs the old site's own output (fingerprints, local DB)
 npm run golden:ledger # the FIFO valuation engine replays every entry of the old stock ledger
 npm run import:erpnext  # load the newest backup in data/erpnext-backup (another machine's DB: --target <host>)
 npm run verify:erpnext  # read-only: does the database still equal the backup?
@@ -78,4 +79,5 @@ npm run export:data -- --out "<folder>"  # every record as readable Excel, by th
 | Stock › Masters & Reports: every section, the old list view (columns by window width), the masters' rules, the five further reports | `docs/14-stock-screens-and-reports.md` (code: `src/lib/purchase/doc/{screens,list-view,list-data,master-form,doc-save}.ts`, `src/components/purchase/doc/`, `src/lib/purchase/stock/reports-more*.ts`) |
 | Phase II (Buying + Stock, Thiru R): who uses what, the 23 Stock sections, data secured, build order, owner decisions | `docs/12-phase-2-buying-and-stock.md` (setup: `docs/reference/erpnext-setup/stock/`; add-on scripts: `docs/reference/live-capture/stock/`; importer: `src/lib/purchase/migrate/stock-build.ts`; forms drawn from the old site's captured definitions: `src/lib/purchase/doc/`) |
 | The top search box; Gate Entry; a receipt's Submit / Cancel (stock ledger, POs, gate entry) | `docs/13-search-gate-entry-receipt.md` (code: `src/lib/purchase/search/`, `src/lib/purchase/stock/{gate-entry-*,gate-entries,receipt-submit,stock-post,ledger-format}.ts`) |
+| Section-by-section comparison with the old site (the record of done / pending), financial-year numbers, print view | `docs/15-replication-checklist.md` (code: `src/lib/purchase/financial-year.ts`, `src/lib/purchase/print/`, `src/components/purchase/print/`) |
 | Main ERP conventions | `C:\Users\User\Desktop\Pacific-ERP-payment-tracking` (read `origin/main` through git; don't modify that checkout) |

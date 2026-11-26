@@ -98,4 +98,26 @@ Code: `lib/purchase/stock/receipt-save.ts` (Submit = save with every check, then
 * **Not built yet:** receiving batch or serial-numbered items — refused with the old message ("Batch number is
   mandatory for Item …"); no receipt since 01-01-2026 had one (3,349 rows). Over-receipt is not capped: the old
   allowance was 0 %, but the role allowed past it (Accounts User) was Thiru R's. No accounting entries (docs/12 §8,
-  decision 3). The receipt's four print formats and the Landed Cost Voucher screen are next (docs/12 §7).
+  decision 3). The Landed Cost Voucher screen is next (docs/12 §7).
+
+## 4. The receipt's print (built 25–26-11-2026)
+
+Code: `lib/purchase/print/` (`jinja.ts`, `receipt-print.ts`, `receipt-formats.ts`, `print-css.ts`),
+`api/purchase/receipts/[id]/print` (the printed page), `app/purchase/receipts/[id]/print` and
+`components/purchase/print/PrintScreen.tsx` (the print view); the printer icon on the receipt (draft or submitted).
+
+* **The formats are the old ones, run as they were:** QR Codes (the default), Test PR, Purchase Receipt PF, Puchase
+  Receipt Format, Goods Receipt — each format's own Jinja template and CSS from the old site, rendered by nunjucks
+  with Python's rules put back (`jinja.ts`: "36.0", "None", Frappe's "no such element" text for a field the
+  receipt does not have, empty lists false, ints and floats as Python kept them, Jinja's filters). The frappe
+  calls they make are answered from this ERP's data (addresses as they are now, the POs' Order Confirmation No);
+  "Puchase Receipt Format" listed every Purchase Invoice's payment schedule, not the receipt's, so its one line
+  ("45 Days From The Date Of Receipt Of Material", 63071.0, from the old site's only invoice) prints on every receipt.
+* **Checked:** every format of MM-03457 (GST) and MM-00407 (30 QR codes) equals the old site's own output, body and
+  style (`npm run check:receipt-prints`; fingerprints read from the old site on 26-11-2026).
+* **QR codes** are drawn here (the old page asked api.qrserver.com) from exactly the text that service read — the
+  address as the browser sent it, cut at "&" and "#" as it was: "A & A Silicates" gave "…-None-A ".
+* **The print view** as the old one: Print Format, Language, Letter Head, the three print options (they change only
+  Frappe's Standard print, as on the old site), Full Page, Refresh, the form, ⋯ (Full Page, PDF, Refresh), Print.
+  A cancelled receipt does not print (Print Settings). **Differs:** PDF opens the browser's print dialog (Save as
+  PDF) — the old server made the PDF itself; Frappe's "Standard" format is not built yet (docs/15, X3).

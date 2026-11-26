@@ -28,7 +28,9 @@ import { SITE_PRECISION } from "../calc/settings";
 import { docSchema, docSnapshot, legacyRow, missingFields, newRowName, siteDateTime, type Doc } from "../doc/store";
 import { LAYOUTS } from "../doc/layouts";
 import { typedDoc } from "../doc/values";
+import { seriesForDate } from "../financial-year";
 import { siteToday } from "../format";
+import { nextInSeries } from "../series-counter";
 import { importId } from "../migrate/convert";
 import { receiptColumns, receiptItemColumns, receiptServiceColumns, receiptTaxColumns } from "../migrate/stock-build";
 import { engineMasters } from "../orders/save";
@@ -57,11 +59,7 @@ const str = (v: unknown) => (typeof v === "string" ? v.trim() : v === null || v 
 
 async function nextNumber(tx: Tx, series: string): Promise<string> {
   const { prefix, digits } = seriesKey(series);
-  const rows = await tx.$queryRaw<{ current: number }[]>`
-    INSERT INTO purchase_naming_series (prefix, current) VALUES (${prefix}, 1)
-    ON CONFLICT (prefix) DO UPDATE SET current = purchase_naming_series.current + 1
-    RETURNING current`;
-  return `${prefix}${String(rows[0].current).padStart(digits, "0")}`;
+  return nextInSeries(tx, prefix, digits);
 }
 
 /** The receipt's own typed document from its stored rows (what the form edits). */
@@ -147,7 +145,8 @@ export async function saveReceipt(user: PurchaseUser, req: SaveRequest): Promise
       // --- header defaults and fetches -----------------------------------------------------------
       doc.docstatus = 0;
       doc.status = "Draft";
-      doc.naming_series = str(doc.naming_series) || DEFAULT_RECEIPT_SERIES;
+      // The series in the financial year of the Posting Date (financial-year.ts, owner 26-11-2026).
+      doc.naming_series = seriesForDate(str(doc.naming_series) || DEFAULT_RECEIPT_SERIES, str(doc.posting_date) || siteToday(now));
       const company = await tx.purchaseCompany.findFirst({ where: str(doc.company) ? { code: str(doc.company) } : {}, orderBy: { code: "asc" } });
       if (!company) refuse(`Could not find Company: ${str(doc.company)}`, "company");
       doc.company = company!.code;

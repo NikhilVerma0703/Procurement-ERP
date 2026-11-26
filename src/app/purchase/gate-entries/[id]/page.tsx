@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { OrderFooter } from "@/components/purchase/activity/OrderFooter";
 import { GateEntryForm } from "@/components/purchase/stock/GateEntryForm";
 import { loadDocActivity } from "@/lib/purchase/doc/activity";
+import { layoutInFy } from "@/lib/purchase/doc/fy-layout";
 import { LAYOUTS } from "@/lib/purchase/doc/layouts";
 import { db } from "@/lib/purchase/server/db";
 import { purchasePageGate } from "@/lib/purchase/server/page";
@@ -36,7 +37,7 @@ export default async function GateEntryPage({ params }: { params: Promise<{ id: 
       initial={doc}
       modified={String(doc.modified ?? "")}
       docStatus={entry.docStatus}
-      layout={LAYOUTS[GATE_ENTRY]}
+      layout={layoutInFy(LAYOUTS[GATE_ENTRY])}
       childLayouts={GATE_ENTRY_CHILDREN}
       links={{ order: ids.order, supplier: ids.supplier, receipt: ids.receipt, items: Object.fromEntries(ids.items) }}
       prev={prev}

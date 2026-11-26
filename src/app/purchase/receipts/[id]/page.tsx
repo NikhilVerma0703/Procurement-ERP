@@ -8,6 +8,7 @@ import { loadDocActivity } from "@/lib/purchase/doc/activity";
 import { DocumentView } from "@/components/purchase/doc/DocumentView";
 import { IndicatorPill } from "@/components/purchase/doc/IndicatorPill";
 import { PageHeader } from "@/components/purchase/layout/PageHeader";
+import { layoutInFy } from "@/lib/purchase/doc/fy-layout";
 import { LAYOUTS } from "@/lib/purchase/doc/layouts";
 import { transactionLabels } from "@/lib/purchase/doc/transaction";
 import { gateEntryPath, masterPath, orderPath, receiptPath, receiptPrintPath } from "@/lib/purchase/routes";
@@ -85,7 +86,7 @@ export default async function PurchaseReceiptPage({ params }: { params: Promise<
           id={receipt.id}
           initial={stored.doc}
           modified={String(stored.doc.modified ?? "")}
-          layout={LAYOUTS["Purchase Receipt"]}
+          layout={layoutInFy(LAYOUTS["Purchase Receipt"])}
           childLayouts={RECEIPT_CHILDREN}
           masters={await engineMasters(companyCurrency)}
           companyCurrency={companyCurrency}

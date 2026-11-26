@@ -17,6 +17,7 @@ import { ORDER_INCLUDE } from "../orders/record";
 import { engineMasters } from "../orders/save";
 import { db } from "../server/db";
 import { computeReceipt } from "./receipt-doc";
+import { seriesForDate } from "../financial-year";
 import { DEFAULT_RECEIPT_SERIES } from "./receipt-meta";
 
 const n = (d: { toString(): string } | null | undefined) => (d == null ? 0 : Number(d.toString()));
@@ -31,7 +32,8 @@ export async function blankReceipt(): Promise<Doc> {
     __islocal: 1,
     docstatus: 0,
     status: "Draft",
-    naming_series: DEFAULT_RECEIPT_SERIES,
+    // The series in this financial year (financial-year.ts, owner 26-11-2026).
+    naming_series: seriesForDate(DEFAULT_RECEIPT_SERIES, now),
     company: company?.code ?? "",
     currency: company?.defaultCurrency ?? "INR",
     conversion_rate: 1,
