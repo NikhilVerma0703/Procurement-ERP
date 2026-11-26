@@ -383,7 +383,10 @@ export function DocumentForm({ layout, childLayouts, doc, binding, options = {} 
   const tabs = shown
     .map((t) => {
       const extra = options.tabContent?.[t.label];
-      if (!t.sections.length && !extra) return null;
+      // Frappe 14 hid a tab only when its own condition hid it (tab.js), not for having nothing to show —
+      // the old Stock Entry shows its empty Supplier Info and Accounting Dimensions tabs. The Connections
+      // tab is the dashboard: shown with its content.
+      if (!t.sections.length && !extra && t.label === "Connections") return null;
       return {
         label: t.label,
         content: (

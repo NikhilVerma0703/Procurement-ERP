@@ -213,9 +213,15 @@ export async function writeMaterialRequest(tx: Tx, id: string | null, legacy: Do
  * of the request done (each row counted up to its own Stock Qty); the status follows; the requested qty
  * in the Bins too.
  */
-export async function refreshMaterialRequestsOrdered(tx: Tx, names: readonly string[], who: { email: string; stamp: string }): Promise<void> {
+export async function refreshMaterialRequestsOrdered(
+  tx: Tx,
+  names: readonly string[],
+  who: { email: string; stamp: string },
+  /** The document being submitted (its DocType): a row may not take a request row past its Stock Qty (validate_qty). */
+  opts: { overLimit?: string } = {},
+): Promise<void> {
   for (const name of [...new Set(names.filter(Boolean))]) {
-    const mr = await tx.purchaseMaterialRequest.findUnique({ where: { number: name }, select: { id: true, legacy: true, items: { select: { id: true, erpnextName: true, stockQty: true, legacy: true } } } });
+    const mr = await tx.purchaseMaterialRequest.findUnique({ where: { number: name }, select: { id: true, legacy: true, items: { select: { id: true, erpnextName: true, itemCode: true, stockQty: true, legacy: true } } } });
     if (!mr) continue;
     let done = 0;
     let total = 0;
@@ -227,6 +233,10 @@ export async function refreshMaterialRequestsOrdered(tx: Tx, names: readonly str
                            WHERE d.material_request_item = ${it.erpnextName} AND e.doc_status = 'Submitted'), 0))::float8 AS q`;
       const ordered = flt(q ?? 0, 9);
       const stock = Number(it.stockQty);
+      if (opts.overLimit && ordered > stock + 1e-9) {
+        const over = flt(ordered - stock, 3);
+        refuse(`This document is over limit by Stock Qty ${over} for item ${it.itemCode}. Are you making another ${opts.overLimit} against the same Material Request Item?`);
+      }
       done += Math.min(Math.abs(ordered), Math.abs(stock));
       total += Math.abs(stock);
       await tx.purchaseMaterialRequestItem.update({

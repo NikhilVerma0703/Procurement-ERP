@@ -325,3 +325,36 @@ export async function refreshBin(tx: Tx, itemCode: string, warehouse: string, wh
   if (bin) await tx.purchaseBin.update({ where: { id: bin.id }, data });
   else await tx.purchaseBin.create({ data: { id: importId("bin", name), ...data } });
 }
+
+/**
+ * What the ledger holds of an item in a warehouse at a moment (get_previous_sle), and the rate a
+ * quantity going out then would be valued at (get_incoming_rate: the FIFO queue consumed, its value
+ * over the quantity) — a Stock Entry's Actual Qty and Basic Rate before it is posted. For a quantity
+ * coming in, the rate is the valuation rate then (the item's own when it has no stock yet).
+ */
+export async function stockAt(
+  tx: Tx | typeof import("../server/db").db,
+  itemCode: string,
+  warehouse: string,
+  postingDate: string,
+  postingTime: string,
+  outQty: number,
+): Promise<{ actualQty: number; rate: number }> {
+  const at = localDateTime(`${postingDate} ${postingTime.slice(0, 15)}`) ?? new Date();
+  const rows = await ledgerOf(tx as Tx, itemCode, warehouse);
+  let i = rows.findIndex((r) => r.at.getTime() > at.getTime());
+  if (i === -1) i = rows.length;
+  const w = stateAfter(rows[i - 1]);
+  if (outQty > 0 && w.qty > 0) {
+    const res = processEntry(
+      { ...w, queue: w.queue.map((b) => [...b] as StockBin) },
+      { voucherType: "Stock Entry", voucherNo: "", actualQty: -outQty, incomingRate: 0, outgoingRate: 0, batchNo: null, serialNo: null, company: "", qtyAfterTransaction: 0, valuationRate: 0 },
+      ctxFor(() => w),
+      new Map(),
+    );
+    return { actualQty: w.qty, rate: res.negative ? w.valuationRate : flt(Math.abs(res.stockValueDifference) / outQty, 9) };
+  }
+  if (w.qty || w.valuationRate) return { actualQty: w.qty, rate: w.valuationRate };
+  const item = await tx.purchaseItem.findUnique({ where: { code: itemCode }, select: { valuationRate: true } });
+  return { actualQty: 0, rate: Number(item?.valuationRate ?? 0) };
+}
