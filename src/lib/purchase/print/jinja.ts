@@ -241,6 +241,20 @@ const STR_METHODS: Record<string, (s: string, ...a: unknown[]) => unknown> = {
   startswith: (s, p) => s.startsWith(String(p)),
   endswith: (s, p) => s.endsWith(String(p)),
   find: (s, p) => new PyInt(s.indexOf(String(p))),
+  // A date (or datetime) is text here ("2026-11-26"); Python's date.strftime on it ("%d-%m-%Y", "%d-%b-%y").
+  strftime: (s, fmt) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}):(\d{2}))?/.exec(s);
+    if (!m) throw new Error(`'str' object has no attribute 'strftime'`);
+    const [, y, mo, d, hh = "00", mm = "00", ss = "00"] = m;
+    const date = new Date(Date.UTC(Number(y), Number(mo) - 1, Number(d)));
+    const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const codes: Record<string, string> = {
+      d: d, m: mo, Y: y, y: y.slice(2), H: hh, M: mm, S: ss, b: MONTHS[Number(mo) - 1].slice(0, 3), B: MONTHS[Number(mo) - 1],
+      a: DAYS[date.getUTCDay()].slice(0, 3), A: DAYS[date.getUTCDay()], "%": "%",
+    };
+    return String(fmt ?? "").replace(/%([a-zA-Z%])/g, (all, c: string) => codes[c] ?? all);
+  },
   join: (s, list) => (Array.isArray(list) ? list.map((x) => (typeof x === "string" ? x : pyPrint(x))).join(s) : ""),
   // str.format: {0} / {} / {name} (no format specs: the print templates use none).
   format: (s, ...args) => {

@@ -468,3 +468,48 @@ export function renderStandardPrint(record: PrintRecord, sys: PrintSystem, opts:
     guess_mimetype: (v: unknown) => [/\.(png|jpe?g|gif|svg|webp|bmp)(\?|$)/i.test(String(v ?? "")) ? "image/png" : null, null],
   });
 }
+
+/** frappe.utils.formatdate(date, "dd-MM-yyyy"): the day in that pattern ("" for none). */
+function formatdateAs(v: unknown, pattern: unknown): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v ?? ""));
+  if (!m) return v === null || v === undefined || v instanceof PyUndefined ? "" : String(v);
+  const fmt = typeof pattern === "string" && pattern ? pattern : "dd-MM-yyyy";
+  return fmt.replace(/yyyy/g, m[1]).replace(/MM/g, m[2]).replace(/dd/g, m[3]);
+}
+
+/**
+ * A record printed in one of its own (Jinja) print formats, as the old site ran them: the document as
+ * Frappe handed it over (every field typed, its before_print applied — print_templates, Discount Amount
+ * negated without taxes), with the frappe calls the formats make: get_doc of an Address (as it is now),
+ * db.get_value, utils.formatdate and format.
+ */
+export function renderCustomFormat(html: string, record: PrintRecord, sys: PrintSystem, lookups: { addresses: Record<string, Legacy> }): string {
+  const ctx: Ctx = { sys, metas: new Map() };
+  const doc = docOf(record.doctype, record.values, record.children, ctx, null);
+  const self = doc as Legacy;
+  self.print_heading = null;
+  self.sub_heading = null;
+  beforePrint(doc, { letterHead: null });
+  const addresses = new Map<string, PyObject>();
+  const addressOf = (name: string) => {
+    if (!addresses.has(name) && lookups.addresses[name]) addresses.set(name, docOf("Address", lookups.addresses[name], {}, ctx, null));
+    return addresses.get(name) ?? null;
+  };
+  const frappe = {
+    get_meta: (doctype: unknown) => metaOf(String(doctype), ctx.metas),
+    get_doc: (doctype: unknown, name: unknown) => {
+      if (doctype === record.doctype && name === self.name) return doc;
+      const found = doctype === "Address" && typeof name === "string" ? addressOf(name) : null;
+      if (found) return found;
+      throw new Error(`${String(doctype)} ${name === null || name === undefined ? "None" : String(name)} not found`);
+    },
+    db: {
+      get_value: (doctype: unknown, name: unknown, field: unknown) =>
+        doctype === "Address" && typeof name === "string" ? ((addressOf(name) as Legacy | null)?.[String(field)] ?? null) : null,
+    },
+    utils: { formatdate: formatdateAs, is_image: (v: unknown) => /\.(png|jpe?g|gif|svg|webp|bmp)(\?|$)/i.test(String(v ?? "")) },
+    format: (value: unknown, df: unknown) => formatValue(value, pyDict((df ?? {}) as Legacy), null, null, sys),
+    render_template: (template: unknown, context: unknown) => renderJinja(String(template ?? ""), (context ?? {}) as Record<string, unknown>),
+  };
+  return renderJinja(html, { doc, frappe, _: (v: unknown) => v });
+}

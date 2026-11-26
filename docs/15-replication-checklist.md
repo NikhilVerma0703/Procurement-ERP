@@ -15,14 +15,15 @@ record's own page, every page a click on an ID, name, supplier, item or title op
 |---|---|---|
 | X1 | **Financial-year numbers** (owner, 26-11-2026): a new document's number carries the financial year of its own date — PUR-ORD/26-27/…, PR/26-27/MM-…, GE-26-27-…; from 01-04-2027 …/27-28/…. FY 2026-27 continues the 25-26 count (next PO PUR-ORD/26-27/02563); every later year restarts at 00001. Old numbers stay as they are. Calendar-year series (MAT-MR-2026-…, MAT-SLE-2026-…, MAT-LCV-2026-…) were not financial-year series on the old site and stay calendar-year. **Built 26-11-2026** (`lib/purchase/financial-year.ts`, `series-counter.ts`): PO (PO Date), Purchase Receipt (Posting Date), Gate Entry (Gate Entry Date; its Financial Year field too), and the generic save (Stock Entry "MAT-STE/24-25/", Delivery Note "DN/24-25/", Quality Inspection "MAT-QA/24-25/" once they are entered here). The forms' Series offer this year's series. Checked in a rolled-back transaction: PUR-ORD/26-27/02563, PR/26-27/MM-03462, GE-26-27-03526; dated 02-04-2027 → PUR-ORD/27-28/00001; back-dated to 20-03-2026 → PUR-ORD/25-26/02563. Tests: `tests/purchase/financial-year.test.ts`. | ☑ |
 | X2 | **Print view** as the old one: Print Format, Language and Letter Head choices, the three print options, Full Page, Refresh, back to the form, ⋯ (Full Page, PDF, Refresh), Print. | ☑ for receipts (`components/purchase/print/PrintScreen.tsx`); the other sections take it as their print is built |
-| X3 | **Frappe's "Standard" print** for every DocType (the old site offered it on all of them), drawn from the captured form layouts. | pending |
+| X3 | **Frappe's "Standard" print** for every DocType (the old site offered it on all of them), drawn from the captured form layouts. | ☑ engine (`print/standard-print.ts`: Frappe 14.101.1's standard.html and ERPNext 14.92.14's includes, run as they were; the old print stylesheet, `print-bundle-css.ts`); live for receipts and POs; the other sections take it as their print view is built |
+| X4 | **Every lookup list complete where the old one was** (owner, 26-11-2026: Payment Terms Template showed only 20): Payment Terms Template (219), Payment Term (206), Terms and Conditions (118) list everything, by name, each typed word matched. | ☑ |
 
 ## The old site's print formats (read 26-11-2026)
 
 | DocType | Formats on the old site (default first) | Here |
 |---|---|---|
-| Purchase Order | PDF PO (default), Standard, Test Future Lab PO, tecnosint, PURCHASE ORDER TEMPLATE, Purchase Order Print, Purchase Order 2025, Purchase Order, PO print format, Import PO, Future Lab PO, Drop Shipping Format | PDF PO and four more as PDFs (docs/07); the rest pending |
-| Purchase Receipt | QR Codes (default), Standard, Test PR, Purchase Receipt PF, Puchase Receipt Format, Goods Receipt | the five Jinja formats, equal to the old site's own output for MM-03457 and MM-00407 (`npm run check:receipt-prints`); Standard pending |
+| Purchase Order | PDF PO (default), Standard, Test Future Lab PO, tecnosint, PURCHASE ORDER TEMPLATE, Purchase Order Print, Purchase Order 2025, Purchase Order, PO print format, Import PO, Future Lab PO, Drop Shipping Format | **all 12**, each run from its own template; every format of four POs (02512 GST, 02510 IGST, 02263 USD import, 02560) equals the old site's output (`npm run check:po-prints`, 48 / 48). The print view as the old one. The server PDFs of docs/07 stay for the emails. |
+| Purchase Receipt | QR Codes (default), Standard, Test PR, Purchase Receipt PF, Puchase Receipt Format, Goods Receipt | **all 6**, equal to the old site's own output for MM-03457 and MM-00407 (`npm run check:receipt-prints`, 12 / 12) |
 | Gate Entry | Standard, GATE ENTRY PRINT | GATE ENTRY PRINT (drawn by hand); to run as its template; Standard pending |
 | Pick List | Standard, Pick List | pending |
 | Supplier | Standard, IRS 1099 Form | pending |
@@ -89,3 +90,9 @@ State: ☐ not compared yet · ◐ compared, differences being built · ☑ equa
 
 * 26-11-2026 — both sites open for comparison; the old site's print formats listed; X1 decided by the owner and built;
   the receipt's print view rebuilt as the old one (X2); its five formats checked against the old site's output.
+* 26-11-2026 — Standard print (X3); all six receipt formats and all twelve PO formats equal the old site's; the terms
+  lookups complete (X4). The old PO list read: ⋯ menu Refresh, Close, Reopen, Import, User Permissions, Role
+  Permissions Manager, Customize, Toggle Sidebar, List Settings; Actions Approve, Reject, Purchase Invoice, Purchase
+  Receipt, Advance Payment, Export, Assign To, Apply Assignment Rule, Add Tags, Print — next.
+* Note on the old PO print: its on-screen preview showed whole numbers as "35" (it sent the form's numbers from the
+  browser); its Print, Full Page and PDF reloaded the PO and printed "35.0". This ERP prints as the old Print did.

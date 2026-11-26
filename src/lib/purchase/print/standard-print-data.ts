@@ -39,3 +39,26 @@ export async function receiptPrintRecord(id: string): Promise<{ record: PrintRec
   const titles = Object.fromEntries([...loaded.linkTitles].map(([k, v]) => [k.replace("\u0000", "::"), v]));
   return { record: recordOf("Purchase Receipt", loaded.doc, ["items", "taxes", "services_items", "supplied_items", "pricing_rules"]), system: await printSystem(titles) };
 }
+
+/** Addresses as a print reads them: the old row with the address's current values over it. */
+export async function addressRecords(codes: readonly string[]): Promise<Record<string, Legacy>> {
+  if (!codes.length) return {};
+  const rows = await db.purchaseAddress.findMany({
+    where: { code: { in: [...new Set(codes)] } },
+    select: {
+      code: true, legacy: true, addressTitle: true, addressType: true, addressLine1: true, addressLine2: true, city: true, state: true, country: true,
+      pincode: true, emailId: true, phone: true, gstin: true, gstState: true, gstStateNumber: true, gstCategory: true,
+    },
+  });
+  return Object.fromEntries(
+    rows.map((a) => [
+      a.code,
+      {
+        ...((a.legacy ?? {}) as Legacy),
+        name: a.code, address_title: a.addressTitle, address_type: a.addressType, address_line1: a.addressLine1, address_line2: a.addressLine2, city: a.city,
+        state: a.state, country: a.country, pincode: a.pincode, email_id: a.emailId, phone: a.phone, gstin: a.gstin, gst_state: a.gstState,
+        gst_state_number: a.gstStateNumber, gst_category: a.gstCategory,
+      },
+    ]),
+  );
+}

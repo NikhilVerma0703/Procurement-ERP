@@ -26,7 +26,8 @@
     "users": "tsx scripts/purchase-users.ts",
     "export:data": "tsx scripts/export-data.ts",
     "check:stock-forms": "tsx --conditions=react-server scripts/check-stock-forms.ts",
-    "check:receipt-prints": "tsx --conditions=react-server scripts/check-receipt-prints.ts"
+    "check:receipt-prints": "tsx --conditions=react-server scripts/check-receipt-prints.ts",
+    "check:po-prints": "tsx --conditions=react-server scripts/check-po-prints.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "5.9.1",
