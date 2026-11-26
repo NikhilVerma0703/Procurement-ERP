@@ -75,6 +75,11 @@ export const orderPath = (id: string) => `${PURCHASE_PATHS.orders}/${encodeURICo
 
 /** One Purchase Receipt's page (Phase II). */
 export const receiptPath = (id: string) => `${PURCHASE_PATHS.receipts}/${encodeURIComponent(id)}`;
+/** A receipt's print view (the old form's printer icon), in a print format. */
+export const receiptPrintPath = (id: string, format?: string) => `${receiptPath(id)}/print${format ? `?format=${encodeURIComponent(format)}` : ""}`;
+/** The printed receipt itself (an HTML page, as the old print view drew it), in a print format. */
+export const receiptPrintHtmlPath = (id: string, format: string) =>
+  `${PURCHASE_API_ROOT}/receipts/${encodeURIComponent(id)}/print?format=${encodeURIComponent(format)}`;
 /** A new receipt: blank, or made from a submitted PO (its Create › Purchase Receipt). */
 export const receiptNewPath = (fromOrder?: string) => `${PURCHASE_PATHS.receipts}/new${fromOrder ? `?purchase_order=${encodeURIComponent(fromOrder)}` : ""}`;
 

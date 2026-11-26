@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Printer } from "lucide-react";
 import { OrderFooter } from "@/components/purchase/activity/OrderFooter";
 import { Connections } from "@/components/purchase/doc/Connections";
 import { loadDocActivity } from "@/lib/purchase/doc/activity";
@@ -10,7 +10,7 @@ import { IndicatorPill } from "@/components/purchase/doc/IndicatorPill";
 import { PageHeader } from "@/components/purchase/layout/PageHeader";
 import { LAYOUTS } from "@/lib/purchase/doc/layouts";
 import { transactionLabels } from "@/lib/purchase/doc/transaction";
-import { gateEntryPath, masterPath, orderPath, receiptPath } from "@/lib/purchase/routes";
+import { gateEntryPath, masterPath, orderPath, receiptPath, receiptPrintPath } from "@/lib/purchase/routes";
 import { db } from "@/lib/purchase/server/db";
 import { purchasePageGate } from "@/lib/purchase/server/page";
 import { receiptIndicator } from "@/lib/purchase/stock/receipt-status";
@@ -54,6 +54,12 @@ export default async function PurchaseReceiptPage({ params }: { params: Promise<
   const labels = transactionLabels(doc, companyCurrency);
   const navigation = (
     <div className="flex items-center gap-1.5">
+      {/* The old form's printer icon (a cancelled receipt did not print: Print Settings). */}
+      {receipt.docStatus !== "CANCELLED" && (
+        <Link href={receiptPrintPath(receipt.id)} className="po-btn-secondary px-2.5" title="Print" aria-label="Print">
+          <Printer className="h-4 w-4" />
+        </Link>
+      )}
       {prev ? <Link href={receiptPath(prev)} className="po-btn-secondary" title="Previous Document" aria-label="Previous Document"><ChevronLeft className="h-4 w-4" /></Link> : null}
       {next ? <Link href={receiptPath(next)} className="po-btn-secondary" title="Next Document" aria-label="Next Document"><ChevronRight className="h-4 w-4" /></Link> : null}
     </div>
