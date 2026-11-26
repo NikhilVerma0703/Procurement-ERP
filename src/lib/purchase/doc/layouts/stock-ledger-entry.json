@@ -95,7 +95,8 @@
    "fieldname": "recalculate_rate",
    "label": "Recalculate Incoming/Outgoing Rate",
    "fieldtype": "Check",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "section_break_11",

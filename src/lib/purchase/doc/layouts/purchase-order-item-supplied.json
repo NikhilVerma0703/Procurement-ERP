@@ -113,7 +113,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "inListView": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "col_break1",
@@ -124,14 +125,16 @@
    "label": "Consumed Qty",
    "fieldtype": "Float",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "returned_qty",
    "label": "Returned Qty",
    "fieldtype": "Float",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "total_supplied_qty",
@@ -139,7 +142,8 @@
    "fieldtype": "Float",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

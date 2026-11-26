@@ -160,7 +160,8 @@
    "label": "Stock Qty",
    "fieldtype": "Float",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "qty_info_sec_break",
@@ -172,7 +173,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "printHide": true,
-   "printWidth": "70px"
+   "printWidth": "70px",
+   "noCopy": true
   },
   {
    "fieldname": "projected_qty",
@@ -181,7 +183,8 @@
    "readOnly": true,
    "allowOnSubmit": true,
    "printHide": true,
-   "printWidth": "70px"
+   "printWidth": "70px",
+   "noCopy": true
   },
   {
    "fieldname": "qty_info_col_break",
@@ -192,7 +195,8 @@
    "label": "Actual Qty",
    "fieldtype": "Float",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "ordered_qty",
@@ -200,7 +204,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "eval:doc.docstatus==1",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "received_qty",
@@ -208,7 +213,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "eval:doc.docstatus==1",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "rate_and_amount_section_break",
@@ -291,7 +297,8 @@
    "fieldtype": "Link",
    "options": "BOM",
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "accounting_dimensions_section",
@@ -327,7 +334,8 @@
    "label": "Lead Time Date",
    "fieldtype": "Date",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "sales_order",
@@ -343,7 +351,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "col_break4",
@@ -355,21 +364,24 @@
    "fieldtype": "Link",
    "options": "Production Plan",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "material_request_plan_item",
    "label": "Material Request Plan Item",
    "fieldtype": "Data",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "job_card_item",
    "label": "Job Card Item",
    "fieldtype": "Data",
    "hidden": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "section_break_46",
@@ -380,7 +392,8 @@
    "label": "Page Break",
    "fieldtype": "Check",
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

@@ -18,7 +18,8 @@
    "fieldtype": "Select",
    "options": "MAT-LCV-.YYYY.-",
    "reqd": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "company",
@@ -66,7 +67,8 @@
    "label": "Purchase Receipt Items",
    "fieldtype": "Table",
    "options": "Landed Cost Item",
-   "reqd": true
+   "reqd": true,
+   "noCopy": true
   },
   {
    "fieldname": "sec_break1",
@@ -109,7 +111,8 @@
    "fieldtype": "Link",
    "options": "Landed Cost Voucher",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "sec_break2",

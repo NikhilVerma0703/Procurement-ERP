@@ -59,6 +59,9 @@ export const itemRowSchema = z.object({
   applyTds: z.boolean().default(true),
   /** From the item master when the item is chosen; makes Total Net Weight. */
   weightPerUnit: num().default(0),
+  /** The Material Request row this row was made from (Create › Purchase Order on the request; 26-11-2026). */
+  materialRequest: optText.optional(),
+  materialRequestItem: optText.optional(),
 });
 
 export const taxRowSchema = z.object({

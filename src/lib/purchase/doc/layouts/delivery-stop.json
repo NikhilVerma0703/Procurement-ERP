@@ -51,7 +51,8 @@
    "fieldtype": "Check",
    "dependsOn": "eval:doc.docstatus==1",
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "order_information_section",
@@ -65,7 +66,8 @@
    "options": "Delivery Note",
    "readOnly": true,
    "inListView": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "cb_order",

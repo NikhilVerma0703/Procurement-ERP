@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/purchase/layout/PageHeader";
 import { OrderForm } from "@/components/purchase/form/OrderForm";
-import { amendmentDoc, blankOrderDoc, duplicateOrderDoc, formMasters, type OrderDoc } from "@/lib/purchase/orders/form-load";
+import { amendmentDoc, blankOrderDoc, duplicateOrderDoc, formMasters, orderFromMaterialRequest, type OrderDoc } from "@/lib/purchase/orders/form-load";
 import { canDo } from "@/lib/purchase/orders/workflow";
 import { PURCHASE_PATHS } from "@/lib/purchase/routes";
 import { purchasePageGate } from "@/lib/purchase/server/page";
@@ -11,10 +11,11 @@ import { purchasePageGate } from "@/lib/purchase/server/page";
 export const metadata: Metadata = { title: "New Purchase Order" };
 export const dynamic = "force-dynamic";
 
-// A new PO: blank with the old form's defaults, a copy of a PO (?duplicate=)
-// or the amendment of a cancelled one (?amend=). Only a role that may save
+// A new PO: blank with the old form's defaults, a copy of a PO (?duplicate=),
+// the amendment of a cancelled one (?amend=), or made from a Material Request
+// (?material_request=, its Create › Purchase Order). Only a role that may save
 // drafts opens it.
-export default async function NewPurchaseOrderPage({ searchParams }: { searchParams: Promise<{ duplicate?: string; amend?: string }> }) {
+export default async function NewPurchaseOrderPage({ searchParams }: { searchParams: Promise<{ duplicate?: string; amend?: string; material_request?: string }> }) {
   const gate = await purchasePageGate();
   const sp = await searchParams;
   if (!canDo(gate.user, null, "save")) return <Refused message="You do not have permission to create a Purchase Order." />;
@@ -24,6 +25,10 @@ export default async function NewPurchaseOrderPage({ searchParams }: { searchPar
     const r = await amendmentDoc(sp.amend);
     if ("error" in r) return <Refused message={r.error} />;
     doc = r.doc;
+  } else if (sp.material_request) {
+    const r = await orderFromMaterialRequest(sp.material_request);
+    if ("error" in r) return <Refused message={r.error} />;
+    doc = r.doc;
   } else if (sp.duplicate) {
     doc = await duplicateOrderDoc(sp.duplicate);
     if (!doc) notFound();
@@ -31,7 +36,7 @@ export default async function NewPurchaseOrderPage({ searchParams }: { searchPar
     doc = await blankOrderDoc();
   }
   const masters = await formMasters();
-  return <OrderForm key={sp.amend ?? sp.duplicate ?? "new"} doc={doc} masters={masters} allowed={["save"]} userEmail={gate.user!.email} />;
+  return <OrderForm key={sp.amend ?? sp.duplicate ?? sp.material_request ?? "new"} doc={doc} masters={masters} allowed={["save"]} userEmail={gate.user!.email} />;
 }
 
 function Refused({ message }: { message: string }) {

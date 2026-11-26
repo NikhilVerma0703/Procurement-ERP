@@ -22,7 +22,8 @@
    "fieldtype": "Link",
    "options": "Item",
    "reqd": true,
-   "inListView": true
+   "inListView": true,
+   "noCopy": true
   },
   {
    "fieldname": "description",

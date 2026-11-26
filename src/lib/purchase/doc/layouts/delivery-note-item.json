@@ -201,7 +201,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "eval:doc.uom != doc.stock_uom",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "stock_qty_col_break",
@@ -212,7 +213,8 @@
    "label": "Returned Qty in Stock UOM",
    "fieldtype": "Float",
    "readOnly": true,
-   "dependsOn": "returned_qty"
+   "dependsOn": "returned_qty",
+   "noCopy": true
   },
   {
    "fieldname": "section_break_17",
@@ -356,7 +358,8 @@
    "fieldtype": "Currency",
    "options": "currency",
    "readOnly": true,
-   "dependsOn": "eval: doc.uom != doc.stock_uom"
+   "dependsOn": "eval: doc.uom != doc.stock_uom",
+   "noCopy": true
   },
   {
    "fieldname": "is_free_item",
@@ -406,7 +409,8 @@
    "options": "Taxable\nZero-Rated\nNil-Rated\nExempted\nNon-GST",
    "readOnly": true,
    "fetchFrom": "item_tax_template.gst_treatment",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break_28",
@@ -434,7 +438,8 @@
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "gst_details_section",
@@ -446,31 +451,36 @@
    "fieldname": "igst_rate",
    "label": "IGST Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cgst_rate",
    "label": "CGST Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "sgst_rate",
    "label": "SGST Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_rate",
    "label": "CESS Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_non_advol_rate",
    "label": "CESS Non Advol Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cb_gst_details",
@@ -481,35 +491,40 @@
    "label": "IGST Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cgst_amount",
    "label": "CGST Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "sgst_amount",
    "label": "SGST Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_amount",
    "label": "CESS Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_non_advol_amount",
    "label": "CESS Non Advol Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "billed_amt",
@@ -517,7 +532,8 @@
    "fieldtype": "Currency",
    "options": "currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "incoming_rate",
@@ -525,7 +541,8 @@
    "fieldtype": "Currency",
    "readOnly": true,
    "precision": "6",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "item_weight_details",
@@ -576,7 +593,8 @@
    "options": "Warehouse",
    "hidden": true,
    "dependsOn": "eval:parent.is_internal_customer || doc.target_warehouse",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "quality_inspection",
@@ -584,7 +602,8 @@
    "fieldtype": "Link",
    "options": "Quality Inspection",
    "dependsOn": "eval:!doc.__islocal",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "col_break4",
@@ -596,7 +615,8 @@
    "fieldtype": "Link",
    "options": "Sales Order",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "so_detail",
@@ -605,7 +625,8 @@
    "hidden": true,
    "readOnly": true,
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "against_sales_invoice",
@@ -613,7 +634,8 @@
    "fieldtype": "Link",
    "options": "Sales Invoice",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "si_detail",
@@ -621,7 +643,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "dn_detail",
@@ -629,7 +652,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "pick_list_item",
@@ -637,7 +661,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "section_break_40",
@@ -655,7 +680,8 @@
    "fieldname": "serial_no",
    "label": "Serial No",
    "fieldtype": "Text",
-   "inListView": true
+   "inListView": true,
+   "noCopy": true
   },
   {
    "fieldname": "actual_batch_qty",
@@ -665,7 +691,8 @@
    "dependsOn": "batch_no",
    "allowOnSubmit": true,
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "actual_qty",
@@ -674,7 +701,8 @@
    "readOnly": true,
    "allowOnSubmit": true,
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "installed_qty",
@@ -682,7 +710,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "item_tax_rate",
@@ -702,7 +731,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "eval: doc.packed_qty",
-   "nonNegative": true
+   "nonNegative": true,
+   "noCopy": true
   },
   {
    "fieldname": "received_qty",
@@ -710,7 +740,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "eval: parent.is_internal_customer",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "accounting_details_section",
@@ -722,13 +753,15 @@
    "label": "Expense Account",
    "fieldtype": "Link",
    "options": "Account",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "allow_zero_valuation_rate",
    "label": "Allow Zero Valuation Rate",
    "fieldtype": "Check",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break_71",
@@ -783,7 +816,8 @@
    "fieldtype": "Link",
    "options": "Cost Center",
    "default": ":Company",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "dimension_col_break",

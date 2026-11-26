@@ -26,9 +26,12 @@ import { isTable, LAYOUT_TYPES, type DoctypeLayout } from "./layout";
 import { linkExists, linkedRow } from "./links";
 import { childLayoutsOf, layoutOf, type DocScreen } from "./screens";
 import { LAYOUTS } from "./layouts";
-import { defaultOf, effectiveLayout, formRules, mayType, newChildRow } from "./master-form";
+import { childRowFor, defaultOf, effectiveLayout, formRules, mayType, newChildRow } from "./master-form";
 import { docSchema, docSnapshot, legacyRow, missingFields, newRowName, siteDateTime, type Doc } from "./store";
 import { typedDoc } from "./values";
+import {
+  MaterialRequestError, materialRequestCancelRefusal, materialRequestStatus, updateRequestedQty, validateMaterialRequest, writeMaterialRequest,
+} from "../stock/material-request";
 
 type Tx = Prisma.TransactionClient;
 
@@ -77,6 +80,13 @@ export function newDoc(s: DocScreen, prefill: Record<string, string> = {}): Doc 
     else Object.assign(doc, { applicable_for: "Supplier", buying: 1 });
   }
   if (s.doctype === "Item Group" && !doc.parent_item_group) doc.parent_item_group = "All Item Groups";
+  // A new Material Request opens with one empty row (Frappe's add_child for a mandatory table), its
+  // title left for set_title.
+  if (s.doctype === "Material Request") {
+    doc.title = "";
+    const child = childLayoutsOf(s)["Material Request Item"];
+    if (child) doc.items = [childRowFor(s.doctype, "items", child, doc, 1)];
+  }
   return doc;
 }
 
@@ -173,6 +183,9 @@ const OTHER_FIELDS = ["other_item_code", "other_item_group", "other_brand"];
 const scrub = (s: string) => s.toLowerCase().replace(/ /g, "_").replace(/-/g, "_");
 
 const RULES: Record<string, Rule> = {
+  // material_request.py validate (stock/material-request.ts).
+  "Material Request": async (tx, doc) => validateMaterialRequest(tx, doc),
+
   // item_group.py: the parent defaults to All Item Groups; a name an item has is refused; NestedSet:
   // a group with children stays a group, one root only; old_parent follows the parent.
   "Item Group": async (tx, doc, { isNew, name }) => {
@@ -440,7 +453,11 @@ async function loadStored(tx: Tx, s: DocScreen, id: string): Promise<Stored | nu
   for (const f of l.fields) {
     if (!isTable(f)) continue;
     const child = children[f.options ?? ""];
-    doc[f.fieldname] = rowsOf(legacy[f.fieldname]).map((row) => (child ? typedDoc(child, row) : row));
+    const kept = s.store.kind === "table" ? s.store.children[f.fieldname] : undefined;
+    const raw = kept
+      ? (await tx.$queryRaw<{ legacy: Doc | null }[]>`SELECT c.legacy FROM ${Prisma.raw(`"${kept.table}"`)} c WHERE c.${Prisma.raw(`"${kept.fk}"`)} = ${r.id} ORDER BY c.idx ASC`).map((c) => c.legacy ?? {})
+      : rowsOf(legacy[f.fieldname]);
+    doc[f.fieldname] = raw.map((row) => (child ? typedDoc(child, row) : row));
   }
   return { id: r.id, name: str(legacy.name), legacy, doc };
 }
@@ -457,7 +474,7 @@ function storedLegacy(s: DocScreen, doc: Doc, std: Record<string, string | null>
       child
         ? legacyRow(child, r, {
             name: str(r.name) || newRowName(), idx: String(i + 1), parent: std.name, parentfield: f.fieldname, parenttype: s.doctype,
-            docstatus: "0", owner: std.owner, creation: std.creation, modified: std.modified, modified_by: std.modified_by,
+            docstatus: std.docstatus ?? "0", owner: std.owner, creation: std.creation, modified: std.modified, modified_by: std.modified_by,
           })
         : r,
     );
@@ -500,6 +517,8 @@ async function writeRecord(tx: Tx, s: DocScreen, id: string | null, name: string
         ? (await tx.purchaseItemPrice.update({ where: { id }, data, select: { id: true } })).id
         : (await tx.purchaseItemPrice.create({ data: { ...data, createdBy: user.email }, select: { id: true } })).id;
     }
+    case "Material Request":
+      return writeMaterialRequest(tx, id, doc);
     default: {
       const data = { doctype: s.doctype, erpnextName: name, docStatus: Number(doc.docstatus ?? 0) || 0, legacy: json(doc), updatedBy: user.email };
       return id
@@ -545,10 +564,89 @@ export interface SaveDocRequest {
   doc: unknown;
   /** The stored record's "modified" when the form opened it (Frappe's stale-document check). */
   modified: string | null;
+  /** Submit it (a submittable DocType's Submit: saved and submitted in one, as savesubmit did). */
+  submit?: boolean;
+}
+
+/** What submitting or cancelling a document did to others (its on_submit / on_cancel). */
+async function afterDocStatus(tx: Tx, s: DocScreen, doc: Doc, who: { email: string; stamp: string }): Promise<void> {
+  if (s.doctype === "Material Request") await updateRequestedQty(tx, doc, who);
+}
+
+/** Frappe's version entry for a submission or cancellation ("submitted this document"). */
+async function docStatusVersion(tx: Tx, s: DocScreen, name: string, from: number, to: number, at: Date, email: string) {
+  await tx.purchaseDocEvent.create({
+    data: {
+      source: "app", doctype: s.doctype, docName: name, kind: "VERSION", at, byEmail: email,
+      data: { added: [], changed: [["docstatus", from, to]], removed: [], row_changed: [], data_import: null, updater_reference: null } as unknown as Prisma.InputJsonValue,
+    },
+  });
+}
+
+/** Document._get_amended_name: "X" amends as "X-1", "X-1" as "X-2". */
+async function amendedName(tx: Tx, s: DocScreen, amendedFrom: string): Promise<string> {
+  const from = await loadByName(tx, s, amendedFrom);
+  if (from && str(from.amended_from)) {
+    const parts = amendedFrom.split("-");
+    return `${parts.slice(0, -1).join("-")}-${(Number.parseInt(parts[parts.length - 1], 10) || 0) + 1}`;
+  }
+  return `${amendedFrom}-1`;
+}
+
+async function loadByName(tx: Tx, s: DocScreen, name: string): Promise<Doc | null> {
+  const rows =
+    s.store.kind === "table"
+      ? await tx.$queryRaw<{ legacy: Doc | null }[]>`SELECT legacy FROM ${Prisma.raw(`"${s.store.table}"`)} WHERE legacy->>'name' = ${name} LIMIT 1`
+      : await tx.$queryRaw<{ legacy: Doc | null }[]>`SELECT legacy FROM purchase_documents WHERE doctype = ${s.doctype} AND erpnext_name = ${name} LIMIT 1`;
+  return rows[0]?.legacy ?? null;
+}
+
+/** A new document amending a cancelled one (its Amend): the old one's values, amended_from set. */
+export async function amendDoc(s: DocScreen, id: string): Promise<Doc | null> {
+  const stored = await db.$transaction((tx) => loadStored(tx, s, id));
+  if (!stored || num(stored.doc.docstatus) !== 2) return null;
+  const l = layoutOf(s);
+  const doc: Doc = { ...stored.doc, __islocal: 1, docstatus: 0, amended_from: stored.name };
+  delete doc.name;
+  for (const f of l.fields) if (f.noCopy && f.fieldname !== "amended_from") delete doc[f.fieldname];
+  if (s.doctype === "Material Request") Object.assign(doc, { status: "Draft", per_ordered: 0, per_received: 0 });
+  for (const f of l.fields) {
+    if (!isTable(f)) continue;
+    doc[f.fieldname] = rowsOf(doc[f.fieldname]).map((r, i) => {
+      const row: Doc = { ...r, __islocal: 1, name: newRowName(), idx: i + 1, docstatus: 0 };
+      if (s.doctype === "Material Request") Object.assign(row, { ordered_qty: 0, received_qty: 0 });
+      return row;
+    });
+  }
+  return doc;
+}
+
+/** A copy of a document for a new one (⋯ › Duplicate): Frappe's copy_doc, no_copy fields left out. */
+export async function duplicateDoc(s: DocScreen, id: string): Promise<Doc | null> {
+  const stored = await db.$transaction((tx) => loadStored(tx, s, id));
+  if (!stored) return null;
+  const l = layoutOf(s);
+  const doc: Doc = { ...stored.doc, __islocal: 1, docstatus: 0 };
+  delete doc.name;
+  for (const f of l.fields) if (f.noCopy) delete doc[f.fieldname];
+  if (s.doctype === "Material Request") Object.assign(doc, { status: "Draft", per_ordered: 0, per_received: 0, title: "", amended_from: "" });
+  const children = childLayoutsOf(s);
+  for (const f of l.fields) {
+    if (!isTable(f)) continue;
+    const child = children[f.options ?? ""];
+    doc[f.fieldname] = rowsOf(doc[f.fieldname]).map((r, i) => {
+      const row: Doc = { ...r, __islocal: 1, name: newRowName(), idx: i + 1, docstatus: 0 };
+      for (const c of child?.fields ?? []) if (c.noCopy) delete row[c.fieldname];
+      return row;
+    });
+  }
+  return doc;
 }
 
 export async function saveDoc(user: PurchaseUser, s: DocScreen, req: SaveDocRequest): Promise<ActionResult<{ id: string; name: string; modified: string }>> {
   if (!s.editable) return { ok: false, error: `${s.doctype} is not entered here.` };
+  const submittable = layoutOf(s).isSubmittable;
+  if (req.submit && !submittable) return { ok: false, error: `${s.doctype} is not submitted.` };
   const l = layoutOf(s);
   const children = childLayoutsOf(s);
   const parsed = docSchema(l, children).safeParse(req.doc);
@@ -563,26 +661,35 @@ export async function saveDoc(user: PurchaseUser, s: DocScreen, req: SaveDocRequ
       }
       const isNew = !stored;
       if (stored && formRules(s.doctype, stored.doc, false).readOnly) refuse("This is a root item group and cannot be edited.");
-      const doc = mergeDoc(s, stored?.doc ?? newDoc(s), incoming, isNew);
+      if (stored && submittable && num(stored.doc.docstatus) !== 0) refuse(num(stored.doc.docstatus) === 1 ? "Cannot edit a submitted document" : "Cannot edit a cancelled document");
+      const base = stored?.doc ?? newDoc(s);
+      // A new amendment keeps what it amends (amended_from is not typed on the form).
+      if (isNew && submittable && str((incoming as Doc).amended_from)) base.amended_from = str((incoming as Doc).amended_from);
+      const doc = mergeDoc(s, base, incoming, isNew);
+      doc.docstatus = req.submit ? 1 : 0;
       await applyFetches(tx, l, doc, children);
       await RULES[s.doctype]?.(tx, doc, { isNew, name: stored?.name ?? null });
       const missing = missingFields(effectiveLayout(l, doc, isNew), children, doc);
       if (missing.summary) throw new UserError(missing.summary, missing.errors);
       await validateLinks(tx, l, doc, children);
 
-      const name = stored?.name ?? (await nameOf(tx, s, doc));
+      const name = stored?.name ?? (submittable && str(doc.amended_from) ? await amendedName(tx, s, str(doc.amended_from)) : await nameOf(tx, s, doc));
       if (isNew && (await linkExists(tx, s.doctype, name))) refuse(`${s.doctype} ${name} already exists`);
       const now = new Date();
       const stamp = siteDateTime(now);
       const std = {
         name, owner: str(stored?.legacy.owner) || user.email, creation: str(stored?.legacy.creation) || stamp,
-        modified: stamp, modified_by: user.email, docstatus: "0", idx: str(stored?.legacy.idx) || "0",
+        modified: stamp, modified_by: user.email, docstatus: req.submit ? "1" : "0", idx: str(stored?.legacy.idx) || "0",
       };
       const legacy = storedLegacy(s, doc, std);
       // Columns the old row kept that this form does not hold (lft, rgt, _comments, _liked_by…) stay.
       const kept = stored ? Object.fromEntries(Object.entries(stored.legacy).filter(([k]) => !(k in legacy))) : {};
       const id = await writeRecord(tx, s, stored?.id ?? null, name, { ...kept, ...legacy }, user);
       await afterSave(tx, s, name, doc, stamp, isNew);
+      if (req.submit) {
+        await afterDocStatus(tx, s, doc, { email: user.email, stamp });
+        await docStatusVersion(tx, s, name, 0, 1, now, user.email);
+      }
       if (stored && TRACK_CHANGES.has(s.doctype)) {
         const diff = versionDiff(docSnapshot(l, children, stored.doc, "INR"), docSnapshot(l, children, { ...doc, name }, "INR"));
         if (diff) {
@@ -594,7 +701,79 @@ export async function saveDoc(user: PurchaseUser, s: DocScreen, req: SaveDocRequ
     return { ok: true, value: out };
   } catch (e) {
     if (e instanceof UserError) return { ok: false, error: e.message, fieldErrors: e.fieldErrors };
+    if (e instanceof MaterialRequestError) return { ok: false, error: e.message, fieldErrors: e.field ? { [e.field]: e.message } : undefined };
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") return { ok: false, error: `${s.doctype} already exists` };
+    throw e;
+  }
+}
+
+/** Why a submitted document may not be cancelled (Frappe's linked-document check), or null. */
+async function cancelRefusal(tx: Tx, s: DocScreen, name: string): Promise<string | null> {
+  if (s.doctype === "Material Request") return materialRequestCancelRefusal(tx, name);
+  return null;
+}
+
+/**
+ * A submitted document's Cancel (and a Material Request's Stop / Re-open): stored with its new
+ * docstatus or status, what it did to others undone or redone, the timeline noting it.
+ */
+export async function changeDocStatus(
+  user: PurchaseUser,
+  s: DocScreen,
+  req: { id: string; modified: string | null; action: "cancel" | "stop" | "reopen" },
+): Promise<ActionResult<{ id: string; name: string; modified: string }>> {
+  if (!s.editable || !layoutOf(s).isSubmittable) return { ok: false, error: `${s.doctype} is not submitted here.` };
+  if (req.action !== "cancel" && s.doctype !== "Material Request") return { ok: false, error: "Not allowed." };
+  try {
+    const out = await db.$transaction(async (tx) => {
+      const stored = await loadStored(tx, s, req.id);
+      if (!stored) refuse(`This ${s.doctype} no longer exists.`);
+      const st = stored!;
+      if (req.modified && str(st.legacy.modified) !== req.modified) {
+        refuse(`Document has been modified after you have opened it (${req.modified}, ${str(st.legacy.modified)}). Please refresh to get the latest document.`);
+      }
+      if (num(st.doc.docstatus) !== 1) refuse(req.action === "cancel" ? "Only a submitted document can be cancelled." : "Only a submitted Material Request can be stopped or re-opened.");
+      const now = new Date();
+      const stamp = siteDateTime(now);
+      const doc: Doc = { ...st.doc };
+      if (req.action === "cancel") {
+        const why = await cancelRefusal(tx, s, st.name);
+        if (why) refuse(why);
+        doc.docstatus = 2;
+      }
+      if (s.doctype === "Material Request") {
+        // update_status: Stop needs a request not yet fully ordered; Re-open a stopped one.
+        if (req.action === "stop") {
+          if (str(st.doc.status) === "Stopped") refuse("Material Request is already Stopped");
+          doc.status = "Stopped";
+        } else doc.status = materialRequestStatus({ ...doc, status: req.action === "reopen" ? "" : doc.status });
+        if (req.action === "reopen" && str(st.doc.status) !== "Stopped") refuse("Only a stopped Material Request can be re-opened");
+      }
+      const legacy: Doc = { ...st.legacy, docstatus: String(doc.docstatus), modified: stamp, modified_by: user.email };
+      if ("status" in doc) legacy.status = str(doc.status);
+      const children = childLayoutsOf(s);
+      for (const f of layoutOf(s).fields) {
+        if (!isTable(f)) continue;
+        const child = children[f.options ?? ""];
+        legacy[f.fieldname] = rowsOf(doc[f.fieldname]).map((r) => ({ ...(child ? legacyRow(child, r) : r), docstatus: String(doc.docstatus), modified: stamp }));
+      }
+      await writeRecord(tx, s, st.id, st.name, legacy, user);
+      await afterDocStatus(tx, s, doc, { email: user.email, stamp });
+      if (req.action === "cancel") await docStatusVersion(tx, s, st.name, 1, 2, now, user.email);
+      else {
+        await tx.purchaseDocEvent.create({
+          data: {
+            source: "app", doctype: s.doctype, docName: st.name, kind: "VERSION", at: now, byEmail: user.email,
+            data: { added: [], changed: [["status", str(st.doc.status), str(doc.status)]], removed: [], row_changed: [], data_import: null, updater_reference: null } as unknown as Prisma.InputJsonValue,
+          },
+        });
+      }
+      return { id: st.id, name: st.name, modified: stamp };
+    });
+    return { ok: true, value: out };
+  } catch (e) {
+    if (e instanceof UserError) return { ok: false, error: e.message };
+    if (e instanceof MaterialRequestError) return { ok: false, error: e.message };
     throw e;
   }
 }
@@ -637,6 +816,7 @@ export async function deleteDoc(user: PurchaseUser, s: DocScreen, id: string): P
     const out = await db.$transaction(async (tx) => {
       const stored = await loadStored(tx, s, id);
       if (!stored) refuse(`This ${s.doctype} no longer exists.`);
+      if (layoutOf(s).isSubmittable && num(stored!.doc.docstatus) === 1) refuse("Submitted Record cannot be deleted. You must Cancel it first.");
       const why = await deleteRefusal(tx, s, stored!);
       if (why) refuse(why);
       if (s.doctype === "Item Manufacturer" && num(stored!.doc.is_default)) await afterSave(tx, s, stored!.name, { ...stored!.doc, is_default: 0 }, siteDateTime(), false);

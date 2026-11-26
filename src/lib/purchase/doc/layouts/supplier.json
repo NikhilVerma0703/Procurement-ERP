@@ -17,14 +17,16 @@
    "label": "Series",
    "fieldtype": "Select",
    "options": "SUP-.YYYY.-",
-   "hidden": true
+   "hidden": true,
+   "noCopy": true
   },
   {
    "fieldname": "supplier_name",
    "label": "Supplier Name",
    "fieldtype": "Data",
    "reqd": true,
-   "bold": true
+   "bold": true,
+   "noCopy": true
   },
   {
    "fieldname": "country",
@@ -63,7 +65,8 @@
    "label": "Image",
    "fieldtype": "Attach Image",
    "hidden": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "defaults_section",
@@ -74,7 +77,8 @@
    "fieldname": "default_currency",
    "label": "Billing Currency",
    "fieldtype": "Link",
-   "options": "Currency"
+   "options": "Currency",
+   "noCopy": true
   },
   {
    "fieldname": "default_bank_account",

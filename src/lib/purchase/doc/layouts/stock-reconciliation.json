@@ -18,7 +18,8 @@
    "fieldtype": "Select",
    "options": "MAT-RECO-.YYYY.-",
    "reqd": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "company",
@@ -135,7 +136,8 @@
    "fieldtype": "Link",
    "options": "Stock Reconciliation",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "accounting_dimensions_section",

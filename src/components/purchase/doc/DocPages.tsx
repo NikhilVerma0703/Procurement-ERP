@@ -11,7 +11,7 @@ import { OrderFooter } from "@/components/purchase/activity/OrderFooter";
 import { PageHeader } from "@/components/purchase/layout/PageHeader";
 import { purchaseCan } from "@/lib/purchase/access";
 import { loadDocActivity } from "@/lib/purchase/doc/activity";
-import { newDoc } from "@/lib/purchase/doc/doc-save";
+import { amendDoc, duplicateDoc, newDoc } from "@/lib/purchase/doc/doc-save";
 import type { DoctypeLayout, LayoutField } from "@/lib/purchase/doc/layout";
 import { linkHrefs } from "@/lib/purchase/doc/link-hrefs";
 import { adjacentDocs, currencyDisplays, currencyOfField, listDocs, loadDoc, siteMoment } from "@/lib/purchase/doc/list-data";
@@ -20,7 +20,7 @@ import {
   standardFilters, type ListColumnView,
 } from "@/lib/purchase/doc/list-view";
 import { formButtons, LINK_LOOKUP } from "@/lib/purchase/doc/master-form";
-import { childLayoutsOf, layoutOf, type DocScreen } from "@/lib/purchase/doc/screens";
+import { childLayoutsOf, layoutOf, screenOf as screenOfDoctype, type DocScreen } from "@/lib/purchase/doc/screens";
 import { displayValue } from "@/lib/purchase/doc/values";
 import { formatCurrency, formatDateTime } from "@/lib/purchase/format";
 import { likesOf, NO_LIKES } from "@/lib/purchase/likes";
@@ -154,6 +154,25 @@ export async function DocListPage({ screen, searchParams, views }: { screen: Doc
   );
 }
 
+/**
+ * A submitted record's Create ▾ (material_request.js refresh): what each purpose of a Material Request
+ * made from it. Only what this ERP enters is offered (Request for Quotation, Supplier Quotation, Work
+ * Order and Pick List are not entered here — docs/12 §8, decision 2).
+ */
+function createMenuOf(screen: DocScreen, doc: Doc, name: string): { label: string; href: string }[] {
+  if (screen.doctype !== "Material Request") return [];
+  if (Number(doc.per_ordered ?? 0) >= 100) return [];
+  const type = str(doc.material_request_type);
+  const q = encodeURIComponent(name);
+  // The Stock Entry made from a request is offered once Stock Entry is entered here.
+  const entries = screenOfDoctype("Stock Entry")?.editable === true;
+  if (type === "Purchase") return [{ label: "Purchase Order", href: `${PURCHASE_PATHS.orderNew}?material_request=${q}` }];
+  if (type === "Material Issue" && entries) return [{ label: "Issue Material", href: `${PURCHASE_PATHS.stockEntries}/new?material_request=${q}` }];
+  if (type === "Material Transfer" && entries) return [{ label: "Material Transfer", href: `${PURCHASE_PATHS.stockEntries}/new?material_request=${q}` }];
+  if (type === "Customer Provided" && entries) return [{ label: "Material Receipt", href: `${PURCHASE_PATHS.stockEntries}/new?material_request=${q}` }];
+  return [];
+}
+
 /** Edit Filters' fields: the DocType's Select, Link, Data, Int and Check fields (list_sidebar_group_by.js). */
 const GROUP_TYPES = new Set(["Select", "Link", "Data", "Int", "Check"]);
 function groupFieldsOf(l: DoctypeLayout) {
@@ -206,6 +225,9 @@ export async function DocRecordPage({ screen, id }: { screen: DocScreen; id: str
           buttons={formButtons(screen.doctype, loaded.name, { itemGroups: PURCHASE_PATHS.itemGroups, items: PURCHASE_PATHS.items, itemPrices: PURCHASE_PATHS.itemPrices })}
           hrefs={Object.fromEntries(hrefs)}
           canWrite={purchaseCan(gate.user, "stock")}
+          printHref={l.isSubmittable ? `${screen.path}/${encodeURIComponent(loaded.id)}/print` : null}
+          create={createMenuOf(screen, loaded.doc, loaded.name)}
+          module={screen.card === "Buying" ? "Buying" : "Stock"}
         />
         {footer}
       </>
@@ -241,20 +263,24 @@ export async function DocRecordPage({ screen, id }: { screen: DocScreen; id: str
   );
 }
 
-/** A new record of a master, with the values the page was opened with (Frappe's route options). */
+/** A new record, with the values the page was opened with (Frappe's route options), a copy (?duplicate=) or an amendment (?amend=). */
 export async function DocNewPage({ screen, searchParams }: { screen: DocScreen; searchParams: Params }) {
   const gate = await purchasePageGate("stock");
   if (!screen.editable || !purchaseCan(gate.user, "stock")) notFound();
-  const prefill = Object.fromEntries(Object.entries(searchParams).flatMap(([k, v]) => (typeof v === "string" ? [[k, v.slice(0, 140)]] : [])));
+  const { amend, duplicate, ...rest } = searchParams;
+  const prefill = Object.fromEntries(Object.entries(rest).flatMap(([k, v]) => (typeof v === "string" ? [[k, v.slice(0, 140)]] : [])));
   const l = layoutOf(screen);
+  const initial = typeof amend === "string" ? await amendDoc(screen, amend) : typeof duplicate === "string" ? await duplicateDoc(screen, duplicate) : newDoc(screen, prefill);
+  if (!initial) notFound();
   return (
     <DocEditor
+      key={typeof amend === "string" ? `a${amend}` : typeof duplicate === "string" ? `d${duplicate}` : "new"}
       screenKey={screen.key}
       doctype={screen.doctype}
       card={screen.card}
       listPath={screen.path}
       id={null}
-      initial={newDoc(screen, prefill)}
+      initial={initial}
       modified={null}
       layout={l}
       childLayouts={childLayoutsOf(screen)}

@@ -151,8 +151,44 @@ export function fetchesFor(doctype: string, l: DoctypeLayout, linkField: string)
   return out;
 }
 
+/**
+ * A new row of a document's table, as its form script made one: a Material Request's row takes the
+ * request's Required By and its Set Source / Set Target Warehouse (material_request.js items_add,
+ * erpnext.utils.copy_value_in_all_rows).
+ */
+export function childRowFor(doctype: string, table: string, l: DoctypeLayout, parent: Doc, idx: number): Doc {
+  const row = newChildRow(l, idx);
+  if (doctype === "Material Request" && table === "items") {
+    if (str(parent.schedule_date)) row.schedule_date = parent.schedule_date;
+    if (str(parent.set_warehouse)) row.warehouse = parent.set_warehouse;
+    if (str(parent.set_from_warehouse)) row.from_warehouse = parent.set_from_warehouse;
+  }
+  return row;
+}
+
+/** The fields of a row that ask the server for the item's values (get_item_details). */
+export const ROW_DETAIL_FIELDS: Readonly<Record<string, Readonly<Record<string, readonly string[]>>>> = {
+  "Material Request": { items: ["item_code", "uom", "warehouse"] },
+};
+
+/** A row's own arithmetic as the form did it (Stock Qty = Qty × UOM Conversion Factor). */
+export function rowAfterChange(doctype: string, table: string, row: Doc, fieldname: string): Doc {
+  if (doctype === "Material Request" && table === "items" && (fieldname === "qty" || fieldname === "conversion_factor")) {
+    return { ...row, stock_qty: Math.round(num(row.qty) * num(row.conversion_factor) * 1e9) / 1e9 };
+  }
+  return row;
+}
+
 /** A Select's reaction in a form script (pricing_rule.js rate_or_discount, set_options_for_applicable_for). */
 export function afterChange(doctype: string, doc: Doc, fieldname: string): Doc {
+  if (doctype === "Material Request") {
+    // set_warehouse / set_from_warehouse / schedule_date: copied into every row (copy_value_in_all_rows).
+    const into: Record<string, string> = { set_warehouse: "warehouse", set_from_warehouse: "from_warehouse", schedule_date: "schedule_date" };
+    const target = into[fieldname];
+    if (!target || !str(doc[fieldname])) return doc;
+    const rows = Array.isArray(doc.items) ? (doc.items as Doc[]) : [];
+    return { ...doc, items: rows.map((r) => ({ ...r, [target]: doc[fieldname] })) };
+  }
   if (doctype !== "Pricing Rule") return doc;
   const next = { ...doc };
   if (fieldname === "rate_or_discount" && next.rate_or_discount === "Rate") next.for_price_list = "";

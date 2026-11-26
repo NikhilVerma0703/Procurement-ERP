@@ -47,7 +47,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "rule_applied",

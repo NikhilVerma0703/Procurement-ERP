@@ -17,7 +17,8 @@
    "label": "Barcode",
    "fieldtype": "Data",
    "reqd": true,
-   "inListView": true
+   "inListView": true,
+   "noCopy": true
   },
   {
    "fieldname": "barcode_type",

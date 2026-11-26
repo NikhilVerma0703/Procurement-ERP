@@ -51,6 +51,7 @@ import { nextInSeries } from "../series-counter";
 import { amendedNumber, DEFAULT_SERIES } from "./numbering";
 import { orderSnapshot, type OrderRecord } from "./record";
 import { versionDiff } from "./version";
+import { materialRequestRowRefusal } from "../stock/material-request";
 
 type Tx = Prisma.TransactionClient;
 
@@ -336,6 +337,8 @@ function itemRows(d: OrderFormData, r: Ok, c: PurchaseOrderCalcResult, rows: Kep
     const tpl = row.itemTaxTemplate ? r.templateBy.get(row.itemTaxTemplate) : undefined;
     return {
       ...kept(row, rows, KEEP_ITEM),
+      // A row made from a Material Request row keeps that link (checked in prepareOrder).
+      ...(row.materialRequestItem ? { materialRequest: row.materialRequest ?? null, materialRequestItem: row.materialRequestItem } : {}),
       idx: i + 1,
       itemId: item.id,
       itemCode: item.code,
@@ -517,6 +520,9 @@ export async function prepareOrder(values: unknown): Promise<{ ok: true; value: 
   // Frappe's no_copy leaves it, failed to save when its template named its terms).
   const unnamed = uniq(data.paymentSchedule.map((s) => s.paymentTerm)).filter((t) => !resolved.termBy.has(t));
   if (unnamed.length) for (const t of await db.purchasePaymentTerm.findMany({ where: { code: { in: unnamed } } })) resolved.termBy.set(t.code, t);
+  // A row made from a Material Request must point at a submitted, not stopped Purchase request's row of its item.
+  const mrIssue = await materialRequestRowRefusal(db, data.items);
+  if (mrIssue) return { ok: false, error: mrIssue };
   const masters = await engineMasters(resolved.company.defaultCurrency ?? "INR");
   const calc = calculatePurchaseOrder(engineInput(data, masters));
   // AccountsController.validate: validate_value("base_grand_total", ">=", 0).

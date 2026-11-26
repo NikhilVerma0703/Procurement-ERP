@@ -93,7 +93,8 @@ export const DOC_SCREENS: readonly DocScreen[] = [
   {
     key: "materialRequests", doctype: "Material Request", path: PURCHASE_PATHS.materialRequests, card: "Stock Transactions",
     store: table("purchase_material_requests", { items: { table: "purchase_material_request_items", fk: "request_id" } }),
-    sort: { field: "creation", order: "desc" }, editable: false,
+    // Entered here (owner, 26-11-2026: "+ Add Material Request … one of the most important functionalities").
+    sort: { field: "creation", order: "desc" }, editable: true,
   },
   {
     key: "stockEntries", doctype: "Stock Entry", path: PURCHASE_PATHS.stockEntries, card: "Stock Transactions",

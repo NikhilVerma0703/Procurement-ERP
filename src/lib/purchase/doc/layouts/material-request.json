@@ -23,7 +23,8 @@
    "fieldtype": "Select",
    "options": "MAT-MR-.YYYY.-",
    "reqd": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "title",
@@ -32,7 +33,8 @@
    "hidden": true,
    "allowOnSubmit": true,
    "default": "{material_request_type}",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "material_request_type",
@@ -71,7 +73,8 @@
    "fieldtype": "Date",
    "reqd": true,
    "default": "Today",
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "schedule_date",
@@ -87,7 +90,8 @@
    "options": "Material Request",
    "readOnly": true,
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "warehouse_section",
@@ -179,7 +183,8 @@
    "readOnly": true,
    "inStandardFilter": true,
    "printHide": true,
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "per_ordered",
@@ -187,7 +192,8 @@
    "fieldtype": "Percent",
    "readOnly": true,
    "dependsOn": "eval:doc.per_ordered > 0",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break2",
@@ -209,7 +215,8 @@
    "fieldtype": "Percent",
    "readOnly": true,
    "dependsOn": "eval:doc.per_received > 0",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "printing_details",

@@ -498,7 +498,8 @@
    "fieldname": "last_purchase_rate",
    "label": "Last Purchase Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "is_customer_provided_item",
@@ -687,7 +688,8 @@
    "label": "Default BOM",
    "fieldtype": "Link",
    "options": "BOM",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break_74",
@@ -698,7 +700,8 @@
    "label": "Customer Code",
    "fieldtype": "Small Text",
    "hidden": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "default_item_manufacturer",

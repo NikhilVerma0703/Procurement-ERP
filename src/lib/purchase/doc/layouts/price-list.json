@@ -26,7 +26,8 @@
    "fieldname": "price_list_name",
    "label": "Price List Name",
    "fieldtype": "Data",
-   "reqd": true
+   "reqd": true,
+   "noCopy": true
   },
   {
    "fieldname": "currency",

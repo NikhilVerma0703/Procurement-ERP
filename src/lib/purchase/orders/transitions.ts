@@ -34,6 +34,8 @@ import { assertUnchanged, prepareOrder, recordVersion, UserError, writeDraft } f
 import { itemDetails, uomFactor } from "./masters";
 import { BUYING_SETTINGS } from "./settings";
 import { ACTION_NEEDS, stateAllows, type PoAction, type PoState } from "./workflow";
+import { refreshMaterialRequestsOrdered } from "../stock/material-request";
+import { siteDateTime } from "../doc/store";
 
 type Tx = Prisma.TransactionClient;
 const n = (d: { toString(): string } | null | undefined) => (d == null ? 0 : Number(d.toString()));
@@ -138,6 +140,8 @@ export async function submitOrder(user: PurchaseUser, req: ActionRequest, decisi
       content: decision === "approve" ? "Approved" : "Rejected", at: s.at(2),
     });
     await updateLastPurchaseRate(s.tx, after, true);
+    // update_prevdoc_status: the Material Requests its rows were made from (their ordered qty and status).
+    await refreshMaterialRequestsOrdered(s.tx, prepared.value.data.items.map((i) => i.materialRequest ?? ""), { email: s.by, stamp: siteDateTime() });
   });
 }
 
@@ -156,6 +160,7 @@ export async function cancelOrder(user: PurchaseUser, req: ActionRequest): Promi
     await s.tx.purchaseOrder.update({ where: { id: s.before.id }, data: { docStatus: "CANCELLED", status: "CANCELLED", updatedBy: s.by } });
     const after = await recordVersion(s.tx, s.before, s.by, s.at(0));
     await updateLastPurchaseRate(s.tx, after, false);
+    await refreshMaterialRequestsOrdered(s.tx, s.before.items.map((i) => i.materialRequest ?? ""), { email: s.by, stamp: siteDateTime() });
   });
 }
 

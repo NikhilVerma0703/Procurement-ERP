@@ -143,7 +143,8 @@
    "readOnly": true,
    "bold": true,
    "printHide": true,
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "qty",
@@ -230,7 +231,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "eval:doc.uom != doc.stock_uom",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "stock_qty",
@@ -239,7 +241,8 @@
    "readOnly": true,
    "dependsOn": "eval:doc.uom != doc.stock_uom",
    "printHide": true,
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "col_break_tracking_section",
@@ -251,7 +254,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "doc.returned_qty",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "rate_and_amount",
@@ -392,7 +396,8 @@
    "fieldtype": "Currency",
    "options": "currency",
    "readOnly": true,
-   "dependsOn": "eval: doc.uom != doc.stock_uom"
+   "dependsOn": "eval: doc.uom != doc.stock_uom",
+   "noCopy": true
   },
   {
    "fieldname": "is_free_item",
@@ -437,7 +442,8 @@
    "options": "Taxable\nZero-Rated\nNil-Rated\nExempted\nNon-GST",
    "readOnly": true,
    "fetchFrom": "item_tax_template.gst_treatment",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break_32",
@@ -465,7 +471,8 @@
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "gst_details_section",
@@ -477,31 +484,36 @@
    "fieldname": "igst_rate",
    "label": "IGST Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cgst_rate",
    "label": "CGST Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "sgst_rate",
    "label": "SGST Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_rate",
    "label": "CESS Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_non_advol_rate",
    "label": "CESS Non Advol Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cb_gst_details",
@@ -512,35 +524,40 @@
    "label": "IGST Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cgst_amount",
    "label": "CGST Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "sgst_amount",
    "label": "SGST Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_amount",
    "label": "CESS Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_non_advol_amount",
    "label": "CESS Non Advol Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "valuation_rate",
@@ -552,7 +569,8 @@
    "precision": "6",
    "allowOnSubmit": true,
    "printHide": true,
-   "printWidth": "80px"
+   "printWidth": "80px",
+   "noCopy": true
   },
   {
    "fieldname": "item_tax_amount",
@@ -562,7 +580,8 @@
    "hidden": true,
    "readOnly": true,
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "rm_supp_cost",
@@ -572,7 +591,8 @@
    "hidden": true,
    "readOnly": true,
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "landed_cost_voucher_amount",
@@ -581,14 +601,16 @@
    "options": "Company:company:default_currency",
    "readOnly": true,
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "rate_difference_with_purchase_invoice",
    "label": "Rate Difference with Purchase Invoice",
    "fieldtype": "Currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "billed_amt",
@@ -596,7 +618,8 @@
    "fieldtype": "Currency",
    "options": "currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "tax_and_charges",
@@ -668,7 +691,8 @@
    "fieldtype": "Link",
    "options": "Warehouse",
    "printHide": true,
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "from_warehouse",
@@ -691,7 +715,8 @@
    "fieldtype": "Link",
    "options": "Purchase Order",
    "readOnly": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "purchase_invoice",
@@ -710,7 +735,8 @@
    "fieldtype": "Check",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "asset_location",
@@ -741,7 +767,8 @@
    "fieldtype": "Link",
    "options": "Quality Inspection",
    "dependsOn": "eval:!doc.__islocal",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "material_request_item",
@@ -757,7 +784,8 @@
    "hidden": true,
    "readOnly": true,
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "purchase_invoice_item",
@@ -765,7 +793,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "purchase_receipt_item",
@@ -773,14 +802,16 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "delivery_note_item",
    "label": "Delivery Note Item",
    "fieldtype": "Data",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "putaway_rule",
@@ -788,7 +819,8 @@
    "fieldtype": "Link",
    "options": "Putaway Rule",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "section_break_45",
@@ -798,7 +830,8 @@
    "fieldname": "allow_zero_valuation_rate",
    "label": "Allow Zero Valuation Rate",
    "fieldtype": "Check",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "bom",
@@ -808,14 +841,16 @@
    "readOnly": true,
    "dependsOn": "eval:parent.is_old_subcontracting_flow",
    "readOnlyDependsOn": "eval:!parent.is_old_subcontracting_flow",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "serial_no",
    "label": "Serial No",
    "fieldtype": "Small Text",
    "dependsOn": "eval:!doc.is_fixed_asset",
-   "inListView": true
+   "inListView": true,
+   "noCopy": true
   },
   {
    "fieldname": "col_break5",
@@ -836,14 +871,16 @@
    "options": "Batch",
    "dependsOn": "eval:!doc.is_fixed_asset",
    "inListView": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "rejected_serial_no",
    "label": "Rejected Serial No",
    "fieldtype": "Small Text",
    "dependsOn": "eval:!doc.is_fixed_asset",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "item_tax_rate",
@@ -971,7 +1008,8 @@
    "fieldtype": "Link",
    "options": "Sales Order",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "sales_order_item",
@@ -979,7 +1017,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

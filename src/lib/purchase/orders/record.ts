@@ -107,6 +107,8 @@ export function orderFormValues(o: OrderRecord): OrderFormValues {
       costCenter: i.costCenter?.code ?? null,
       applyTds: i.applyTds,
       weightPerUnit: n(i.weightPerUnit),
+      materialRequest: i.materialRequest ?? null,
+      materialRequestItem: i.materialRequestItem ?? null,
     })),
     costOverheads: o.costOverheads.map((c) => ({
       id: c.id,

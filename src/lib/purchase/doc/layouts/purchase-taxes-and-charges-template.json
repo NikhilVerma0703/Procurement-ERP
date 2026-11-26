@@ -16,7 +16,8 @@
    "fieldname": "title",
    "label": "Title",
    "fieldtype": "Data",
-   "reqd": true
+   "reqd": true,
+   "noCopy": true
   },
   {
    "fieldname": "is_default",

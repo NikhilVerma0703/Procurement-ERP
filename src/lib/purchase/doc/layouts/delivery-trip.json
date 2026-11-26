@@ -147,7 +147,8 @@
    "options": "Draft\nScheduled\nIn Transit\nCompleted\nCancelled",
    "readOnly": true,
    "inStandardFilter": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "cb_more_info",
@@ -159,7 +160,8 @@
    "fieldtype": "Link",
    "options": "Delivery Trip",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

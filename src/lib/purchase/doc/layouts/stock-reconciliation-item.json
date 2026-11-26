@@ -40,7 +40,8 @@
    "fieldtype": "Data",
    "readOnly": true,
    "fetchFrom": "item_code.item_name",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "item_group",
@@ -146,7 +147,8 @@
    "label": "Current Serial No",
    "fieldtype": "Long Text",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "section_break_14",

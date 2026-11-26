@@ -203,7 +203,8 @@
    "readOnly": true,
    "dependsOn": "eval:doc.uom != doc.stock_uom",
    "printHide": true,
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "sec_break1",
@@ -328,7 +329,8 @@
    "options": "Taxable\nZero-Rated\nNil-Rated\nExempted\nNon-GST",
    "readOnly": true,
    "fetchFrom": "item_tax_template.gst_treatment",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "col_break4",
@@ -366,7 +368,8 @@
    "fieldtype": "Currency",
    "options": "currency",
    "readOnly": true,
-   "dependsOn": "eval: doc.uom != doc.stock_uom"
+   "dependsOn": "eval: doc.uom != doc.stock_uom",
+   "noCopy": true
   },
   {
    "fieldname": "is_free_item",
@@ -476,7 +479,8 @@
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "gst_details_section",
@@ -488,31 +492,36 @@
    "fieldname": "igst_rate",
    "label": "IGST Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cgst_rate",
    "label": "CGST Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "sgst_rate",
    "label": "SGST Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_rate",
    "label": "CESS Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_non_advol_rate",
    "label": "CESS Non Advol Rate",
    "fieldtype": "Float",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cb_gst_details",
@@ -523,35 +532,40 @@
    "label": "IGST Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cgst_amount",
    "label": "CGST Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "sgst_amount",
    "label": "SGST Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_amount",
    "label": "CESS Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "cess_non_advol_amount",
    "label": "CESS Non Advol Amount",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "warehouse_and_reference",
@@ -590,7 +604,8 @@
    "label": "Available Qty at Company",
    "fieldtype": "Float",
    "readOnly": true,
-   "allowOnSubmit": true
+   "allowOnSubmit": true,
+   "noCopy": true
   },
   {
    "fieldname": "references_section",
@@ -606,7 +621,8 @@
    "readOnly": true,
    "mandatoryDependsOn": "eval: doc.material_request_item",
    "printHide": true,
-   "printWidth": "120px"
+   "printWidth": "120px",
+   "noCopy": true
   },
   {
    "fieldname": "material_request_item",
@@ -615,14 +631,16 @@
    "hidden": true,
    "readOnly": true,
    "mandatoryDependsOn": "eval: doc.material_request",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "sales_order",
    "label": "Sales Order",
    "fieldtype": "Link",
    "options": "Sales Order",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "sales_order_item",
@@ -630,20 +648,23 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "sales_order_packed_item",
    "label": "Sales Order Packed Item",
    "fieldtype": "Data",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "supplier_quotation",
    "label": "Supplier Quotation",
    "fieldtype": "Link",
    "options": "Supplier Quotation",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "supplier_quotation_item",
@@ -651,7 +672,8 @@
    "fieldtype": "Link",
    "options": "Supplier Quotation Item",
    "hidden": true,
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "col_break5",
@@ -696,7 +718,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "received_qty",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "returned_qty",
@@ -704,7 +727,8 @@
    "fieldtype": "Float",
    "readOnly": true,
    "dependsOn": "returned_qty",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break_60",
@@ -717,7 +741,8 @@
    "options": "currency",
    "readOnly": true,
    "dependsOn": "billed_amt",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "accounting_details",
@@ -873,21 +898,24 @@
    "label": "Production Plan Item",
    "fieldtype": "Data",
    "hidden": true,
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "production_plan_sub_assembly_item",
    "label": "Production Plan Sub Assembly Item",
    "fieldtype": "Data",
    "hidden": true,
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "page_break",
    "label": "Page Break",
    "fieldtype": "Check",
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

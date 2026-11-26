@@ -172,14 +172,16 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "inListView": true
+   "inListView": true,
+   "noCopy": true
   },
   {
    "fieldname": "pi_detail",
    "label": "Delivery Note Packed Item",
    "fieldtype": "Data",
    "hidden": true,
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   }
  ]
 }

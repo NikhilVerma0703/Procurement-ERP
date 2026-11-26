@@ -19,7 +19,8 @@
    "hidden": true,
    "allowOnSubmit": true,
    "default": "{customer_name}",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "naming_series",
@@ -28,7 +29,8 @@
    "options": "DN-.YY.-\nDRET-.YY.-\n\nDN/24-25/\nMAT-DN-.YYYY.-\nMAT-DN-RET-.YYYY.-",
    "reqd": true,
    "default": "DN/24-25/",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "customer",
@@ -60,7 +62,8 @@
    "fieldtype": "Data",
    "readOnly": true,
    "dependsOn": "eval: doc.docstatus === 1 && (doc.ewaybill || doc.e_waybill_status !== 'Not Applicable')",
-   "allowOnSubmit": true
+   "allowOnSubmit": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break1",
@@ -72,7 +75,8 @@
    "fieldtype": "Date",
    "reqd": true,
    "default": "Today",
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "posting_time",
@@ -124,14 +128,16 @@
    "options": "Delivery Note",
    "readOnly": true,
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "is_return",
    "label": "Is Return",
    "fieldtype": "Check",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "issue_credit_note",
@@ -146,7 +152,8 @@
    "options": "Delivery Note",
    "readOnly": true,
    "dependsOn": "is_return",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "accounting_dimensions_section",
@@ -277,7 +284,8 @@
    "options": "Warehouse",
    "dependsOn": "eval: doc.is_internal_customer",
    "inStandardFilter": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "section_break_30",
@@ -452,7 +460,8 @@
    "options": "Company:company:default_currency",
    "readOnly": true,
    "dependsOn": "eval:!doc.disable_rounded_total",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "base_rounded_total",
@@ -493,7 +502,8 @@
    "options": "currency",
    "readOnly": true,
    "dependsOn": "eval:!doc.disable_rounded_total",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "rounded_total",
@@ -569,7 +579,8 @@
    "label": "Taxes and Charges Calculation",
    "fieldtype": "Text Editor",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "section_gst_breakup",
@@ -811,7 +822,8 @@
    "label": "% Amount Billed",
    "fieldtype": "Percent",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "status",
@@ -823,7 +835,8 @@
    "inStandardFilter": true,
    "default": "Draft",
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "column_break_112",
@@ -836,7 +849,8 @@
    "readOnly": true,
    "dependsOn": "eval:!doc.__islocal",
    "inListView": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "installation_status",
@@ -855,7 +869,8 @@
    "fieldtype": "Percent",
    "readOnly": true,
    "dependsOn": "eval:!doc.__islocal",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "transporter_info",
@@ -879,7 +894,8 @@
    "label": "GST Transporter ID",
    "fieldtype": "Data",
    "fetchFrom": "transporter.gst_transporter_id",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "driver",
@@ -906,7 +922,8 @@
    "label": "Distance (in km)",
    "fieldtype": "Int",
    "description": "Set as zero to update distance as per the e-Waybill portal (if available)",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "col_break34",
@@ -927,7 +944,8 @@
    "fieldtype": "Select",
    "options": "\nRoad\nAir\nRail\nShip",
    "default": "Road",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "driver_name",
@@ -952,7 +970,8 @@
    "dependsOn": "eval:[\"Road\", \"Ship\"].includes(doc.mode_of_transport)",
    "readOnlyDependsOn": "eval: doc.mode_of_transport == 'Ship'",
    "default": "Regular",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "gst_section",
@@ -1014,7 +1033,8 @@
    "fieldtype": "Small Text",
    "allowOnSubmit": true,
    "printHide": true,
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "column_break_17",
@@ -1098,7 +1118,8 @@
    "fieldtype": "Link",
    "options": "Auto Repeat",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "printing_details",
@@ -1138,7 +1159,8 @@
    "fieldtype": "Link",
    "options": "Print Heading",
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "language",

@@ -86,7 +86,8 @@
    "label": "Quality Inspection",
    "fieldtype": "Link",
    "options": "Quality Inspection",
-   "dependsOn": "eval:parent.inspection_required && doc.t_warehouse"
+   "dependsOn": "eval:parent.inspection_required && doc.t_warehouse",
+   "noCopy": true
   },
   {
    "fieldname": "subcontracted_item",
@@ -236,7 +237,8 @@
    "label": "Allow Zero Valuation Rate",
    "fieldtype": "Check",
    "readOnlyDependsOn": "eval:doc.s_warehouse",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "col_break3",
@@ -266,12 +268,14 @@
   {
    "fieldname": "serial_no_batch",
    "label": "Serial No / Batch",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "noCopy": true
   },
   {
    "fieldname": "serial_no",
    "label": "Serial No",
-   "fieldtype": "Small Text"
+   "fieldtype": "Small Text",
+   "noCopy": true
   },
   {
    "fieldname": "col_break4",
@@ -283,7 +287,8 @@
    "fieldtype": "Link",
    "options": "Batch",
    "inListView": true,
-   "columns": 1
+   "columns": 1,
+   "noCopy": true
   },
   {
    "fieldname": "fetch_serial_no",
@@ -348,14 +353,16 @@
    "fieldtype": "Float",
    "readOnly": true,
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "transferred_qty",
    "label": "Transferred Qty",
    "fieldtype": "Float",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "bom_no",
@@ -386,7 +393,8 @@
    "hidden": true,
    "readOnly": true,
    "description": "Material Request used to make this Stock Entry",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "material_request_item",
@@ -395,7 +403,8 @@
    "options": "Material Request Item",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "original_item",
@@ -404,7 +413,8 @@
    "options": "Item",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "reference_section",
@@ -418,14 +428,16 @@
    "fieldtype": "Link",
    "options": "Stock Entry",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "ste_detail",
    "label": "Stock Entry Child",
    "fieldtype": "Data",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "po_detail",
@@ -433,7 +445,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "sco_rm_detail",
@@ -441,7 +454,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "putaway_rule",
@@ -450,7 +464,8 @@
    "options": "Putaway Rule",
    "readOnly": true,
    "dependsOn": "eval:in_list([\"Material Transfer\", \"Material Receipt\"], parent.purpose)",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break_51",
@@ -469,7 +484,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

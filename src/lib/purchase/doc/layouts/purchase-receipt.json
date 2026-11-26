@@ -30,7 +30,8 @@
    "inListView": true,
    "allowOnSubmit": true,
    "default": "{supplier_name}",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "naming_series",
@@ -39,7 +40,8 @@
    "options": "PR-.YY.-\nPRRET-.YY.-\n\nPR/25-26/.MM-\nMAT-PRE-.YYYY.-\nMAT-PR-RET-.YYYY.-",
    "reqd": true,
    "default": "PR/25-26/.MM-",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "supplier",
@@ -66,7 +68,8 @@
    "fieldtype": "Data",
    "readOnly": true,
    "dependsOn": "eval: doc.docstatus === 1 && (doc.ewaybill || doc.e_waybill_status !== 'Not Applicable')",
-   "allowOnSubmit": true
+   "allowOnSubmit": true,
+   "noCopy": true
   },
   {
    "fieldname": "supplier_delivery_note",
@@ -90,7 +93,8 @@
    "reqd": true,
    "inListView": true,
    "default": "Today",
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "posting_time",
@@ -98,7 +102,8 @@
    "fieldtype": "Time",
    "reqd": true,
    "printHide": true,
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "set_posting_time",
@@ -136,7 +141,8 @@
    "label": "Is Return",
    "fieldtype": "Check",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "return_against",
@@ -145,7 +151,8 @@
    "options": "Purchase Receipt",
    "readOnly": true,
    "dependsOn": "is_return",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "gate_entry",
@@ -289,7 +296,8 @@
    "label": "Rejected Warehouse",
    "fieldtype": "Link",
    "options": "Warehouse",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "is_subcontracted",
@@ -305,7 +313,8 @@
    "options": "Warehouse",
    "dependsOn": "eval:doc.is_subcontracted",
    "printHide": true,
-   "printWidth": "50px"
+   "printWidth": "50px",
+   "noCopy": true
   },
   {
    "fieldname": "items_section",
@@ -522,7 +531,8 @@
    "options": "Company:company:default_currency",
    "readOnly": true,
    "dependsOn": "eval:!doc.disable_rounded_total",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "base_rounded_total",
@@ -558,7 +568,8 @@
    "options": "currency",
    "readOnly": true,
    "dependsOn": "eval:!doc.disable_rounded_total",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "rounded_total",
@@ -566,7 +577,8 @@
    "fieldtype": "Currency",
    "options": "currency",
    "readOnly": true,
-   "dependsOn": "eval:!doc.disable_rounded_total"
+   "dependsOn": "eval:!doc.disable_rounded_total",
+   "noCopy": true
   },
   {
    "fieldname": "in_words",
@@ -629,7 +641,8 @@
    "label": "Taxes and Charges Calculation",
    "fieldtype": "Text Editor",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "section_gst_breakup",
@@ -680,7 +693,8 @@
    "label": "Consumed Items",
    "fieldtype": "Table",
    "options": "Purchase Receipt Item Supplied",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "address_and_contact_tab",
@@ -850,7 +864,8 @@
    "inStandardFilter": true,
    "default": "Draft",
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "column_break4",
@@ -863,7 +878,8 @@
    "label": "% Amount Billed",
    "fieldtype": "Percent",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "per_returned",
@@ -871,7 +887,8 @@
    "fieldtype": "Percent",
    "readOnly": true,
    "dependsOn": "eval:!doc.__islocal",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "subscription_detail",
@@ -884,7 +901,8 @@
    "fieldtype": "Link",
    "options": "Auto Repeat",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "printing_settings",
@@ -917,7 +935,8 @@
    "fieldtype": "Link",
    "options": "Print Heading",
    "allowOnSubmit": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "language",
@@ -938,14 +957,16 @@
    "label": "Transporter",
    "fieldtype": "Link",
    "options": "Supplier",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "gst_transporter_id",
    "label": "GST Transporter ID",
    "fieldtype": "Data",
    "fetchFrom": "transporter.gst_transporter_id",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "transporter_name",
@@ -953,20 +974,23 @@
    "fieldtype": "Small Text",
    "readOnly": true,
    "fetchFrom": "transporter.supplier_name",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "vehicle_no",
    "label": "Vehicle No",
    "fieldtype": "Data",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "distance",
    "label": "Distance (in km)",
    "fieldtype": "Int",
    "description": "Set as zero to update distance as per the e-Waybill portal (if available)",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "mode_of_transport",
@@ -974,7 +998,8 @@
    "fieldtype": "Select",
    "options": "\nRoad\nAir\nRail\nShip",
    "default": "Road",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break5",
@@ -986,7 +1011,8 @@
    "label": "Transport Receipt No",
    "fieldtype": "Data",
    "printHide": true,
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "lr_date",
@@ -994,21 +1020,24 @@
    "fieldtype": "Date",
    "default": "Today",
    "printHide": true,
-   "printWidth": "100px"
+   "printWidth": "100px",
+   "noCopy": true
   },
   {
    "fieldname": "driver",
    "label": "Driver",
    "fieldtype": "Link",
    "options": "Driver",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "driver_name",
    "label": "Driver Name",
    "fieldtype": "Small Text",
    "fetchFrom": "driver.full_name",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "gst_vehicle_type",
@@ -1018,7 +1047,8 @@
    "dependsOn": "eval:[\"Road\", \"Ship\"].includes(doc.mode_of_transport)",
    "readOnlyDependsOn": "eval: doc.mode_of_transport == 'Ship'",
    "default": "Regular",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "gst_section",
@@ -1065,7 +1095,8 @@
    "fieldtype": "Link",
    "options": "Delivery Note",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break_131",
@@ -1092,7 +1123,8 @@
    "hidden": true,
    "readOnly": true,
    "printHide": true,
-   "printWidth": "150px"
+   "printWidth": "150px",
+   "noCopy": true
   },
   {
    "fieldname": "is_old_subcontracting_flow",

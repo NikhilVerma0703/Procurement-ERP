@@ -24,7 +24,8 @@
    "options": "MAT-STE/24-25/",
    "reqd": true,
    "default": "MAT-STE/24-25/",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "stock_entry_type",
@@ -59,7 +60,8 @@
    "label": "Add to Transit",
    "fieldtype": "Check",
    "dependsOn": "eval: doc.purpose=='Material Transfer' && !doc.outgoing_stock_entry",
-   "fetchFrom": "stock_entry_type.add_to_transit"
+   "fetchFrom": "stock_entry_type.add_to_transit",
+   "noCopy": true
   },
   {
    "fieldname": "work_order",
@@ -96,7 +98,8 @@
    "fieldtype": "Link",
    "options": "Delivery Note",
    "dependsOn": "eval:doc.purpose==\"Sales Return\"",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "sales_invoice_no",
@@ -104,7 +107,8 @@
    "fieldtype": "Link",
    "options": "Sales Invoice",
    "dependsOn": "eval:doc.purpose==\"Sales Return\"",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "pick_list",
@@ -119,7 +123,8 @@
    "fieldtype": "Link",
    "options": "Purchase Receipt",
    "dependsOn": "eval:doc.purpose==\"Purchase Return\"",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "col2",
@@ -138,13 +143,15 @@
    "fieldname": "posting_date",
    "label": "Posting Date",
    "fieldtype": "Date",
-   "default": "Today"
+   "default": "Today",
+   "noCopy": true
   },
   {
    "fieldname": "posting_time",
    "label": "Posting Time",
    "fieldtype": "Time",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break_eaoa",
@@ -253,7 +260,8 @@
    "inListView": true,
    "inStandardFilter": true,
    "description": "Sets 'Source Warehouse' in each row of the items table.",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "source_warehouse_address",
@@ -280,7 +288,8 @@
    "inListView": true,
    "inStandardFilter": true,
    "description": "Sets 'Target Warehouse' in each row of the items table.",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "target_warehouse_address",
@@ -397,7 +406,8 @@
    "fieldtype": "Link",
    "options": "Supplier",
    "dependsOn": "eval:doc.purpose === \"Send to Subcontractor\"",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "supplier_name",
@@ -405,14 +415,16 @@
    "fieldtype": "Data",
    "readOnly": true,
    "dependsOn": "eval:doc.purpose === \"Send to Subcontractor\"",
-   "bold": true
+   "bold": true,
+   "noCopy": true
   },
   {
    "fieldname": "supplier_address",
    "label": "Supplier Address",
    "fieldtype": "Link",
    "options": "Address",
-   "dependsOn": "eval:doc.purpose === \"Send to Subcontractor\""
+   "dependsOn": "eval:doc.purpose === \"Send to Subcontractor\"",
+   "noCopy": true
   },
   {
    "fieldname": "address_display",
@@ -475,7 +487,8 @@
    "fieldname": "remarks",
    "label": "Remarks",
    "fieldtype": "Text",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "col5",
@@ -488,7 +501,8 @@
    "fieldtype": "Percent",
    "readOnly": true,
    "inListView": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "total_amount",
@@ -513,7 +527,8 @@
    "fieldtype": "Link",
    "options": "Stock Entry",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "credit_note",
@@ -529,7 +544,8 @@
    "hidden": true,
    "readOnly": true,
    "inListView": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

@@ -22,7 +22,7 @@ import { db } from "../server/db";
 import type { EngineMasters } from "./engine-input";
 import type { ItemRowValues, OrderFormValues } from "./form-schema";
 import { orderRecord } from "./load";
-import { companyDetails, currencies, taxTemplateRows } from "./masters";
+import { companyDetails, currencies, itemDetails, taxTemplateRows } from "./masters";
 import { DEFAULT_MODE_OF_TRANSPORT, PURPOSES, SHIPMENT_TYPES } from "./options";
 import { DOC_STATUS_LABEL, WORKFLOW_STATE_LABEL, orderFormValues, storedFigures, type OrderRecord } from "./record";
 import { engineMasters } from "./save";
@@ -295,4 +295,49 @@ export async function amendmentDoc(id: string): Promise<{ doc: OrderDoc } | { er
     paymentSchedule: (v.paymentSchedule ?? []).map(({ id: _id, ...row }) => row),
   };
   return { doc: newDoc(values, displaysOf(o), rowInfoOf(o).map((r) => ({ ...r, receivedQty: 0, billedAmt: 0 })), { id: o.id, number: o.number }) };
+}
+
+/**
+ * Create › Purchase Order on a submitted Purchase request (material_request.py make_purchase_order): a new
+ * PO with the request's rows not yet ordered — each row's Qty the part of its Stock Qty not yet ordered,
+ * in its own UOM; its Required By kept unless already past (then left for the user); its warehouse,
+ * expense account and cost centre; each row remembering the request row it came from.
+ */
+export async function orderFromMaterialRequest(name: string): Promise<{ doc: OrderDoc } | { error: string }> {
+  const mr = await db.purchaseMaterialRequest.findUnique({
+    where: { number: name },
+    select: { docStatus: true, status: true, materialRequestType: true, items: { orderBy: { idx: "asc" } } },
+  });
+  if (!mr) return { error: `Material Request ${name} not found` };
+  if (mr.docStatus !== "SUBMITTED") return { error: `Material Request ${name} must be submitted` };
+  if (mr.materialRequestType !== "Purchase") return { error: `Material Request ${name}: Purpose must be Purchase` };
+  if (mr.status === "Stopped") return { error: `Material Request ${name} is Stopped` };
+  const open = mr.items.filter((i) => Number(i.orderedQty) < Number(i.stockQty));
+  if (!open.length) return { error: `All items of Material Request ${name} have already been ordered` };
+  const base = await blankOrderDoc();
+  const today = siteToday();
+  const items = await db.purchaseItem.findMany({ where: { code: { in: open.map((i) => i.itemCode) } }, select: { code: true, stockUom: true, gstHsnCode: true, lastPurchaseRate: true, weightPerUnit: true } });
+  const itemBy = new Map(items.map((i) => [i.code, i]));
+  // The PO form's own item fetch (itemDetails): the tax template, accounts and weight, as choosing the item does.
+  const ctx = { company: base.values.company, taxCategory: base.values.taxCategory ?? null, transactionDate: base.values.transactionDate, setWarehouse: null, conversionRate: 1 };
+  const details = new Map(await Promise.all([...new Set(open.map((i) => i.itemCode))].map(async (c) => [c, await itemDetails(c, ctx)] as const)));
+  const rows = open.map((i) => {
+    const d = details.get(i.itemCode);
+    const cf = Number(i.conversionFactor) || 1;
+    const sched = i.scheduleDate ? i.scheduleDate.toISOString().slice(0, 10) : "";
+    return {
+      ...emptyItem(sched && sched >= today ? sched : ""),
+      itemCode: i.itemCode, itemName: i.itemName ?? i.itemCode, description: i.description ?? i.itemName ?? "",
+      qty: Math.round(((Number(i.stockQty) - Number(i.orderedQty)) / cf) * 1e9) / 1e9, uom: i.uom, conversionFactor: cf,
+      warehouse: i.warehouseCode ?? d?.warehouse ?? null, expenseAccount: i.expenseAccount ?? d?.expenseAccount ?? null, costCenter: i.costCenter ?? d?.costCenter ?? null,
+      itemTaxTemplate: d?.itemTaxTemplate ?? null,
+      weightPerUnit: Number(itemBy.get(i.itemCode)?.weightPerUnit ?? 0),
+      materialRequest: name, materialRequestItem: i.erpnextName,
+    };
+  });
+  const rowInfo = open.map((i) => {
+    const it = itemBy.get(i.itemCode);
+    return { stockUom: it?.stockUom ?? i.stockUom, gstHsnCode: it?.gstHsnCode ?? null, lastPurchaseRate: Number(it?.lastPurchaseRate ?? 0), receivedQty: 0, billedAmt: 0, pageBreak: false };
+  });
+  return { doc: { ...base, values: { ...base.values, items: rows }, rowInfo } };
 }

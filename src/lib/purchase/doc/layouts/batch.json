@@ -42,7 +42,8 @@
    "fieldtype": "Data",
    "reqd": true,
    "dependsOn": "eval:doc.__islocal",
-   "inListView": true
+   "inListView": true,
+   "noCopy": true
   },
   {
    "fieldname": "item",

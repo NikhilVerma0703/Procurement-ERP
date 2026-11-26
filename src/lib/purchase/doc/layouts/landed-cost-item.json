@@ -36,7 +36,8 @@
    "fieldtype": "Select",
    "options": "Purchase Invoice\nPurchase Receipt",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "receipt_document",
@@ -44,7 +45,8 @@
    "fieldtype": "Dynamic Link",
    "options": "receipt_document_type",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "col_break2",
@@ -95,7 +97,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "accounting_dimensions_section",

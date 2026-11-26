@@ -26,8 +26,10 @@ KEEP = [
     ("default", "default"), ("fetch_from", "fetchFrom"), ("print_hide", "printHide"), ("non_negative", "nonNegative"), ("permlevel", "permlevel"),
     # Frappe's Standard print (docs/15, X3, 26-11-2026).
     ("print_hide_if_no_value", "printHideIfNoValue"), ("print_width", "printWidth"),
+    # Duplicate and Amend leave these out (copy_doc; docs/15, 26-11-2026).
+    ("no_copy", "noCopy"),
 ]
-FLAGS = {"hidden", "reqd", "read_only", "collapsible", "bold", "in_list_view", "in_standard_filter", "allow_on_submit", "print_hide", "non_negative", "print_hide_if_no_value"}
+FLAGS = {"hidden", "reqd", "read_only", "collapsible", "bold", "in_list_view", "in_standard_filter", "allow_on_submit", "print_hide", "non_negative", "print_hide_if_no_value", "no_copy"}
 
 
 def slug(name):

@@ -117,7 +117,8 @@
    "fieldtype": "Link",
    "options": "Gate Entry",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

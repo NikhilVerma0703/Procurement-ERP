@@ -224,6 +224,61 @@ export function receiptItemColumns(r: Row, refs: { itemId: string | null; wareho
   };
 }
 
+/** A Material Request's columns (the importer's, and one saved here: stock/material-request.ts). */
+export function materialRequestColumns(r: Row, refs: { amendedFromId: string | null }) {
+  return {
+    number: r.name!, title: text(r.title), namingSeries: r.naming_series ?? "", docStatus: docStatusOf(r),
+    status: r.status ?? "Draft", materialRequestType: r.material_request_type ?? "", companyCode: r.company ?? "",
+    transactionDate: dateOnly(r.transaction_date)!, scheduleDate: dateOnly(r.schedule_date), amendedFromId: refs.amendedFromId,
+    setWarehouse: text(r.set_warehouse), tcName: text(r.tc_name), terms: text(r.terms), perOrdered: dec(r.per_ordered),
+    perReceived: dec(r.per_received), letterHead: text(r.letter_head), legacy: legacyOf(r), ...stamps(r),
+  };
+}
+
+/** A Material Request Item's columns (without its id and request). */
+export function materialRequestItemColumns(r: Row, refs: { itemId: string | null; warehouseId: string | null }) {
+  return {
+    erpnextName: r.name!, idx: int(r.idx), itemCode: r.item_code ?? "", itemId: refs.itemId, itemName: text(r.item_name),
+    description: text(r.description), itemGroup: text(r.item_group), scheduleDate: dateOnly(r.schedule_date), qty: dec(r.qty),
+    uom: r.uom ?? "", stockUom: r.stock_uom ?? "", conversionFactor: dec(r.conversion_factor), stockQty: dec(r.stock_qty),
+    fromWarehouse: text(r.from_warehouse), warehouseCode: text(r.warehouse), warehouseId: refs.warehouseId, projectedQty: dec(r.projected_qty),
+    actualQty: dec(r.actual_qty), orderedQty: dec(r.ordered_qty), receivedQty: dec(r.received_qty), rate: dec(r.rate),
+    priceListRate: dec(r.price_list_rate), amount: dec(r.amount), expenseAccount: text(r.expense_account),
+    costCenter: text(r.cost_center), gstHsnCode: text(r.gst_hsn_code), legacy: legacyOf(r),
+  };
+}
+
+/** A Stock Entry's columns (the importer's, and one saved here: stock/stock-entry.ts). */
+export function stockEntryColumns(r: Row, refs: { stockEntryTypeId: string | null; amendedFromId: string | null }) {
+  return {
+    number: r.name!, namingSeries: r.naming_series ?? "", docStatus: docStatusOf(r),
+    stockEntryTypeCode: r.stock_entry_type ?? "", stockEntryTypeId: refs.stockEntryTypeId,
+    purpose: r.purpose ?? "", workOrder: text(r.work_order), companyCode: r.company ?? "", postingDate: dateOnly(r.posting_date)!,
+    postingTime: r.posting_time ?? "00:00:00", setPostingTime: bool(r.set_posting_time), fromBom: bool(r.from_bom),
+    useMultiLevelBom: bool(r.use_multi_level_bom), bomNo: text(r.bom_no), fgCompletedQty: dec(r.fg_completed_qty),
+    fromWarehouse: text(r.from_warehouse), toWarehouse: text(r.to_warehouse), totalOutgoingValue: dec(r.total_outgoing_value),
+    totalIncomingValue: dec(r.total_incoming_value), valueDifference: dec(r.value_difference), totalAmount: dec(r.total_amount),
+    letterHead: text(r.letter_head), isOpening: text(r.is_opening), amendedFromId: refs.amendedFromId,
+    materialTransfer: text(r.custom_material_transfer), legacy: legacyOf(r), ...stamps(r),
+  };
+}
+
+/** A Stock Entry Detail's columns (without its id and entry). */
+export function stockEntryDetailColumns(r: Row, refs: { sourceWarehouseId: string | null; targetWarehouseId: string | null; itemId: string | null; supplierId: string | null }) {
+  return {
+    erpnextName: r.name!, idx: int(r.idx), barcode: text(r.barcode),
+    sourceWarehouseCode: text(r.s_warehouse), sourceWarehouseId: refs.sourceWarehouseId,
+    targetWarehouseCode: text(r.t_warehouse), targetWarehouseId: refs.targetWarehouseId, itemCode: r.item_code ?? "",
+    itemId: refs.itemId, itemName: text(r.item_name), description: text(r.description), itemGroup: text(r.item_group),
+    isFinishedItem: bool(r.is_finished_item), qty: dec(r.qty), transferQty: dec(r.transfer_qty), uom: r.uom ?? "",
+    stockUom: r.stock_uom ?? "", conversionFactor: dec(r.conversion_factor), basicRate: dec(r.basic_rate),
+    valuationRate: dec(r.valuation_rate), basicAmount: dec(r.basic_amount), amount: dec(r.amount), serialNo: text(r.serial_no),
+    batchNo: text(r.batch_no), expenseAccount: text(r.expense_account), costCenter: text(r.cost_center), actualQty: dec(r.actual_qty),
+    bomNo: text(r.bom_no), materialRequest: text(r.material_request), materialRequestItem: text(r.material_request_item),
+    supplierCode: text(r.custom_supplier), supplierId: refs.supplierId, woQty: dec(r.custom_wo_qty), legacy: legacyOf(r),
+  };
+}
+
 /** A receipt tax row's columns (without its id and receipt). */
 export function receiptTaxColumns(r: Row) {
   return {
@@ -386,24 +441,13 @@ export function buildStock(tables: Map<string, DumpTable>, known: KnownMasters):
   // Material Request --------------------------------------------------------------
   const mrIds = ids("tabMaterial Request", "mr");
   out.materialRequests = byCreation(rows("tabMaterial Request")).map((r) => ({
-    id: mrIds.get(r.name!)!, number: r.name!, title: text(r.title), namingSeries: r.naming_series ?? "", docStatus: docStatusOf(r),
-    status: r.status ?? "Draft", materialRequestType: r.material_request_type ?? "", companyCode: r.company ?? "",
-    transactionDate: dateOnly(r.transaction_date)!, scheduleDate: dateOnly(r.schedule_date),
-    amendedFromId: self(mrIds, r.amended_from, `Material Request ${r.name}`, "amended from"), setWarehouse: text(r.set_warehouse),
-    tcName: text(r.tc_name), terms: text(r.terms), perOrdered: dec(r.per_ordered), perReceived: dec(r.per_received),
-    letterHead: text(r.letter_head), legacy: legacyOf(r), ...stamps(r),
+    id: mrIds.get(r.name!)!, ...materialRequestColumns(r, { amendedFromId: self(mrIds, r.amended_from, `Material Request ${r.name}`, "amended from") }),
   }));
   out.materialRequestItems = children("tabMaterial Request Item", mrIds, "Material Request row").map((r) => {
     const where = `Material Request ${r.parent} row ${r.idx}`;
     return {
-      id: importId("mri", r.name!), erpnextName: r.name!, requestId: mrIds.get(r.parent!)!, idx: int(r.idx), itemCode: r.item_code ?? "",
-      itemId: item(r.item_code, where), itemName: text(r.item_name), description: text(r.description), itemGroup: text(r.item_group),
-      scheduleDate: dateOnly(r.schedule_date), qty: dec(r.qty), uom: r.uom ?? "", stockUom: r.stock_uom ?? "",
-      conversionFactor: dec(r.conversion_factor), stockQty: dec(r.stock_qty), fromWarehouse: text(r.from_warehouse),
-      warehouseCode: text(r.warehouse), warehouseId: warehouse(r.warehouse, where), projectedQty: dec(r.projected_qty),
-      actualQty: dec(r.actual_qty), orderedQty: dec(r.ordered_qty), receivedQty: dec(r.received_qty), rate: dec(r.rate),
-      priceListRate: dec(r.price_list_rate), amount: dec(r.amount), expenseAccount: text(r.expense_account),
-      costCenter: text(r.cost_center), gstHsnCode: text(r.gst_hsn_code), legacy: legacyOf(r),
+      id: importId("mri", r.name!), requestId: mrIds.get(r.parent!)!,
+      ...materialRequestItemColumns(r, { itemId: item(r.item_code, where), warehouseId: warehouse(r.warehouse, where) }),
     };
   });
 
@@ -412,31 +456,18 @@ export function buildStock(tables: Map<string, DumpTable>, known: KnownMasters):
   out.stockEntries = byCreation(rows("tabStock Entry")).map((r) => {
     const where = `Stock Entry ${r.name}`;
     return {
-      id: steIds.get(r.name!)!, number: r.name!, namingSeries: r.naming_series ?? "", docStatus: docStatusOf(r),
-      stockEntryTypeCode: r.stock_entry_type ?? "", stockEntryTypeId: self(typeIds, r.stock_entry_type, where, "stock entry type"),
-      purpose: r.purpose ?? "", workOrder: text(r.work_order), companyCode: r.company ?? "", postingDate: dateOnly(r.posting_date)!,
-      postingTime: r.posting_time ?? "00:00:00", setPostingTime: bool(r.set_posting_time), fromBom: bool(r.from_bom),
-      useMultiLevelBom: bool(r.use_multi_level_bom), bomNo: text(r.bom_no), fgCompletedQty: dec(r.fg_completed_qty),
-      fromWarehouse: text(r.from_warehouse), toWarehouse: text(r.to_warehouse), totalOutgoingValue: dec(r.total_outgoing_value),
-      totalIncomingValue: dec(r.total_incoming_value), valueDifference: dec(r.value_difference), totalAmount: dec(r.total_amount),
-      letterHead: text(r.letter_head), isOpening: text(r.is_opening), amendedFromId: self(steIds, r.amended_from, where, "amended from"),
-      materialTransfer: text(r.custom_material_transfer), legacy: legacyOf(r), ...stamps(r),
+      id: steIds.get(r.name!)!,
+      ...stockEntryColumns(r, { stockEntryTypeId: self(typeIds, r.stock_entry_type, where, "stock entry type"), amendedFromId: self(steIds, r.amended_from, where, "amended from") }),
     };
   });
   out.stockEntryDetails = children("tabStock Entry Detail", steIds, "Stock Entry row").map((r) => {
     const where = `Stock Entry ${r.parent} row ${r.idx}`;
     return {
-      id: importId("sted", r.name!), erpnextName: r.name!, entryId: steIds.get(r.parent!)!, idx: int(r.idx), barcode: text(r.barcode),
-      sourceWarehouseCode: text(r.s_warehouse), sourceWarehouseId: warehouse(r.s_warehouse, where),
-      targetWarehouseCode: text(r.t_warehouse), targetWarehouseId: warehouse(r.t_warehouse, where), itemCode: r.item_code ?? "",
-      itemId: item(r.item_code, where), itemName: text(r.item_name), description: text(r.description), itemGroup: text(r.item_group),
-      isFinishedItem: bool(r.is_finished_item), qty: dec(r.qty), transferQty: dec(r.transfer_qty), uom: r.uom ?? "",
-      stockUom: r.stock_uom ?? "", conversionFactor: dec(r.conversion_factor), basicRate: dec(r.basic_rate),
-      valuationRate: dec(r.valuation_rate), basicAmount: dec(r.basic_amount), amount: dec(r.amount), serialNo: text(r.serial_no),
-      batchNo: text(r.batch_no), expenseAccount: text(r.expense_account), costCenter: text(r.cost_center), actualQty: dec(r.actual_qty),
-      bomNo: text(r.bom_no), materialRequest: text(r.material_request), materialRequestItem: text(r.material_request_item),
-      supplierCode: text(r.custom_supplier), supplierId: supplier(r.custom_supplier, where), woQty: dec(r.custom_wo_qty),
-      legacy: legacyOf(r),
+      id: importId("sted", r.name!), entryId: steIds.get(r.parent!)!,
+      ...stockEntryDetailColumns(r, {
+        sourceWarehouseId: warehouse(r.s_warehouse, where), targetWarehouseId: warehouse(r.t_warehouse, where),
+        itemId: item(r.item_code, where), supplierId: supplier(r.custom_supplier, where),
+      }),
     };
   });
 

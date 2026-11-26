@@ -144,7 +144,8 @@
    "fieldtype": "Link",
    "options": "Pick List",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "print_settings_section",
@@ -169,7 +170,8 @@
    "readOnly": true,
    "inStandardFilter": true,
    "default": "Draft",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

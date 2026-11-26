@@ -29,6 +29,8 @@ export interface LayoutField {
   fetchFrom?: string;
   printHide?: boolean;
   nonNegative?: boolean;
+  /** Left out of a copy (Duplicate, Amend: Frappe copy_doc). */
+  noCopy?: boolean;
   /** Permission level (0 when absent): only level-0 fields were named in the old timeline. */
   permlevel?: number;
 }

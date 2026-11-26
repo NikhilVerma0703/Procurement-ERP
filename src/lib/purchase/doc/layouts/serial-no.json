@@ -24,7 +24,8 @@
    "fieldname": "serial_no",
    "label": "Serial No",
    "fieldtype": "Data",
-   "reqd": true
+   "reqd": true,
+   "noCopy": true
   },
   {
    "fieldname": "item_code",
@@ -43,7 +44,8 @@
    "readOnly": true,
    "inListView": true,
    "inStandardFilter": true,
-   "description": "Warehouse can only be changed via Stock Entry / Delivery Note / Purchase Receipt"
+   "description": "Warehouse can only be changed via Stock Entry / Delivery Note / Purchase Receipt",
+   "noCopy": true
   },
   {
    "fieldname": "batch_no",
@@ -103,33 +105,38 @@
    "label": "Creation Document Type",
    "fieldtype": "Link",
    "options": "DocType",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "purchase_document_no",
    "label": "Creation Document No",
    "fieldtype": "Dynamic Link",
    "options": "purchase_document_type",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "purchase_date",
    "label": "Creation Date",
    "fieldtype": "Date",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "purchase_time",
    "label": "Creation Time",
    "fieldtype": "Time",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "purchase_rate",
    "label": "Incoming Rate",
    "fieldtype": "Currency",
    "options": "Company:company:default_currency",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break3",
@@ -139,14 +146,16 @@
    "fieldname": "supplier",
    "label": "Supplier",
    "fieldtype": "Link",
-   "options": "Supplier"
+   "options": "Supplier",
+   "noCopy": true
   },
   {
    "fieldname": "supplier_name",
    "label": "Supplier Name",
    "fieldtype": "Data",
    "readOnly": true,
-   "bold": true
+   "bold": true,
+   "noCopy": true
   },
   {
    "fieldname": "asset_details",
@@ -159,7 +168,8 @@
    "fieldtype": "Link",
    "options": "Asset",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "asset_status",
@@ -197,26 +207,30 @@
    "label": "Delivery Document Type",
    "fieldtype": "Link",
    "options": "DocType",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "delivery_document_no",
    "label": "Delivery Document No",
    "fieldtype": "Dynamic Link",
    "options": "delivery_document_type",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "delivery_date",
    "label": "Delivery Date",
    "fieldtype": "Date",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "delivery_time",
    "label": "Delivery Time",
    "fieldtype": "Time",
-   "readOnly": true
+   "readOnly": true,
+   "noCopy": true
   },
   {
    "fieldname": "column_break5",
@@ -227,14 +241,16 @@
    "label": "Customer",
    "fieldtype": "Link",
    "options": "Customer",
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "customer_name",
    "label": "Customer Name",
    "fieldtype": "Data",
    "readOnly": true,
-   "bold": true
+   "bold": true,
+   "noCopy": true
   },
   {
    "fieldname": "invoice_details",

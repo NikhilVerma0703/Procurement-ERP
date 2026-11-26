@@ -18,7 +18,8 @@
    "fieldtype": "Select",
    "options": "MAT-QA/24-25/",
    "reqd": true,
-   "default": "MAT-QA/24-25/"
+   "default": "MAT-QA/24-25/",
+   "noCopy": true
   },
   {
    "fieldname": "report_date",
@@ -167,7 +168,8 @@
   {
    "fieldname": "remarks",
    "label": "Remarks",
-   "fieldtype": "Text"
+   "fieldtype": "Text",
+   "noCopy": true
   },
   {
    "fieldname": "amended_from",
@@ -175,7 +177,8 @@
    "fieldtype": "Link",
    "options": "Quality Inspection",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

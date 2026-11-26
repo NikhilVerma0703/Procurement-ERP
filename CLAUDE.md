@@ -20,6 +20,7 @@ npm run golden:stock  # the seven stock reports vs the old site's own live answe
 npm run check:stock-forms  # save / edit / delete every Stock master through the server code (local DB; cleans up)
 npm run check:receipt-prints  # the receipt print formats vs the old site's own output (fingerprints, local DB)
 npm run golden:ledger # the FIFO valuation engine replays every entry of the old stock ledger
+npm run check:material-requests  # every submitted Material Request worked out again = the old site's status, % Ordered, Completed Qty (rolled back)
 npm run import:erpnext  # load the newest backup in data/erpnext-backup (another machine's DB: --target <host>)
 npm run verify:erpnext  # read-only: does the database still equal the backup?
 npm run merge:sql  # rebuild merge/ for the Main ERP after any schema change

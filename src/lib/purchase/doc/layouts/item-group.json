@@ -88,7 +88,8 @@
    "fieldname": "route",
    "label": "Route",
    "fieldtype": "Data",
-   "dependsOn": "show_in_website"
+   "dependsOn": "show_in_website",
+   "noCopy": true
   },
   {
    "fieldname": "website_title",
@@ -165,14 +166,16 @@
    "label": "lft",
    "fieldtype": "Int",
    "hidden": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "rgt",
    "label": "rgt",
    "fieldtype": "Int",
    "hidden": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "old_parent",
@@ -180,7 +183,8 @@
    "fieldtype": "Link",
    "options": "Item Group",
    "hidden": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }

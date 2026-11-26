@@ -27,7 +27,8 @@
    "fieldname": "title",
    "label": "Title",
    "fieldtype": "Data",
-   "reqd": true
+   "reqd": true,
+   "noCopy": true
   },
   {
    "fieldname": "disable",
@@ -531,7 +532,8 @@
    "fieldtype": "Data",
    "hidden": true,
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   },
   {
    "fieldname": "promotional_scheme",
@@ -539,7 +541,8 @@
    "fieldtype": "Link",
    "options": "Promotional Scheme",
    "readOnly": true,
-   "printHide": true
+   "printHide": true,
+   "noCopy": true
   }
  ]
 }
