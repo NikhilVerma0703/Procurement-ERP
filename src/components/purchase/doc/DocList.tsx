@@ -4,11 +4,13 @@
 // Gate Entry List "looking different … some extra columns and icons"). What it shows is worked out
 // on the server from the DocType's own definition (lib/purchase/doc/list-view.ts); this draws it:
 //
-//   header   List View ▾ · ↻ · ⋯ (Export) · "+ Add <DocType>", or Actions ▾ while rows are ticked;
+//   header   ≡ (the sidebar) · List View ▾ · ↻ · ⋯ (Export, Toggle Sidebar) · "+ Add <DocType>", or Actions ▾
+//            (Export, Assign To, Apply Assignment Rule, Add Tags, Delete) while rows are ticked;
+//   sidebar  Filter By (Assigned To, Created By, Edit Filters), Tags, Save Filter (collab/ListSidebar.tsx);
 //   filters  the standard filters (ID, the title, the "in standard filter" fields), then Filter (the
 //            builder), the clear-filters button and the sort (order ⇅ and field ▾);
 //   rows     ☐ ♥ the title in bold, Status, the columns that fit the window (4 / 6 / 10, as Frappe
-//            chose them by width), the ID; on the right the empty "assigned to" (-), when it last
+//            chose them by width), the ID; on the right who it is assigned to ("-" for no one), when it last
 //            changed, and its comment count; a click on a value or a pill filters the list by it;
 //   count    "20 of 77", "20 of 1,000+" (click: the exact count); 20 / 100 / 500 / 2500 and Load More.
 //
@@ -22,6 +24,11 @@ import { toast } from "sonner";
 import { bulkDeleteDocsAction } from "@/app/purchase/doc-actions";
 import { bulkDeleteGateEntriesAction } from "@/app/purchase/gate-entries/actions";
 import { bulkDeleteMastersAction } from "@/app/purchase/masters-actions";
+import { applyAssignmentRuleAction } from "@/app/purchase/collab-actions";
+import { AddTagsDialog, Assignees, AssignToDialog, TagPills } from "../collab/CollabDialogs";
+import { ListWithSidebar, SidebarToggleButton, useToggleSidebar } from "../collab/ListLayout";
+import { ListSidebar, type GroupField, type SavedFilter } from "../collab/ListSidebar";
+import { useTagsShown } from "../collab/sidebar-state";
 import { cn } from "@/lib/purchase/cn";
 import { isLikedByMeFilter, likedByMeFilter, NO_LIKES, type LikeInfo, type LikeKind } from "@/lib/purchase/like-rules";
 import {
@@ -45,6 +52,10 @@ const MASTER_KEYS: ReadonlySet<string> = new Set<MasterKey>(["suppliers", "items
 
 export interface DocListRow extends ListRowView {
   likes: LikeInfo;
+  /** Its open assignments (the row's avatars). */
+  assignees: { email: string; name: string }[];
+  /** Its tags (Show Tags). */
+  tags: string[];
 }
 
 /** A standard filter, with the lookup its Link searches (api/purchase/lookup). */
@@ -86,6 +97,10 @@ export interface DocListProps {
   views?: { label: string; href: string; active: boolean }[];
   /** The server's clock (ISO), so "time ago" reads the same on both sides. */
   now: string;
+  /** The sidebar's Edit Filters fields, and the saved filters. */
+  groupFields: GroupField[];
+  saved: SavedFilter[];
+  canGlobal: boolean;
 }
 
 export function DocList(props: DocListProps) {
@@ -125,6 +140,9 @@ function DocListBody(p: DocListProps) {
   const sort = usePopover<HTMLDivElement>();
   const views = usePopover<HTMLDivElement>();
   const [confirming, setConfirming] = useState(false);
+  const [collab, setCollab] = useState<"assign" | "tags" | null>(null);
+  const [showTags, toggleTags] = useTagsShown();
+  const toggleSidebar = useToggleSidebar();
   const [deleting, setDeleting] = useState(false);
   const [messages, setMessages] = useState<string[] | null>(null);
   const now = new Date(p.now);
@@ -188,6 +206,18 @@ function DocListBody(p: DocListProps) {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
+  /** Assign To / Add Tags / Apply Assignment Rule done: the ticks cleared and the list read again. */
+  const collabDone = () => {
+    setCollab(null);
+    clear();
+    startTransition(() => router.refresh());
+  };
+  const applyRule = async () => {
+    const r = await applyAssignmentRuleAction(p.doctype, chosen.map((c) => c.id));
+    if (!r.ok) return setMessages([r.error]);
+    collabDone();
+  };
+
   const runDelete = async () => {
     setDeleting(true);
     try {
@@ -221,7 +251,10 @@ function DocListBody(p: DocListProps) {
           <nav aria-label="Breadcrumb" className="mb-1 text-sm text-gray-500">
             {p.crumbs.join(" › ")}
           </nav>
-          <h1 className="truncate text-2xl font-bold tracking-tight text-pacific-dark">{p.doctype}</h1>
+          <div className="flex min-w-0 items-center gap-3">
+            <SidebarToggleButton />
+            <h1 className="truncate text-2xl font-bold tracking-tight text-pacific-dark">{p.doctype}</h1>
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
           {viewList.length > 0 && (
@@ -245,16 +278,21 @@ function DocListBody(p: DocListProps) {
           <button type="button" className="po-btn-secondary px-2" title="Refresh" aria-label="Refresh" onClick={() => startTransition(() => router.refresh())}>
             <RefreshCw className={cn("h-4 w-4", pending && "animate-spin")} aria-hidden />
           </button>
-          {p.exportHref && (
+          {(
             <div ref={menu.ref} className="relative">
               <button type="button" className="po-btn-secondary px-2" title="Menu" aria-label="Menu" aria-haspopup="menu" aria-expanded={menu.open} onClick={() => menu.setOpen(!menu.open)}>
                 <MoreHorizontal className="h-4 w-4" aria-hidden />
               </button>
               {menu.open && (
                 <div role="menu" className="absolute right-0 top-full z-30 mt-1 min-w-[160px] rounded-md border border-gray-200 bg-white py-1 shadow-lg">
-                  <a role="menuitem" href={p.exportHref} className="block px-3 py-1.5 text-[13px] text-gray-800 hover:bg-gray-50" onClick={() => menu.setOpen(false)}>
-                    Export
-                  </a>
+                  {p.exportHref && (
+                    <a role="menuitem" href={p.exportHref} className="block px-3 py-1.5 text-[13px] text-gray-800 hover:bg-gray-50" onClick={() => menu.setOpen(false)}>
+                      Export
+                    </a>
+                  )}
+                  <button type="button" role="menuitem" className="block w-full px-3 py-1.5 text-left text-[13px] text-gray-800 hover:bg-gray-50" onClick={() => { menu.setOpen(false); toggleSidebar(); }}>
+                    Toggle Sidebar
+                  </button>
                 </div>
               )}
             </div>
@@ -270,6 +308,15 @@ function DocListBody(p: DocListProps) {
                   <button type="button" role="menuitem" className="block w-full px-3 py-1.5 text-left text-[13px] text-gray-800 hover:bg-gray-50" onClick={() => { actions.setOpen(false); exportChosen(); }}>
                     Export
                   </button>
+                  {[
+                    { label: "Assign To", run: () => setCollab("assign") },
+                    { label: "Apply Assignment Rule", run: () => void applyRule() },
+                    { label: "Add Tags", run: () => setCollab("tags") },
+                  ].map((it) => (
+                    <button key={it.label} type="button" role="menuitem" className="block w-full px-3 py-1.5 text-left text-[13px] text-gray-800 hover:bg-gray-50" onClick={() => { actions.setOpen(false); it.run(); }}>
+                      {it.label}
+                    </button>
+                  ))}
                   {p.canDelete && (
                     <button type="button" role="menuitem" className="block w-full px-3 py-1.5 text-left text-[13px] text-gray-800 hover:bg-gray-50" onClick={() => { actions.setOpen(false); setConfirming(true); }}>
                       Delete
@@ -292,6 +339,22 @@ function DocListBody(p: DocListProps) {
         </div>
       </div>
 
+      <ListWithSidebar
+        sidebar={
+          <ListSidebar
+            doctype={p.doctype}
+            search={docListParams({ ...q, limit: q.pageLength, exact: false }, p.defaults).toString()}
+            groupFields={p.groupFields}
+            filters={q.filters}
+            onFilters={(next) => setFilters(next as DocFilter[])}
+            saved={p.saved}
+            canGlobal={p.canGlobal}
+            viewer={p.viewer}
+            showTags={showTags}
+            onToggleTags={toggleTags}
+          />
+        }
+      >
       <section className="po-card">
         {/* The filter area: standard filters left; Filter, clear, and the sort right. */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 p-3">
@@ -363,6 +426,7 @@ function DocListBody(p: DocListProps) {
                 </button>
                 <span className="truncate">{p.columns[0]?.label}</span>
               </div>
+              {showTags && <div className="hidden min-w-0 flex-1 md:flex" />}
               {p.columns.slice(1).map((c, i) => (
                 <div key={`${c.label}-${i}`} className={cn("min-w-0 flex-1 truncate", FROM[c.from], c.numeric && "justify-end text-right")}>
                   {c.label}
@@ -398,6 +462,11 @@ function DocListBody(p: DocListProps) {
                 {r.subject}
               </Link>
             </div>
+            {showTags && (
+              <div className="hidden min-w-0 flex-1 md:flex">
+                <TagPills tags={r.tags} />
+              </div>
+            )}
             {p.columns.slice(1).map((c, i) => (
               <div key={`${c.label}-${i}`} className={cn("min-w-0 flex-1 items-center", FROM[c.from], c.numeric && "justify-end text-right")}>
                 {c.kind === "status" ? (
@@ -414,10 +483,16 @@ function DocListBody(p: DocListProps) {
               </div>
             ))}
             <div className="ml-auto flex shrink-0 items-center justify-end gap-3 text-xs text-gray-500 md:min-w-[150px]">
-              {/* No one was ever assigned on the old site: its empty avatar showed "-". */}
-              <span className="hidden h-6 w-6 items-center justify-center rounded-full border border-dashed border-gray-300 text-gray-400 md:inline-flex lg:hidden xl:inline-flex" aria-hidden>
-                -
-              </span>
+              {/* Who it is assigned to; with no one, the old list's empty avatar "-". A click filters by the user. */}
+              {r.assignees.length ? (
+                <span className="hidden md:inline-flex lg:hidden xl:inline-flex">
+                  <Assignees people={r.assignees} onFilter={(email) => setFilters([...q.filters.filter((f) => f.field !== "_assign"), { field: "_assign", op: "like", value: `%${email}%` }])} />
+                </span>
+              ) : (
+                <span className="hidden h-6 w-6 items-center justify-center rounded-full border border-dashed border-gray-300 text-gray-400 md:inline-flex lg:hidden xl:inline-flex" aria-hidden>
+                  -
+                </span>
+              )}
               <span className="hidden md:inline" title={r.modifiedTitle} suppressHydrationWarning>{minute(r.modified, now)}</span>
               <span className={cn("hidden items-center gap-1 md:inline-flex", !r.comments && "text-gray-400")} title="Comments">
                 <MessageSquare className="h-3.5 w-3.5" aria-hidden />
@@ -474,6 +549,9 @@ function DocListBody(p: DocListProps) {
           </div>
         )}
       </section>
+      </ListWithSidebar>
+      {collab === "assign" && <AssignToDialog doctype={p.doctype} ids={chosen.map((c) => c.id)} viewer={p.viewer} onDone={collabDone} onClose={() => setCollab(null)} />}
+      {collab === "tags" && <AddTagsDialog doctype={p.doctype} ids={chosen.map((c) => c.id)} onDone={collabDone} onClose={() => setCollab(null)} />}
       {confirming && (
         <ConfirmDialog
           message={chosen.length > 1 ? `Delete ${chosen.length} items permanently?` : `Delete ${chosen.length} item permanently?`}

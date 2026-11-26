@@ -24,6 +24,8 @@ import { childLayoutsOf, layoutOf, type DocScreen } from "@/lib/purchase/doc/scr
 import { displayValue } from "@/lib/purchase/doc/values";
 import { formatCurrency, formatDateTime } from "@/lib/purchase/format";
 import { likesOf, NO_LIKES } from "@/lib/purchase/likes";
+import { openAssignments } from "@/lib/purchase/collab/assignments";
+import { savedFilters, tagsOf } from "@/lib/purchase/collab/tags";
 import type { ListField, ListFieldType } from "@/lib/purchase/orders/list";
 import { PURCHASE_API_ROOT, PURCHASE_PATHS } from "@/lib/purchase/routes";
 import { purchasePageGate } from "@/lib/purchase/server/page";
@@ -59,6 +61,8 @@ function filterFieldsOf(l: DoctypeLayout): ListField[] {
     { key: "creation", label: "Created On", type: "datetime" },
     { key: "modified", label: "Last Updated On", type: "datetime" },
     { key: "_liked_by", label: "Liked By", type: "data" },
+    { key: "_assign", label: "Assigned To", type: "data" },
+    { key: "_user_tags", label: "Tags", type: "data" },
   );
   return out;
 }
@@ -83,7 +87,13 @@ export async function DocListPage({ screen, searchParams, views }: { screen: Doc
   const defaults = { sort: screen.sort.field, order: screen.sort.order };
   const q = parseDocListQuery(l, searchParams, defaults);
   const [{ rows, total }, currencies] = await Promise.all([listDocs(screen, q), currencyDisplays()]);
-  const likes = await likesOf(screen.key, rows.map((r) => r.id), user.email);
+  const ids = rows.map((r) => r.id);
+  const [likes, assigned, tags, saved] = await Promise.all([
+    likesOf(screen.key, ids, user.email),
+    openAssignments(screen.doctype, ids),
+    tagsOf(screen.doctype, ids),
+    savedFilters(screen.doctype, user),
+  ]);
   const columns = listColumns(l, { hideNameColumn: screen.hideNameColumn, settings: screen.listSettings });
   const format = (f: LayoutField, v: unknown, doc: Doc) => {
     if (f.fieldtype !== "Currency") return displayValue(f, v);
@@ -105,6 +115,8 @@ export async function DocListPage({ screen, searchParams, views }: { screen: Doc
       modified: modified.toISOString(),
       modifiedTitle: formatDateTime(modified),
       likes: likes[id] ?? NO_LIKES,
+      assignees: assigned[id] ?? [],
+      tags: tags[id] ?? [],
     };
   });
   const standard: DocListStandardFilter[] = standardFilters(l).map((s) => ({ ...s, lookup: s.fieldtype === "Link" ? LINK_LOOKUP[s.options ?? ""] ?? null : null }));
@@ -135,8 +147,22 @@ export async function DocListPage({ screen, searchParams, views }: { screen: Doc
       exportHref={`${PURCHASE_API_ROOT}/doc-export/${screen.key}${params ? `?${params}` : ""}`}
       views={views}
       now={new Date().toISOString()}
+      groupFields={groupFieldsOf(l)}
+      saved={saved}
+      canGlobal={purchaseCan(user, "manage")}
     />
   );
+}
+
+/** Edit Filters' fields: the DocType's Select, Link, Data, Int and Check fields (list_sidebar_group_by.js). */
+const GROUP_TYPES = new Set(["Select", "Link", "Data", "Int", "Check"]);
+function groupFieldsOf(l: DoctypeLayout) {
+  const seen = new Set<string>();
+  return l.fields.flatMap((f) => {
+    if (!GROUP_TYPES.has(f.fieldtype) || seen.has(f.fieldname)) return [];
+    seen.add(f.fieldname);
+    return [{ fieldname: f.fieldname, label: f.label ?? f.fieldname, fieldtype: f.fieldtype }];
+  });
 }
 
 /** One record: the old form, editable for a master, read-only for a transaction. */

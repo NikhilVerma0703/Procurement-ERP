@@ -55,6 +55,10 @@ export const LIST_FIELDS: readonly ListField[] = [
   // Frappe's standard "Liked By" (_liked_by): the ♥ heading adds "Liked By like %<me>%". Answered from
   // the likes table (like-rules.ts), not by list-where.ts.
   { key: "_liked_by", label: "Liked By", type: "data" },
+  // Frappe's "Assigned To" (_assign) and "Tags" (_user_tags), answered from the assignments and tags tables
+  // (collab/filters.ts; owner, 26-11-2026).
+  { key: "_assign", label: "Assigned To", type: "data" },
+  { key: "_user_tags", label: "Tags", type: "data" },
   { key: "item_code", label: "Item Code (Purchase Order Item)", type: "link", child: "items" },
   { key: "item_name", label: "Item Name (Purchase Order Item)", type: "data", child: "items" },
   { key: "material_request", label: "Material Request (Purchase Order Item)", type: "link", child: "items" },

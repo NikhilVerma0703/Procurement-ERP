@@ -9,6 +9,7 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 import { db } from "../server/db";
 import { likedByWhere } from "../likes";
+import { collabWhere } from "../collab/filters";
 import { LIKE_DOCTYPE, type LikeKind } from "../like-rules";
 import type { DoctypeLayout, LayoutField } from "./layout";
 import { COUNT_UPPER_BOUND, type DocFilter, type DocListQuery } from "./list-view";
@@ -36,6 +37,10 @@ const numberIn = (v: string) => {
 
 /** One condition as SQL (null: nothing to add). "_liked_by" is answered by the likes table. */
 async function condition(s: DocScreen, l: DoctypeLayout, f: DocFilter): Promise<Prisma.Sql | null> {
+  if (f.field === "_assign" || f.field === "_user_tags") {
+    const ids = await collabWhere(s.doctype, { field: f.field, op: f.op as never, value: f.value });
+    return "in" in ids ? (ids.in.length ? Prisma.sql`t.id IN (${Prisma.join(ids.in)})` : Prisma.sql`FALSE`) : ids.notIn.length ? Prisma.sql`t.id NOT IN (${Prisma.join(ids.notIn)})` : null;
+  }
   if (f.field === "_liked_by") {
     const kind = s.key as LikeKind;
     if (!(kind in LIKE_DOCTYPE)) return null;
@@ -105,6 +110,18 @@ export async function listDocs(s: DocScreen, q: DocListQuery): Promise<{ rows: D
       : db.$queryRaw<{ n: number }[]>`SELECT COUNT(*)::int AS n FROM (SELECT 1 FROM ${source(s)} ${where} LIMIT ${COUNT_UPPER_BOUND}) x`,
   ]);
   return { rows: rows.map((r) => ({ id: r.id, doc: typedDoc(l, r.legacy ?? {}) })), total: counted[0]?.n ?? 0 };
+}
+
+/**
+ * Every record the list's conditions select — all but those on `field` itself, as the sidebar's counts left
+ * them out (frappe.desk.listview.get_group_by_count) — with its value of `field` (null: not set).
+ */
+export async function docFieldValues(s: DocScreen, filters: DocFilter[], field: string): Promise<{ id: string; value: string | null }[]> {
+  const l = layoutOf(s);
+  const own = field === "assigned_to" ? "_assign" : field;
+  const where = await whereOf(s, l, filters.filter((f) => f.field !== own));
+  const key = field === "assigned_to" ? "name" : field;
+  return db.$queryRaw<{ id: string; value: string | null }[]>`SELECT t.id, NULLIF(t.legacy->>${key}, '') AS value FROM ${source(s)} ${where}`;
 }
 
 /** Does the record exist (for a like)? */
@@ -209,4 +226,11 @@ export async function docTitle(s: DocScreen, id: string): Promise<string | null>
   const name = String(r.legacy?.name ?? "");
   const title = l.titleField ? String(r.legacy?.[l.titleField] ?? "") : "";
   return title && title !== name ? `${title} - ${name}` : name;
+}
+
+/** The names of these records (for an action that notes them on their timelines): only those that exist. */
+export async function docNames(s: DocScreen, ids: readonly string[]): Promise<Map<string, string>> {
+  if (!ids.length) return new Map();
+  const rows = await db.$queryRaw<{ id: string; name: string | null }[]>`SELECT t.id, t.legacy->>'name' AS name FROM ${source(s)} AND t.id IN (${Prisma.join([...ids])})`;
+  return new Map(rows.map((r) => [r.id, r.name ?? r.id]));
 }

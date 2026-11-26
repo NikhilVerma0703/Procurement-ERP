@@ -74,7 +74,9 @@ describe("purchase schema conventions", () => {
     // Not ERPNext records: the import log, the PO's links, the file store (keyed by each file's place,
     // which comes from the old site's file URL), and the standalone app's sign-in accounts.
     // Likes were a column on the old site (_liked_by), not a doctype: no ERPNext name to keep.
-    const own = new Set(["PurchaseImportRun", "PurchaseOrderLink", "PurchaseFile", "PurchaseLogin", "PurchaseLike"]);
+    // Assignments, tags and saved filters (26-11-2026) start empty here: the old site had none to bring over
+    // (0 to-dos and 0 tags on its records, read 26-11-2026), so they keep no ERPNext name either.
+    const own = new Set(["PurchaseImportRun", "PurchaseOrderLink", "PurchaseFile", "PurchaseLogin", "PurchaseLike", "PurchaseAssignment", "PurchaseTag", "PurchaseSavedFilter"]);
     for (const m of models.filter((x) => !own.has(x.name))) {
       expect(identity.test(fieldLines(m).join("\n")), `${m.name} has no ERPNext identity`).toBe(true);
     }

@@ -1474,6 +1474,57 @@ model PurchaseLike {
   @@map("purchase_likes")
 }
 
+/// Frappe's ToDo for a record (Assign To, owner 26-11-2026): who it is assigned to, by whom, and its state.
+/// Open while assigned; Closed when the assignee marked it done; Cancelled when the assignment was removed.
+model PurchaseAssignment {
+  id          String   @id @default(cuid())
+  doctype     String
+  recordId    String   @map("record_id")
+  /// The record's name as the list shows it (PUR-ORD/26-27/02563), for messages and the timeline.
+  recordName  String   @map("record_name")
+  allocatedTo String   @map("allocated_to")
+  assignedBy  String   @map("assigned_by")
+  description String?
+  priority    String   @default("Medium")
+  status      String   @default("Open")
+  date        DateTime? @db.Date
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([doctype, recordId])
+  @@index([allocatedTo, status])
+  @@map("purchase_assignments")
+}
+
+/// A tag on a record (Frappe's _user_tags / Tag Link: Add Tags, owner 26-11-2026).
+model PurchaseTag {
+  id        String   @id @default(cuid())
+  doctype   String
+  recordId  String   @map("record_id")
+  tag       String
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([doctype, recordId, tag])
+  @@index([doctype, tag])
+  @@map("purchase_tags")
+}
+
+/// A list's saved filter (Frappe's List Filter: the list sidebar's Save Filter, owner 26-11-2026).
+model PurchaseSavedFilter {
+  id         String   @id @default(cuid())
+  doctype    String
+  filterName String   @map("filter_name")
+  /// The list's address-bar state when it was saved.
+  query      String
+  /// Saved for one login (its email); null: for everyone.
+  forUser    String?  @map("for_user")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([doctype])
+  @@map("purchase_saved_filters")
+}
+
 // ---------------------------------------------------------------------------
 // People and migration runs
 // ---------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Heart, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/purchase/cn";
 import { formatCount, formatCurrency, formatDate, formatDateTime, timeAgoMini } from "@/lib/purchase/format";
@@ -8,6 +9,8 @@ import { isLikedByMeFilter, likedByMeFilter } from "@/lib/purchase/like-rules";
 import { listHref, type ListQuery } from "@/lib/purchase/orders/list";
 import type { OrderListRow } from "@/lib/purchase/orders/queries";
 import { orderPath, PURCHASE_PATHS } from "@/lib/purchase/routes";
+import { Assignees, TagPills } from "../collab/CollabDialogs";
+import { useTagsShown } from "../collab/sidebar-state";
 import { LikeButton } from "../likes/LikeButton";
 import { CHECKBOX, useListSelection } from "./selection";
 import { StatusPill } from "./StatusPill";
@@ -49,7 +52,18 @@ export function OrderTable({ rows, total, query, now, viewer, canLike }: {
   canLike: boolean;
 }) {
   const { chosen, isSelected, allSelected, toggle, setAll } = useListSelection();
+  const router = useRouter();
+  const [showTags] = useTagsShown();
   const at = new Date(now);
+  /** An avatar's click: "Assigned To like %<user>%", replacing any earlier one. */
+  const byAssignee = (email: string) =>
+    router.push(
+      listHref(PURCHASE_PATHS.orders, {
+        ...query,
+        filters: [...query.filters.filter((f) => f.field !== "_assign"), { field: "_assign", op: "like", value: `%${email}%` }],
+        limit: query.pageLength,
+      }),
+    );
   const filtered = query.filters.length > 0 || Object.keys(query.quick).length > 0;
   /** The list filtered by a workflow state, replacing any earlier one. */
   const byState = (state: string) =>
@@ -76,13 +90,14 @@ export function OrderTable({ rows, total, query, now, viewer, canLike }: {
       <table className="w-full min-w-[720px] table-fixed text-sm">
         <colgroup>
           <col className="w-[24%]" />
+          {showTags && <col className="w-[12%]" />}
           <col className="w-[12%]" />
           <col className="w-[10%]" />
           <col className="hidden w-[14%] min-[1367px]:table-column" />
           <col className="hidden w-[9%] min-[1367px]:table-column" />
           <col className="hidden w-[9%] min-[1920px]:table-column" />
           <col className="w-[12%]" />
-          <col className="w-[10%]" />
+          <col className="w-[13%]" />
         </colgroup>
         <thead className="border-b border-gray-200">
           {chosen.length > 0 ? (
@@ -93,6 +108,7 @@ export function OrderTable({ rows, total, query, now, viewer, canLike }: {
                   {chosen.length} items selected
                 </label>
               </th>
+              {showTags && <th className={TH} />}
               <th className={TH} />
               <th className={TH} />
               <th className={`${TH} hidden min-[1367px]:table-cell`} />
@@ -112,6 +128,7 @@ export function OrderTable({ rows, total, query, now, viewer, canLike }: {
                   Supplier Name
                 </span>
               </th>
+              {showTags && <th className={TH} />}
               <th className={TH}>Status</th>
               <th className={TH}>Date</th>
               <th className={`${TH} hidden text-right min-[1367px]:table-cell`}>Grand Total</th>
@@ -141,6 +158,11 @@ export function OrderTable({ rows, total, query, now, viewer, canLike }: {
                   {r.supplierName}
                 </Link>
               </td>
+              {showTags && (
+                <td className={`${TD} truncate`}>
+                  <TagPills tags={r.tags} />
+                </td>
+              )}
               <td className={TD}>
                 <StatusPill label={r.workflowState} docStatus={r.docStatus} href={byState(r.workflowState)} />
               </td>
@@ -159,6 +181,11 @@ export function OrderTable({ rows, total, query, now, viewer, canLike }: {
               </td>
               <td className={`${TD} whitespace-nowrap text-right text-xs text-gray-500`}>
                 <span title={formatDateTime(r.updatedAt)}>{timeAgoMini(r.updatedAt, at)}</span>
+                {r.assignees.length > 0 && (
+                  <span className="ml-3 inline-flex align-middle">
+                    <Assignees people={r.assignees} onFilter={byAssignee} />
+                  </span>
+                )}
                 <span className="ml-3 inline-flex items-center gap-1" title="Comments">
                   <MessageSquare className="h-3.5 w-3.5" aria-hidden />
                   {r.comments > 99 ? "99+" : r.comments}

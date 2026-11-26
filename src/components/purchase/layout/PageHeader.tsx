@@ -12,9 +12,12 @@ export function PageHeader({
   title,
   badge,
   actions,
+  before,
 }: {
   crumbs?: readonly string[];
   title: string;
+  /** Before the title (a list's ≡ sidebar toggle). */
+  before?: ReactNode;
   badge?: ReactNode;
   actions?: ReactNode;
 }) {
@@ -32,6 +35,7 @@ export function PageHeader({
       )}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
+          {before}
           <h1 className="truncate text-2xl font-bold tracking-tight text-pacific-dark">{title}</h1>
           {badge}
         </div>

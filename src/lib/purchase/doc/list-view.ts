@@ -291,7 +291,7 @@ export interface DocListQuery {
 }
 
 /** Fields a list may filter or sort on besides the layout's: Frappe's standard fields. */
-export const STANDARD_LIST_FIELDS = ["name", "owner", "modified_by", "creation", "modified", "docstatus", "idx", "_liked_by"] as const;
+export const STANDARD_LIST_FIELDS = ["name", "owner", "modified_by", "creation", "modified", "docstatus", "idx", "_liked_by", "_assign", "_user_tags"] as const;
 
 const MAX_VALUE = 200;
 type Params = URLSearchParams | Record<string, string | string[] | undefined>;

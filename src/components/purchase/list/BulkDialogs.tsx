@@ -12,7 +12,7 @@ import { cn } from "@/lib/purchase/cn";
 import type { BulkOutcome } from "@/lib/purchase/bulk-delete";
 import { orderPath } from "@/lib/purchase/routes";
 
-function Modal({ title, indicator, onClose, children, footer }: { title: string; indicator?: "green" | "red" | "orange"; onClose: () => void; children: ReactNode; footer?: ReactNode }) {
+export function Modal({ title, indicator, onClose, children, footer }: { title: string; indicator?: "green" | "red" | "orange"; onClose: () => void; children: ReactNode; footer?: ReactNode }) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/30 p-4 pt-24" role="dialog" aria-modal="true" aria-label={title} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className="w-full max-w-md rounded-lg bg-white shadow-xl">

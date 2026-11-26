@@ -27,6 +27,8 @@ type Target =
   /** A text column of the item rows. */
   | { kind: "item"; column: string; nullable: boolean };
 
+export type FilterTarget = Target;
+
 const TARGETS: Record<string, Target> = {
   name: { kind: "text", column: "number", nullable: false },
   supplier: { kind: "text", relation: "supplier", column: "code", nullable: false },
@@ -57,6 +59,9 @@ const TARGETS: Record<string, Target> = {
   item_name: { kind: "item", column: "itemName", nullable: false },
   material_request: { kind: "item", column: "materialRequest", nullable: true },
 };
+
+/** Where each filterable field is stored (the sidebar's counts read the same columns). */
+export const FILTER_TARGETS: Readonly<Record<string, Target>> = TARGETS;
 
 const NEVER: Where = { id: { in: [] } };
 const ci = { mode: "insensitive" as const };

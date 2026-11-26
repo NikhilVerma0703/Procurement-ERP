@@ -3,10 +3,13 @@ import "server-only";
 import type { Prisma } from "@prisma/client";
 import { LIKED_BY_FIELD, NO_LIKES, type LikeInfo } from "../like-rules";
 import { likedByWhere, likesOf } from "../likes";
+import { collabWhere, isCollabField } from "../collab/filters";
+import { openAssignments } from "../collab/assignments";
+import { tagsOf } from "../collab/tags";
 import { db } from "../server/db";
 import { PO_STATUS_KEYS, labelOf } from "./labels";
 import { allFilters, type ListQuery } from "./list";
-import { buildOrderBy, buildWhere, SORT_COLUMNS } from "./list-where";
+import { buildOrderBy, buildWhere, FILTER_TARGETS, SORT_COLUMNS } from "./list-where";
 
 const WORKFLOW_LABEL = { CREATED: "Created", APPROVED: "Approved", REJECTED: "Rejected" } as const;
 const DOCSTATUS_LABEL = { DRAFT: "Draft", SUBMITTED: "Submitted", CANCELLED: "Cancelled" } as const;
@@ -27,6 +30,10 @@ export interface OrderListRow {
   updatedAt: string;
   /** Comments and e-mails on the PO (ERPNext's comment count). */
   comments: number;
+  /** Its open assignments (the row's avatars). */
+  assignees: { email: string; name: string }[];
+  /** Its tags (Show Tags). */
+  tags: string[];
   /** The row's heart: how many liked it, whether the viewer did, and who. */
   likes: LikeInfo;
 }
@@ -50,10 +57,44 @@ const ROW_SELECT = {
 /** The list's conditions as one query. "Liked By" is answered from the likes table first. */
 async function orderWhere(q: ListQuery): Promise<Prisma.PurchaseOrderWhereInput> {
   const filters = allFilters(q);
-  const where = buildWhere(filters.filter((f) => f.field !== LIKED_BY_FIELD));
+  const where = buildWhere(filters.filter((f) => f.field !== LIKED_BY_FIELD && !isCollabField(f.field)));
   const liked = filters.filter((f) => f.field === LIKED_BY_FIELD);
-  if (!liked.length) return where;
-  return { AND: [where, ...(await Promise.all(liked.map((f) => likedByWhere("orders", f))))] };
+  // "Assigned To" and "Tags" are answered from the assignments and tags tables (collab/filters.ts).
+  const collab = filters.filter((f) => isCollabField(f.field));
+  if (!liked.length && !collab.length) return where;
+  return {
+    AND: [
+      where,
+      ...(await Promise.all(liked.map((f) => likedByWhere("orders", f)))),
+      ...(await Promise.all(collab.map(async (f) => ({ id: await collabWhere("Purchase Order", f) })))),
+    ],
+  };
+}
+
+/**
+ * Every PO the list's conditions select — all but those on `field` itself, as the sidebar's counts left
+ * them out (frappe.desk.listview.get_group_by_count) — with its value of `field` (null: not set; none for
+ * "assigned_to", whose counts come from the assignments).
+ */
+export async function orderFieldValues(q: ListQuery, field: string): Promise<{ id: string; value: string | null }[]> {
+  const own = field === "assigned_to" ? "_assign" : field;
+  const where = await orderWhere({
+    ...q,
+    quick: Object.fromEntries(Object.entries(q.quick).filter(([k]) => k !== own)),
+    filters: q.filters.filter((f) => f.field !== own),
+  });
+  const t = FILTER_TARGETS[field];
+  if (!t || t.kind === "item" || t.kind === "date" || t.kind === "datetime" || t.kind === "number") {
+    return (await db.purchaseOrder.findMany({ where, select: { id: true } })).map((o) => ({ id: o.id, value: null }));
+  }
+  const select = t.kind === "text" && t.relation ? { id: true, [t.relation]: { select: { [t.column]: true } } } : { id: true, [t.column]: true };
+  const rows = (await db.purchaseOrder.findMany({ where, select: select as never })) as unknown as Record<string, unknown>[];
+  const labels = t.kind === "enum" ? new Map(Object.entries(t.keys).map(([label, key]) => [key, label])) : null;
+  return rows.map((r) => {
+    const raw = t.kind === "text" && t.relation ? (r[t.relation] as Record<string, unknown> | null)?.[t.column] : r[t.column];
+    const value = raw === null || raw === undefined || raw === "" ? null : String(raw);
+    return { id: String(r.id), value: labels && value ? labels.get(value) ?? value : value };
+  });
 }
 
 /** The rows the list shows (the first `limit`) and how many match in all; `viewer` sees their own hearts filled. */
@@ -64,11 +105,13 @@ export async function listOrders(q: ListQuery, viewer: string): Promise<{ rows: 
     db.purchaseOrder.findMany({ where, orderBy: buildOrderBy(q.sort, q.order), take: q.limit, select: ROW_SELECT }),
   ]);
   const ids = orders.map((o) => o.id);
-  const [counts, likes] = await Promise.all([
+  const [counts, likes, assigned, tags] = await Promise.all([
     ids.length
       ? db.purchaseOrderEvent.groupBy({ by: ["orderId"], where: { orderId: { in: ids }, kind: { in: ["COMMENT", "EMAIL"] } }, _count: { _all: true } })
       : [],
     likesOf("orders", ids, viewer),
+    openAssignments("Purchase Order", ids),
+    tagsOf("Purchase Order", ids),
   ]);
   const commentCount = new Map(counts.map((c) => [c.orderId, c._count._all]));
   const rows = orders.map((o) => ({
@@ -86,6 +129,8 @@ export async function listOrders(q: ListQuery, viewer: string): Promise<{ rows: 
     updatedAt: o.updatedAt.toISOString(),
     comments: commentCount.get(o.id) ?? 0,
     likes: likes[o.id] ?? NO_LIKES,
+    assignees: assigned[o.id] ?? [],
+    tags: tags[o.id] ?? [],
   }));
   return { rows, total };
 }

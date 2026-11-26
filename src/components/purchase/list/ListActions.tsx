@@ -10,6 +10,9 @@ import { cn } from "@/lib/purchase/cn";
 import type { BulkOutcome } from "@/lib/purchase/bulk-delete";
 import { MAX_PRINT_SHEETS, TOO_MANY_TO_PRINT } from "@/lib/purchase/orders/selection";
 import { PURCHASE_API_PATHS, PURCHASE_PATHS } from "@/lib/purchase/routes";
+import { applyAssignmentRuleAction } from "@/app/purchase/collab-actions";
+import { AddTagsDialog, AssignToDialog } from "../collab/CollabDialogs";
+import { useToggleSidebar } from "../collab/ListLayout";
 import { ConfirmDialog } from "../form/Grid";
 import { usePopover } from "../ui/usePopover";
 import { deleteInBatches, inBatches } from "./batches";
@@ -31,9 +34,11 @@ type Dialog =
   | { kind: "delete" }
   | { kind: "message"; lines: string[]; title?: string }
   | { kind: "makeReceipts" }
+  | { kind: "assign" }
+  | { kind: "tags" }
   | { kind: "workflow"; outcome: BulkOutcome };
 
-export function ListActions({ exportHref, selectionExportAction, layouts, defaultLayout, canApprove, canDelete, canManage, canCreateReceipt }: {
+export function ListActions({ exportHref, selectionExportAction, layouts, defaultLayout, canApprove, canDelete, canManage, canCreateReceipt, viewer }: {
   /** The filtered list as Excel (the ⋯ menu). */
   exportHref: string;
   /** Where the selection's Export posts its ids (the list's sort kept). */
@@ -47,7 +52,10 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
   canManage: boolean;
   /** May make Purchase Receipts (Actions › Purchase Receipt). */
   canCreateReceipt: boolean;
+  /** The signed-in user (Assign To's "Assign to me"). */
+  viewer: string;
 }) {
+  const toggleSidebar = useToggleSidebar();
   const router = useRouter();
   const [refreshing, startTransition] = useTransition();
   const menu = usePopover<HTMLDivElement>();
@@ -157,11 +165,27 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
     }
   };
 
+  /** Collaboration done: the ticks cleared and the list read again (Frappe's clear_checked_items + refresh). */
+  const collabDone = () => {
+    setDialog(null);
+    clear();
+    startTransition(() => router.refresh());
+  };
+  /** bulk_operations.apply_assignment_rule: no message; the ticks cleared and the list refreshed. */
+  const applyRule = async () => {
+    const r = await applyAssignmentRuleAction("Purchase Order", ids);
+    if (!r.ok) return setDialog({ kind: "message", lines: [r.error] });
+    collabDone();
+  };
+
   // The old list's order: the workflow's actions, the list's own (Purchase Receipt), then Frappe's.
   const items: ({ label: string; run: () => void } | "divider")[] = [
     ...(workflow ? [{ label: "Approve", run: () => void runWorkflow("approve") }, { label: "Reject", run: () => void runWorkflow("reject") }, "divider" as const] : []),
     ...(canCreateReceipt ? [{ label: "Purchase Receipt", run: () => setDialog({ kind: "makeReceipts" }) }] : []),
     { label: "Export", run: () => postForm(selectionExportAction, { ids: JSON.stringify(ids) }) },
+    { label: "Assign To", run: () => setDialog({ kind: "assign" }) },
+    { label: "Apply Assignment Rule", run: () => void applyRule() },
+    { label: "Add Tags", run: () => setDialog({ kind: "tags" }) },
     { label: "Print", run: print },
     ...(canDelete ? [{ label: "Delete", run: () => setDialog({ kind: "delete" }) }] : []),
   ];
@@ -203,6 +227,9 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
               <Download className="h-4 w-4" aria-hidden />
               Export (Excel)
             </a>
+            <button type="button" role="menuitem" onClick={() => { menu.setOpen(false); toggleSidebar(); }} className="block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+              Toggle Sidebar
+            </button>
           </div>
         )}
       </div>
@@ -242,6 +269,8 @@ export function ListActions({ exportHref, selectionExportAction, layouts, defaul
         </Link>
       )}
 
+      {dialog?.kind === "assign" && <AssignToDialog doctype="Purchase Order" ids={ids} viewer={viewer} onDone={collabDone} onClose={() => setDialog(null)} />}
+      {dialog?.kind === "tags" && <AddTagsDialog doctype="Purchase Order" ids={ids} onDone={collabDone} onClose={() => setDialog(null)} />}
       {dialog?.kind === "delete" && (
         <ConfirmDialog
           message={ids.length > 1 ? `Delete ${ids.length} items permanently?` : `Delete ${ids.length} item permanently?`}
